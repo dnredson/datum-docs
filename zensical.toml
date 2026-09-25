@@ -1,0 +1,56 @@
+[project]
+site_name = "DATUM"
+site_url = "https://dnredson.github.io/datum-docs/"
+site_description = "Architecture, contracts and evidence for distributed applications across the IoTinuum."
+repo_url = "https://github.com/dnredson/datum-docs"
+repo_name = "dnredson/datum-docs"
+edit_uri = "edit/main/docs/"
+extra_css = ["stylesheets/extra.css"]
+nav = [
+  { "Home" = "index.md" },
+  { "Overview" = [{ "What is DATUM?" = "overview/index.md" }, { "Status and limitations" = "overview/status.md" }] },
+  { "Get started" = [{ "Choose a path" = "getting-started/index.md" }, { "First validation" = "examples/first-validation.md" }] },
+  { "Concepts" = "concepts/index.md" },
+  { "Architecture" = [{ "Overview" = "architecture/index.md" }, { "Authority and evidence" = "architecture/authority-and-evidence.md" }] },
+  { "Guides and operations" = [{ "Inspect readiness" = "guides/inspect-readiness.md" }, { "Readiness semantics" = "operations/readiness.md" }] },
+  { "Reference" = [{ "Contract map" = "reference/index.md" }, { "Readiness API" = "reference/readiness-api.md" }, { "Sources and provenance" = "reference/sources.md" }] },
+  { "Project" = [{ "Architecture decisions" = "project/decisions.md" }, { "Contributing" = "project/contributing.md" }, { "Roadmap" = "project/roadmap.md" }] },
+]
+
+[project.theme]
+language = "en"
+custom_dir = "overrides"
+logo = "assets/brand/datum-monochrome.png"
+favicon = "assets/brand/datum-icon.png"
+features = ["navigation.sections", "navigation.top", "navigation.footer", "navigation.indexes", "content.code.copy", "content.action.edit", "search.highlight"]
+
+[project.theme.font]
+text = "Inter"
+code = "JetBrains Mono"
+
+[[project.theme.palette]]
+scheme = "default"
+primary = "custom"
+accent = "cyan"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+scheme = "slate"
+primary = "custom"
+accent = "cyan"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to light mode"
+
+[project.markdown_extensions]
+admonition = {}
+attr_list = {}
+md_in_html = {}
+tables = {}
+toc.permalink = true
+pymdownx.details = {}
+pymdownx.highlight.pygments_lang_class = true
+pymdownx.inlinehilite = {}
+pymdownx.superfences.custom_fences = [
+  { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" },
+]
