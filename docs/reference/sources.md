@@ -10,6 +10,12 @@ The following files were retrieved at the pinned commit. Their Git blob IDs iden
 
 | Source | Git blob ID |
 |---|---|
+| [dserver/src/main.rs](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/main.rs) | `1da08b3c9699c6b146ca82a4f961a2c949818cf3` |
+| [DATUM/src/agent/canonical_dgraph.rs](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/agent/canonical_dgraph.rs) | `11a0a6b534adc1ed670d8edf2069f57503034bef` |
+| [DATUM/src/agent/canonical_dcontinuum.rs](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/agent/canonical_dcontinuum.rs) | `8d6115b01c217cb0b084fa1e232e123af4c5c47e` |
+| [DATUM/src/agent/canonical_dforward.rs](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/agent/canonical_dforward.rs) | `17b227bdaa84e58dfeed9d550a79c56710e88ebb` |
+| [DATUM/src/agent/canonical_dmap_v2.rs](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/agent/canonical_dmap_v2.rs) | `5243e0d4387101d4d4bb03c40adfded5560b3482` |
+| [DATUM/src/agent/canonical_dmonitor.rs](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/agent/canonical_dmonitor.rs) | `aea21e92885d17225215fb31995602fb1db02d42` |
 | [documentation/adr/ADR-0024-canonical-dmonitor-observation-model.md](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/documentation/adr/ADR-0024-canonical-dmonitor-observation-model.md) | `be0dfa88d70a5dced58cdd28a3153ad6fffe57e8` |
 | [documentation/adr/ADR-0023-canonical-dforward-diot-dmap-v2.md](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/documentation/adr/ADR-0023-canonical-dforward-diot-dmap-v2.md) | `2f76811c13dfe4b7babd873733bd8c6fbbed7047` |
 | [documentation/adr/ADR-0010-cross-node-readiness-fresh-evidence.md](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/documentation/adr/ADR-0010-cross-node-readiness-fresh-evidence.md) | `6046c32c64713c05293193e1c0634b27f6c22b36` |
@@ -27,11 +33,15 @@ The following files were retrieved at the pinned commit. Their Git blob IDs iden
 | [DATUM/tests/dmonitor_d1_readiness_integration.rs](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/tests/dmonitor_d1_readiness_integration.rs) | `ea4377883a254469059c7584b768193f3991a87c` |
 | [DATUM/tests/dmonitor_d2_dependency_readiness_integration.rs](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/tests/dmonitor_d2_dependency_readiness_integration.rs) | `e293094dd094f02017f07379d2c0309ab92b5eea` |
 
+Additional source modules were inspected to expand conceptual/API documentation, including D-Deploy, D-Node registry, D-Serv artifact/D-Code, D-Call and DIoT runtime binding. Their links are pinned inline on the pages that derive claims from them.
+
 ## Reading historical material
 
 Early sections of cumulative ADRs can describe a phase that was later extended. This site uses the D1 implementation plus the D2 dependency-readiness additions at the pinned checkpoint. Older architecture pages are context, not evidence that every statement still describes canonical control-state persistence.
 
 The canonical glossary distinguishes D-Node (runtime) from a continuum element or physical machine. Legacy snapshot terminology must not silently replace the typed canonical contracts.
+
+The DServer router also exposes older and auxiliary subsystems. The [complete HTTP API](http-api.md) records them, while the [core API](core-api.md) identifies the routes most directly tied to current canonical authority/evidence domains.
 
 ## Maintaining the baseline
 

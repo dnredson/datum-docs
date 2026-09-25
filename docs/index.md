@@ -11,17 +11,29 @@ It gives application structure, accepted placement and runtime observations dist
 
 <div class="grid cards" markdown>
 
-- **Start with the model**
+- **Learn the vocabulary and entities**
 
-    Learn what DATUM represents and why application logic, placement and evidence are separate.
+    Start from D-Application, D-Graph, D-Serv, D-Call, D-Node, D-Map, D-Forward, D-IoT, D-Monitor and their concrete identities.
 
-    [Read the overview](overview/index.md)
+    [Open the entity encyclopedia](concepts/entities.md)
 
-- **Find your way through the architecture**
+- **Understand authority**
 
-    Understand DServer, SmartSentinel, the D-Node runtime and the contracts connecting them.
+    Follow the distinction between desired state, accepted authority, operational binding, observed evidence, convergence and readiness.
 
-    [Explore the architecture](architecture/index.md)
+    [Read the lifecycle](architecture/lifecycle.md)
+
+- **Read the contracts**
+
+    Inspect canonical schemas, important fields, invariants and cross-contract relationships.
+
+    [Open the contract reference](reference/contracts.md)
+
+- **Use the API**
+
+    Start with the canonical control-plane surfaces, then use the complete route catalog when debugging or integrating older subsystems.
+
+    [Open the core API](reference/core-api.md)
 
 - **Understand readiness**
 
@@ -29,7 +41,7 @@ It gives application structure, accepted placement and runtime observations dist
 
     [Read the readiness guide](operations/readiness.md)
 
-- **Run the first validation scenarios**
+- **Run validation scenarios**
 
     Follow the existing D1 and D2 DServer subprocess integration proofs in an isolated source checkout.
 
@@ -45,4 +57,6 @@ It gives application structure, accepted placement and runtime observations dist
 | Where are the required realizations accepted to run? | D-Map, materialized through governed D-Deploy acceptance |
 | What was observed, and does it support use now? | D-Monitor evidence plus server-derived convergence and readiness |
 
-The documentation covers concepts, architecture, task guides, technical reference and the project's validation boundaries. Source links are pinned to the [documented revision](reference/sources.md). Some implementation links require repository access.
+A fourth question appears when D-Forward crosses elements: *is the exact provider placement for this dependency usable now?* Phase 114D2 answers it with provider-specific dependency readiness, without replacing D-Map placement authority.
+
+The documentation covers concepts, architecture, contracts, API surfaces, task guides, technical reference and validation boundaries. Source links are pinned to the [documented revision](reference/sources.md). Some implementation links require repository access.
