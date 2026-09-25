@@ -31,8 +31,12 @@ An old realization may remain healthy after accepted authority advances. Its hea
 
 ## Static versus dynamic views
 
-The authority-only DForward projection describes structural relationships. Its `pending_fresh_evidence` marker does not assert a live decision. D1 readiness adds a governed evidence interpretation, while D2 consumption of that result remains outside this edition's baseline.
+The authority-only DForward projection describes structural relationships. For `scope = any_element`, its `readiness_authority = "dmonitor"` and `readiness_state = "pending_fresh_evidence"` fields deliberately remain a static marker rather than a live decision.
+
+D1 provides the governed evidence interpretation and exact placement readiness. D2 is the separate dynamic counterpart for cross-node `any_element` dependencies: it resolves the provider from the **current accepted** DForward/DMap/2 authority and asks whether that exact provider placement is Ready under D1 governance. It neither rewrites static projection nor promotes an observation into placement authority.
+
+Provider ambiguity, placement ambiguity, absent provider readiness or a provider that is not Ready fail closed as a blocked dependency. A caller cannot supply an alternate provider to the D2 read-only endpoint.
 
 ## Sources
 
-[Canonical DGraph](https://github.com/dnredson/datum/blob/c059c3341c7901eeea77ce4881bbd341580d8aef/dserver/src/core/canonical_dgraph.rs), [ADR-0023](https://github.com/dnredson/datum/blob/c059c3341c7901eeea77ce4881bbd341580d8aef/documentation/adr/ADR-0023-canonical-dforward-diot-dmap-v2.md), [ADR-0024](https://github.com/dnredson/datum/blob/c059c3341c7901eeea77ce4881bbd341580d8aef/documentation/adr/ADR-0024-canonical-dmonitor-observation-model.md).
+[Canonical DGraph](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/canonical_dgraph.rs), [ADR-0023](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/documentation/adr/ADR-0023-canonical-dforward-diot-dmap-v2.md), [ADR-0024](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/documentation/adr/ADR-0024-canonical-dmonitor-observation-model.md), [D2 dependency core](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/dforward_dependency_readiness.rs).

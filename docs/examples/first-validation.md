@@ -1,6 +1,6 @@
-# First example: D1 readiness governance
+# First examples: D1 and D2 readiness governance
 
-**Type:** real DServer subprocess integration fixture. **Scope:** local governance proof. **Source execution:** reported passing at the pinned checkpoint; not rerun for this documentation edition.
+**Type:** real DServer subprocess integration fixtures. **Scope:** local governance proofs. **Documentation execution:** source inspected at the pinned checkpoint; runtime tests were not rerun for this documentation edition.
 
 ## Obtain an isolated checkout
 
@@ -9,19 +9,19 @@ These commands create a separate directory. They do not switch your existing Pha
 ```bash
 git clone --no-checkout https://github.com/dnredson/datum.git datum-readiness-example
 cd datum-readiness-example
-git checkout --detach c059c3341c7901eeea77ce4881bbd341580d8aef
+git checkout --detach 3e0baa8f415b822f69eef86c0cbfe2a3681e3a65
 cd DATUM
 ```
 
-## Execute the existing integration test
+## D1: application readiness
+
+Run the existing ignored subprocess proof explicitly:
 
 ```bash
 cargo test --locked --test dmonitor_d1_readiness_integration -- --ignored --test-threads=1
 ```
 
-The `--ignored` argument is necessary because the source marks this subprocess test ignored for ordinary runs. A successful explicit run is expected to report one passing test and zero filtered out; an ordinary test invocation that skips it is not evidence of success.
-
-## What the test establishes
+The D1 proof establishes this progression:
 
 | Step | Condition | Expected result |
 |---|---|---|
@@ -31,12 +31,30 @@ The `--ignored` argument is necessary because the source marks this subprocess t
 
 The source constructs current DMap/2, DForward, placement and runtime-binding state through production HTTP flows. It builds DServer, starts an isolated process and publishes the evidence used for the assertions.
 
-## What it does not establish
+## D2: provider-specific `any_element` readiness
 
-It does not run a live two-machine deployment, demonstrate an external MQTT session, implement a production DServ collector, or close `any_element` dependency consumption. The DServ evidence is intentionally constructed as a fixture.
+Run the D2 subprocess proof separately:
 
-If the run fails, preserve the command, commit and test output. Diagnose build or environment errors separately from failed governance assertions. Do not alter policy values merely to make a readiness assertion pass.
+```bash
+cargo test --locked --test dmonitor_d2_dependency_readiness_integration -- --ignored --test-threads=1
+```
 
-## Source
+The D2 proof constructs a consumer DIoT on `cloud-01` with an `any_element` requirement and a canonical DForward chain to a provider DIoT on `fog-01`:
 
-[Full integration test](https://github.com/dnredson/datum/blob/c059c3341c7901eeea77ce4881bbd341580d8aef/DATUM/tests/dmonitor_d1_readiness_integration.rs). Read [status and limitations](../overview/status.md) before extending the result to a live deployment claim.
+| Step | Provider evidence | Expected dependency result |
+|---|---|---|
+| 1 | No provider DMonitor evidence | `blocked` |
+| 2 | Exact-current Healthy provider DIoT evidence | `satisfied`, even while an unrelated required DServ keeps whole-application readiness NotReady |
+| 3 | Fresh exact-current Unhealthy provider observation | `blocked` again, even though provider convergence may remain Converged |
+
+This is the key D2 distinction: dependency readiness consumes the exact provider placement's D1 readiness, not whole-application readiness, raw health alone or convergence alone.
+
+## What these examples do not establish
+
+They do not run a live two-machine deployment, demonstrate the full Phase 114E fog/cloud validation, or implement a production DServ collector. D1 canonical DServ evidence in the fixture is intentionally constructed for governance testing.
+
+If a run fails, preserve the command, commit and test output. Diagnose build or environment errors separately from failed governance assertions. Do not alter policy values merely to make a readiness assertion pass.
+
+## Sources
+
+[D1 integration test](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/tests/dmonitor_d1_readiness_integration.rs), [D2 integration test](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/tests/dmonitor_d2_dependency_readiness_integration.rs). Read [status and limitations](../overview/status.md) before extending either result to a live deployment claim.

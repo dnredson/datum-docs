@@ -1,30 +1,40 @@
-# Inspect application readiness
+# Inspect readiness
 
-Use this read-only task when DServer is already running with the intended project and application state. It does not register nodes, deploy workloads or publish synthetic observations.
+Use these read-only tasks when DServer is already running with the intended project and application state. They do not register nodes, deploy workloads or publish synthetic observations.
 
-## Query the current result
+## Query application readiness
 
-Replace the three example values with the base URL and identifiers of your test environment. Percent-encode identifiers if they contain URL-reserved characters.
+Replace the example values with the base URL and identifiers of your test environment. Percent-encode identifiers if they contain URL-reserved characters.
 
 ```bash
 DSERVER_URL='http://127.0.0.1:8080'
 PROJECT_ID='your-project-id'
 APPLICATION_ID='your-application-id'
 
-curl --fail-with-body --silent --show-error   "$DSERVER_URL/api/v1/dmonitor/readiness/$PROJECT_ID/$APPLICATION_ID"
+curl --fail-with-body --silent --show-error \
+  "$DSERVER_URL/api/v1/dmonitor/readiness/$PROJECT_ID/$APPLICATION_ID"
 ```
 
 The address above is an example, not a promised default port. The handler selects policy and evaluation time on the server. Do not attach a freshness override or a replacement DMap/DForward object.
 
-## Read the result in order
-
-1. Confirm the result belongs to the intended project/application and evaluation time.
-2. Inspect top-level readiness and findings.
-3. Locate the required DServ and DIoT placement results.
-4. For a NotReady placement, inspect its current-health assessment and nested convergence diagnostics.
-5. Check admitted/excluded evidence and exact authority references before drawing a runtime conclusion.
+Read the result in this order: confirm project/application and evaluation time; inspect top-level readiness/findings; locate required DServ and DIoT placements; then inspect current health, convergence, admitted/excluded evidence and exact authority references for any NotReady placement.
 
 A successful HTTP request means the read completed. It does not mean the application is Ready.
+
+## Query `any_element` dependency readiness
+
+For D2, add the consumer node whose placed DIoTs should be evaluated:
+
+```bash
+NODE_ID='cloud-01'
+
+curl --fail-with-body --silent --show-error \
+  "$DSERVER_URL/api/v1/dforward/dependency-readiness/$PROJECT_ID/$APPLICATION_ID/$NODE_ID"
+```
+
+The server resolves providers from current accepted DMap/2/DForward authority. There is no request body or query parameter for selecting a provider, changing policy or supplying evaluation time.
+
+Inspect top-level authority findings first. Then inspect each dependency's consumer placement/interface, resolved provider DIoT/placement/node, embedded provider placement readiness, `state`, and findings. A dependency can be `satisfied` while whole-application readiness is `not_ready` because unrelated required placements are evaluated separately.
 
 ## Common diagnoses
 
@@ -37,6 +47,10 @@ A successful HTTP request means the read completed. It does not mean the applica
 | `health_unknown` | Whether usable current health evidence exists |
 | `health_degraded` / `health_unhealthy` | The admitted observations and runtime condition |
 | `conflicting_current_health` | Disagreeing admitted observations and their provenance |
+| `no_active_dmap_v2_authority` | Whether current accepted authority is DMap/2 and carries accepted DForward context |
+| `provider_unresolved` / `provider_ambiguous` | Current DForward chains/hops and provider candidates for the required interface |
+| `provider_placement_missing` / `provider_placement_ambiguous` | Current accepted DIoT placement authority for the provider |
+| `provider_readiness_missing` / `provider_not_ready` | The exact provider placement's D1 readiness and evidence |
 
 The generic SmartSentinel bridge is not a canonical DServ emitter. Do not resolve that absence by treating a container with a similar name as the required service.
 

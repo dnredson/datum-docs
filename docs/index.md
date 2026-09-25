@@ -6,8 +6,8 @@ DATUM is an architectural framework and information model for distributed applic
 
 It gives application structure, accepted placement and runtime observations distinct meanings. That separation makes it possible to ask both *what is authorized to run* and *what the available evidence proves now*.
 
-!!! info "Development documentation · Phase 114D1 baseline"
-    This edition describes checkpoint `c059c3341c79`, not a stable release. DMonitor-backed readiness is implemented at this baseline; dynamic `any_element` consumption and live multinode validation remain open. See [status and limitations](overview/status.md).
+!!! info "Development documentation · Phase 114D2 baseline"
+    This edition describes checkpoint `3e0baa8f415b`, not a stable release. DMonitor-backed application readiness and provider-specific `any_element` dependency readiness are implemented at this baseline; Phase 114E live multinode validation remains open. See [status and limitations](overview/status.md).
 
 <div class="grid cards" markdown>
 
@@ -25,13 +25,13 @@ It gives application structure, accepted placement and runtime observations dist
 
 - **Understand readiness**
 
-    Distinguish health, freshness, convergence and a governed readiness decision.
+    Distinguish health, freshness, convergence, application readiness and provider-specific dependency readiness.
 
     [Read the readiness guide](operations/readiness.md)
 
-- **Run the first validation scenario**
+- **Run the first validation scenarios**
 
-    Follow an existing DServer subprocess integration proof in an isolated source checkout.
+    Follow the existing D1 and D2 DServer subprocess integration proofs in an isolated source checkout.
 
     [Get started](getting-started/index.md)
 

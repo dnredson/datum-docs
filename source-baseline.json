@@ -1,13 +1,12 @@
 {
   "repository": "dnredson/datum",
-  "commit": "c059c3341c7901eeea77ce4881bbd341580d8aef",
-  "checkpoint": "Phase 114D1",
+  "commit": "3e0baa8f415b822f69eef86c0cbfe2a3681e3a65",
+  "checkpoint": "Phase 114D2",
   "channel": "development",
   "reviewed_on": "2026-09-25",
   "verification": "source-inspected; runtime test results are maintainer-reported, not rerun by this docs build",
   "pending_at_baseline": [
-    "114D2 any_element consumption",
-    "114E live multinode validation",
+    "114E0 preflight and Phase 114E live multinode validation",
     "canonical DServ production evidence emitter"
   ]
 }

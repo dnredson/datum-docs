@@ -34,7 +34,7 @@ DMap/2 adds DIoT placements and exact DForward references while preserving D-Map
 
 ## Observation and platform
 
-**D-Monitor** is the monitoring sub-platform and lifecycle process. The canonical observation contract expresses typed runtime evidence. Server-derived readiness is a separate governance result.
+**D-Monitor** is the monitoring sub-platform and lifecycle process. The canonical observation contract expresses typed runtime evidence. Server-derived readiness is a separate governance result. D2 additionally derives provider-specific readiness for `any_element` DForward dependencies without making D-Monitor a placement authority.
 
 **D-Agent** is a project extension, not a term from the DATUM reference paper. SmartSentinel implements node-local observation, reporting and governed interaction, alongside executor responsibilities.
 
@@ -50,4 +50,4 @@ DMap/2 adds DIoT placements and exact DForward references while preserving D-Map
 
 ## Sources
 
-[Canonical vocabulary](https://github.com/dnredson/datum/blob/c059c3341c7901eeea77ce4881bbd341580d8aef/documentation/adr/ADR-0001-canonical-datum-vocabulary.md), [glossary](https://github.com/dnredson/datum/blob/c059c3341c7901eeea77ce4881bbd341580d8aef/documentation/reference/glossary.md), [canonical DGraph](https://github.com/dnredson/datum/blob/c059c3341c7901eeea77ce4881bbd341580d8aef/dserver/src/core/canonical_dgraph.rs), [DForward and DMap/2](https://github.com/dnredson/datum/blob/c059c3341c7901eeea77ce4881bbd341580d8aef/documentation/adr/ADR-0023-canonical-dforward-diot-dmap-v2.md).
+[Canonical vocabulary](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/documentation/adr/ADR-0001-canonical-datum-vocabulary.md), [glossary](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/documentation/reference/glossary.md), [canonical DGraph](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/canonical_dgraph.rs), [DForward and DMap/2](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/documentation/adr/ADR-0023-canonical-dforward-diot-dmap-v2.md).

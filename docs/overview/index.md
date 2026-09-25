@@ -25,10 +25,10 @@ DATUM is not a synonym for an executor or for one server binary. A read-only obs
 
 ## Scope of this edition
 
-This edition introduces canonical vocabulary and the evidence path through Phase 114D1. It explains an implemented readiness API and points to reproducible integration fixtures. It does not present the entire reference architecture as fully implemented.
+This edition introduces canonical vocabulary and the evidence path through Phase 114D2. It explains both application readiness and provider-specific `any_element` dependency readiness and points to reproducible integration fixtures. It does not present the entire reference architecture as fully implemented, and it does not claim Phase 114E live multinode validation.
 
 Continue with the [concept glossary](../concepts/index.md), [architecture](../architecture/index.md) and [current limitations](status.md).
 
 ## Sources
 
-[DATUM concept](https://github.com/dnredson/datum/blob/c059c3341c7901eeea77ce4881bbd341580d8aef/documentation/concepts/datum.md), [IoTinuum](https://github.com/dnredson/datum/blob/c059c3341c7901eeea77ce4881bbd341580d8aef/documentation/concepts/iotinuum.md), and [canonical vocabulary](https://github.com/dnredson/datum/blob/c059c3341c7901eeea77ce4881bbd341580d8aef/documentation/adr/ADR-0001-canonical-datum-vocabulary.md).
+[DATUM concept](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/documentation/concepts/datum.md), [IoTinuum](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/documentation/concepts/iotinuum.md), and [canonical vocabulary](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/documentation/adr/ADR-0001-canonical-datum-vocabulary.md).

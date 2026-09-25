@@ -4,7 +4,7 @@ Independent documentation for DATUM, built with **Zensical + Markdown**.
 
 This repository contains explanatory documentation and publication tooling. Implementation, canonical contracts and Architecture Decision Records remain in `dnredson/datum`.
 
-**Development baseline:** `c059c3341c7901eeea77ce4881bbd341580d8aef` (Phase 114D1). This is a feature-branch checkpoint, not a stable release. See [status](docs/overview/status.md) and [source provenance](docs/reference/sources.md).
+**Development baseline:** `3e0baa8f415b822f69eef86c0cbfe2a3681e3a65` (Phase 114D2). This is a feature-branch checkpoint, not a stable release. See [status](docs/overview/status.md) and [source provenance](docs/reference/sources.md).
 
 ## Preview locally
 

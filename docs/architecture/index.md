@@ -24,15 +24,18 @@ flowchart TD
     C --> R["Placement readiness"]
     H --> R
     R --> G["Application aggregation"]
+    A --> P["Current DForward provider resolution"]
+    P --> D["any_element dependency readiness"]
+    R --> D
 ```
 
-This is a dependency diagram for interpretation, not a network topology or an automatic remediation loop.
+This is a dependency diagram for interpretation, not a network topology or an automatic remediation loop. The D2 dependency result consumes the exact provider placement's D1 readiness; it does not substitute whole-application readiness.
 
 ## State ownership
 
 Accepted DDeploy state exposes the active placement authority. DMap/2 additionally carries the accepted DForward context and DIoT placements. Operational runtime bindings attach realization details to that authority. DMonitor records facts about observations; it cannot choose placement.
 
-D1 readiness uses one coherent in-process snapshot and one server-owned evaluation time. It is derived again for each call and is not persisted as an independent boolean.
+D1 readiness uses one coherent in-process snapshot and one server-owned evaluation time. D2 resolves `any_element` providers from current accepted DMap/2/DForward authority and evaluates their exact placement readiness using the same server-owned governance. Both results are derived on read rather than persisted as independent booleans.
 
 Canonical control-state domains use the existing control-state persistence mechanisms. Legacy compatibility surfaces also exist; they should not be presented as the authority for every canonical subsystem.
 
@@ -44,4 +47,4 @@ Continue with [desired state, authority and evidence](authority-and-evidence.md)
 
 ## Sources
 
-[ADR-0023](https://github.com/dnredson/datum/blob/c059c3341c7901eeea77ce4881bbd341580d8aef/documentation/adr/ADR-0023-canonical-dforward-diot-dmap-v2.md), [ADR-0024](https://github.com/dnredson/datum/blob/c059c3341c7901eeea77ce4881bbd341580d8aef/documentation/adr/ADR-0024-canonical-dmonitor-observation-model.md), [D1 handler](https://github.com/dnredson/datum/blob/c059c3341c7901eeea77ce4881bbd341580d8aef/dserver/src/api/dmonitor_readiness.rs).
+[ADR-0023](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/documentation/adr/ADR-0023-canonical-dforward-diot-dmap-v2.md), [ADR-0024](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/documentation/adr/ADR-0024-canonical-dmonitor-observation-model.md), [D1 handler](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/api/dmonitor_readiness.rs), [D2 dependency handler](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/api/dforward_dependency_readiness.rs).
