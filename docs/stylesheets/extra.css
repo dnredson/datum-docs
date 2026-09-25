@@ -1,4 +1,6 @@
-.md-header { background: #123349; }
+.md-header { background: #123349; color: #fff; }
+.md-header .md-search__button { color: #fff; }
+.md-header .md-source { color: #fff; }
 .md-banner { background: #0a6574; color: #fff; }
 .md-typeset h1 { font-weight: 750; letter-spacing: -.03em; }
 .md-typeset .grid.cards > ul > li { border-radius: .65rem; }
