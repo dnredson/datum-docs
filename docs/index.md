@@ -11,6 +11,12 @@ It gives application structure, accepted placement and runtime observations dist
 
 <div class="grid cards" markdown>
 
+- **Follow the source-to-deploy tutorial**
+
+    Build DServer and DATUM, configure identities, declare a D-Node, author artifacts and a D-Graph, create a deterministic proposal, explicitly accept a D-Map, then understand the separate runtime-realization paths.
+
+    [Start the tutorials](tutorials/index.md)
+
 - **Learn the vocabulary and entities**
 
     Start from D-Application, D-Graph, D-Serv, D-Call, D-Node, D-Map, D-Forward, D-IoT, D-Monitor and their concrete identities.
@@ -45,7 +51,7 @@ It gives application structure, accepted placement and runtime observations dist
 
     Follow the existing D1 and D2 DServer subprocess integration proofs in an isolated source checkout.
 
-    [Get started](getting-started/index.md)
+    [Open the validation examples](examples/first-validation.md)
 
 </div>
 
@@ -59,4 +65,4 @@ It gives application structure, accepted placement and runtime observations dist
 
 A fourth question appears when D-Forward crosses elements: *is the exact provider placement for this dependency usable now?* Phase 114D2 answers it with provider-specific dependency readiness, without replacing D-Map placement authority.
 
-The documentation covers concepts, architecture, contracts, API surfaces, task guides, technical reference and validation boundaries. Source links are pinned to the [documented revision](reference/sources.md). Some implementation links require repository access.
+The documentation covers concepts, architecture, source-derived tutorials, contracts, API surfaces, task guides, technical reference and validation boundaries. Source links are pinned to the [documented revision](reference/sources.md). Some implementation links require repository access.

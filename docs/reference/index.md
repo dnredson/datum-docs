@@ -6,6 +6,7 @@ Reference pages describe the pinned Phase 114D2 prototype baseline. They are not
 
 | Need | Page |
 |---|---|
+| Learn by building/configuring/deploying | [Source-to-deploy tutorials](../tutorials/index.md) |
 | Understand each entity and its authority boundary | [Entity encyclopedia](../concepts/entities.md) |
 | Understand IDs, revisions, digests and exact references | [Identity and references](../concepts/identities-and-references.md) |
 | See canonical schema fields and invariants | [Canonical contracts](contracts.md) |

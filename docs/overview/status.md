@@ -31,10 +31,14 @@ A broker URI or runtime-binding registration alone does not prove runtime livene
 
 Static DForward projection still uses `pending_fresh_evidence` for `any_element`: it is an authority-only view and does not become a live health assertion. D2 adds a separate dynamic, evidence-aware dependency-readiness evaluation against the exact current provider placement.
 
-D2 does not by itself establish a live fog/cloud deployment. Phase 114E validation and its tutorial remain intentionally pending.
+D2 does not by itself establish a live fog/cloud deployment. Phase 114E validation and its live tutorial remain intentionally pending.
+
+The new tutorial section is **source-derived onboarding**, not a claim of a freshly reproduced clean-environment installation. It explains the current install/configure/artifact/D-Graph/D-Deploy/runtime boundaries from pinned source. Runtime commands were not rerun as part of the documentation build.
 
 ## Documentation coverage
 
-Conceptual introduction, authority boundaries, D1 readiness policy/findings, D2 provider-specific dependency readiness, both read-only API surfaces and integration-test entry points are included. A turnkey runtime installation guide, complete API catalog, generated schemas and reproduced live multinode tutorial remain editorial work.
+This edition includes conceptual introduction, entity/identity reference, authority boundaries, canonical contracts, a complete DServer route catalog, D1 readiness policy/findings, D2 provider-specific dependency readiness, source-derived installation/configuration/artifact/D-Graph/basic-governed-deploy tutorials, both read-only readiness API surfaces and integration-test entry points.
 
-See [source provenance](../reference/sources.md) and [roadmap](../project/roadmap.md).
+Still intentionally pending are a packaged production installer, a freshly reproduced clean-environment onboarding proof, generated schemas/OpenAPI, and the captured live multinode tutorial gated on Phase 114E.
+
+See [tutorials](../tutorials/index.md), [source provenance](../reference/sources.md) and [roadmap](../project/roadmap.md).

@@ -10,6 +10,7 @@ nav = [
   { "Home" = "index.md" },
   { "Overview" = [{ "What is DATUM?" = "overview/index.md" }, { "Status and limitations" = "overview/status.md" }] },
   { "Get started" = [{ "Choose a path" = "getting-started/index.md" }, { "First validation" = "examples/first-validation.md" }] },
+  { "Tutorials" = [{ "Tutorial map" = "tutorials/index.md" }, { "Install from source" = "tutorials/install.md" }, { "Configure components" = "tutorials/configure.md" }, { "Author software artifacts" = "tutorials/artifacts.md" }, { "Create a D-Graph" = "tutorials/dgraph.md" }, { "Basic governed deploy" = "tutorials/basic-deploy.md" }, { "Runtime realization" = "tutorials/runtime-realization.md" }, { "Troubleshooting" = "tutorials/troubleshooting.md" }] },
   { "Concepts" = [{ "Vocabulary" = "concepts/index.md" }, { "Entity encyclopedia" = "concepts/entities.md" }, { "Identity and references" = "concepts/identities-and-references.md" }] },
   { "Architecture" = [{ "Overview" = "architecture/index.md" }, { "Authority and evidence" = "architecture/authority-and-evidence.md" }, { "Lifecycle and authority flow" = "architecture/lifecycle.md" }] },
   { "Guides and operations" = [{ "Inspect readiness" = "guides/inspect-readiness.md" }, { "Readiness semantics" = "operations/readiness.md" }] },

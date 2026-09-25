@@ -35,6 +35,20 @@ The following files were retrieved at the pinned commit. Their Git blob IDs iden
 
 Additional source modules were inspected to expand conceptual/API documentation, including D-Deploy, D-Node registry, D-Serv artifact/D-Code, D-Call and DIoT runtime binding. Their links are pinned inline on the pages that derive claims from them.
 
+## Tutorial source trail
+
+The source-to-deploy tutorials additionally inspect and link the current implementation of each operational step rather than deriving a hypothetical workflow. Important inputs include:
+
+- [DServer configuration](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/config.rs) and [SQLite control state](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/storage/control_state.rs);
+- [D-Node registry API](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/api/dnode_registry.rs);
+- [ServiceArtifact API](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/api/service_artifacts.rs) and [registry/validation](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/service_artifact_registry.rs);
+- [D-Deploy API](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/api/ddeploy.rs), [D-Deploy authority](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/ddeploy.rs) and [deterministic placement](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/canonical_placement.rs);
+- [canonical D-Serv artifact](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/dserv_artifact.rs) and [D-Code registry API](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/api/dcode.rs);
+- [D-Code ABI](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/dcode/abi.rs), [runtime](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/dcode/runtime.rs), [module store](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/dcode/module_store.rs), [identity initialization](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/bin/smartsentinel-dcode-init.rs), [module installation](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/bin/smartsentinel-dcode-install.rs) and [governed invocation](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/bin/smartsentinel-dcode-invoke.rs);
+- [operational reconciler CLI](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/bin/smartsentinel-operational-reconcile.rs) and [laboratory artifact/bundle status](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/artifacts/README.md).
+
+The tutorials are therefore **source-inspected**, not a fresh clean-host reproduction. This distinction is deliberate and is repeated at the execution boundaries where it matters.
+
 ## Reading historical material
 
 Early sections of cumulative ADRs can describe a phase that was later extended. This site uses the D1 implementation plus the D2 dependency-readiness additions at the pinned checkpoint. Older architecture pages are context, not evidence that every statement still describes canonical control-state persistence.
