@@ -5,6 +5,26 @@ This tutorial creates a real **accepted placement authority** using the current 
 !!! important
     Completing this page means DServer has accepted a canonical D-Map. It does **not** mean the target container/process/WASM is already running. Runtime realization is the next tutorial.
 
+## See the whole control-plane exchange
+
+```mermaid
+sequenceDiagram
+    actor Operator
+    participant DS as DServer
+    participant Planner as Deterministic planner
+
+    Operator->>DS: Declare D-Node + register ServiceArtifact
+    Operator->>DS: POST /ddeploy/plan with D-Graph
+    DS->>Planner: Authoritative D-Continuum + commitments + eligibility
+    Planner-->>DS: Candidate placements
+    DS-->>Operator: Pending proposal + proposal_digest
+    Operator->>Operator: Review candidate placement
+    Operator->>DS: POST /proposals/:id/accept
+    DS-->>Operator: Acceptance + active canonical D-Map
+```
+
+The review/accept step is deliberately visible. Planning is not authority.
+
 ## Prerequisites
 
 Complete these first:
@@ -107,6 +127,15 @@ A successful response creates a **pending** proposal. Important fields include:
 
 ## What the deterministic planner did
 
+```mermaid
+flowchart TB
+    G["D-Graph requirements"] --> P["deterministic planner"]
+    C["Authoritative D-Continuum\ncapacity + ABI"] --> P
+    K["Current project commitments"] --> P
+    E["ServiceArtifact eligibility"] --> P
+    P --> PROP["Pending placement proposal"]
+```
+
 The current planner is a pure deterministic structural planner. It does not read live CPU usage, DMonitor health, randomness or AI output.
 
 It considers:
@@ -185,18 +214,12 @@ curl -fsS -X POST \
 
 Only explicit acceptance materializes and activates canonical placement. The response includes the acceptance record and materialized D-Map.
 
-Conceptually:
-
-```text
-DGraph + authoritative DContinuum + ServiceArtifact eligibility
-        ↓
-deterministic planner
-        ↓
-pending DDeploy proposal
-        ↓ explicit operator acceptance
-active canonical DMap
-        ↓
-derived operational projection
+```mermaid
+flowchart LR
+    INPUT["D-Graph + authoritative D-Continuum\n+ current eligibility"] --> PLAN["deterministic planner"]
+    PLAN --> PROP["pending proposal"]
+    PROP -->|"explicit acceptance"| MAP["active canonical D-Map"]
+    MAP --> PROJ["derived operational projection"]
 ```
 
 The accepted D-Map becomes the placement authority. `ServiceArtifact.target_nodes` no longer overrides an already-accepted placement.
@@ -226,6 +249,13 @@ Acceptance revalidates current authority. A pending proposal can fail later if t
 This is intentional: a proposal says “this candidate was valid under these captured/derived facts,” not “activate me regardless of what changed afterward.”
 
 ## 10. You have not started the software yet
+
+```mermaid
+flowchart LR
+    MAP["Active D-Map\nplacement accepted"] -->|"next, separately"| REAL["Runtime realization"]
+    REAL -->|"then observe"| EVID["DMonitor evidence"]
+    EVID --> READY["Readiness"]
+```
 
 At this point the basic deployment is **accepted**, but runtime realization remains separate.
 

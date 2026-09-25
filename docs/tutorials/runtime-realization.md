@@ -6,21 +6,32 @@ Accepted authority and running software are intentionally different facts. This 
 
 Keep this sequence explicit:
 
-```text
-accepted DMap
-  = where DATUM authorizes a D-Serv to be placed
-
-runtime realization
-  = what the node actually starts/executes under governed operational rules
-
-DMonitor evidence
-  = what an observer actually saw
-
-readiness
-  = what DServer can currently derive from fresh, exactly-correlated evidence
+```mermaid
+flowchart LR
+    MAP["Accepted D-Map\nwhere DATUM authorizes placement"] --> REAL["Runtime realization\nwhat the node starts or executes"]
+    REAL --> OBS["DMonitor evidence\nwhat an observer saw"]
+    OBS --> READY["Readiness\nwhat DServer can derive now"]
 ```
 
 No arrow in this sequence is logically automatic just because the previous object exists.
+
+## Two realization paths in the current baseline
+
+```mermaid
+flowchart TB
+    MAP["Accepted placement authority"]
+    MAP --> OP["Path A\nOperational reconciliation"]
+    MAP --> DC["Path B\nCanonical D-Code"]
+
+    OP --> CNT["container / native process"]
+    CNT --> OPEV["operational observations"]
+
+    DC --> AUTH["fresh DServer authorization"]
+    AUTH --> WASM["isolated WASM invocation"]
+    WASM --> DCEV["execution evidence"]
+```
+
+The paths share the placement-governance model but use different realization mechanisms.
 
 ## Path A — operational reconciliation
 
@@ -43,6 +54,16 @@ Without `--execute`, the CLI does not request host mutation execution.
 ### Why the basic tutorial stops short of `--execute`
 
 The operational reconciliation plane has more prerequisites than “an active D-Map exists.” It uses operational resource/role binding, a node-specific operational D-Graph slice, governed reconciliation context, management WASM decision logic, authorization and local execution policy.
+
+```mermaid
+flowchart LR
+    MAP["Active D-Map"] --> SLICE["node operational slice"]
+    ART["ServiceArtifact"] --> CTX["reconciliation context"]
+    SLICE --> CTX
+    CTX --> DEC["sandboxed reconciliation decision"]
+    DEC -->|"without --execute"| REPORT["report / no host mutation"]
+    DEC -->|"authorized --execute"| HOST["governed host action"]
+```
 
 The repository's `artifacts/prepare.py` can build node-specific laboratory bundles, but its own documentation explicitly states that preparation does **not** publish artifacts, authorize a D-Graph, pull images or start containers. Existing lab evidence is not promoted into a new Phase 114E proof here.
 
@@ -69,6 +90,20 @@ For one D-Code service you need all of the following:
 5. a local D-Node identity matching the node that DServer will authorize.
 
 In the current D-Deploy v1 workflow, the service also still needs the matching project-scoped `ServiceArtifact` used by proposal/acceptance eligibility.
+
+### The D-Code trust chain
+
+```mermaid
+flowchart LR
+    ID["Local D-Node identity"] --> AUTH["DServer authorization"]
+    MAP["Current active D-Map"] --> AUTH
+    DESC["Canonical D-Serv artifact"] --> AUTH
+    BYTES["Local WASM bytes\nmatching digest"] --> WORKER["isolated worker"]
+    AUTH --> WORKER
+    WORKER --> OUT["execution outcome + evidence"]
+```
+
+No single local file grants itself permission to execute. Current server authority participates in the decision.
 
 ### Initialize local identity
 
@@ -132,6 +167,15 @@ DServer itself does not execute guest bytes. The node-side path loads the exact 
 A module that was once valid is not necessarily currently authorized. Authorization binds to active canonical authority such as the current D-Map/D-Graph placement and the currently registered artifact identity. If placement or artifact authority no longer matches, execution must fail closed rather than silently running historical content.
 
 ## Runtime success is still not application readiness
+
+```mermaid
+flowchart LR
+    RUN["container running\nor invocation succeeded"] --> OBS["canonical current evidence?"]
+    OBS --> FRESH["fresh?"]
+    FRESH --> CORR["exact authority match?"]
+    CORR --> HEALTH["Healthy?"]
+    HEALTH --> READY["Ready"]
+```
 
 A successful invocation or a running container is not automatically D1 readiness. Canonical readiness is derived from DMonitor observations with freshness and exact current-authority correlation.
 

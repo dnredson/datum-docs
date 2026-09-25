@@ -13,6 +13,24 @@ The current baseline contains two artifact families with different authority and
 | Stores WASM bytes in DServer | No | No — only canonical metadata/digest identity |
 | Where D-Code bytes live | Not applicable | D-Node-local content-addressed module store |
 
+## One D-Serv, two current artifact paths
+
+```mermaid
+flowchart TB
+    DS["D-Serv\nhello-service"]
+
+    DS --> SA["ServiceArtifact"]
+    SA --> ELIG["D-Deploy eligibility\ntarget_nodes"]
+    SA --> REC["Operational reconciliation\ncontainer / native process"]
+
+    DS --> DA["datum.dserv-artifact/1"]
+    DA --> META["WASM digest + ABI + ports + limits"]
+    META --> STORE["D-Node local module store"]
+    STORE --> INV["Governed D-Code invocation"]
+```
+
+A beginner-friendly rule: **ServiceArtifact helps the current operational deployment path know what/how it may realize; `datum.dserv-artifact/1` gives canonical identity to application D-Code.**
+
 ## Part A — create an operational `ServiceArtifact`
 
 The basic deployment tutorial uses one container-shaped artifact for `hello-service`. This artifact lets current D-Deploy resolve the canonical service and determine which structural D-Nodes are eligible.
@@ -118,6 +136,15 @@ curl -fsS \
 ```
 
 ### Why `target_nodes` matters
+
+```mermaid
+flowchart LR
+    SA["ServiceArtifact"] --> TN["target_nodes"]
+    TN --> PLAN["planner candidate filter"]
+    PLAN --> PROP["pending proposal"]
+    PROP --> ACC["explicit acceptance"]
+    ACC --> DM["D-Map becomes authority"]
+```
 
 For current D-Deploy v1, `target_nodes` is an **eligibility constraint**. The deterministic planner filters candidate nodes against it. It never becomes placement authority: after explicit acceptance, D-Map is the placement truth.
 
@@ -273,6 +300,16 @@ curl -fsS -X POST \
 This registry is keyed by `(application_id, dserv_id)`. In v0.1 one immutable descriptor occupies that key: byte-identical redeclaration is idempotent, while conflicting replacement fails. Artifact replacement/version transition is future work.
 
 ### Install the module bytes on the D-Node
+
+```mermaid
+flowchart LR
+    WASM["hello.wasm"] --> HASH["SHA-256"]
+    HASH --> DESC["canonical descriptor\nin DServer"]
+    WASM --> STORE["local D-Node\ncontent-addressed store"]
+    DESC --> AUTH["current authorization"]
+    STORE --> EXEC["isolated execution"]
+    AUTH --> EXEC
+```
 
 DServer never stores or executes the WASM bytes. Install them explicitly in the D-Node-local store:
 

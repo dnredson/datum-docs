@@ -13,6 +13,25 @@ DATUM deliberately uses different identities for different claims. This tutorial
 | D-Code local identity | Node-local file | Which logical D-Node a governed D-Code installation claims to be at invocation time. |
 | Sentinel registration/lease | Sentinel subsystem | Operational agent registration/liveness domain; deliberately not the structural D-Node registry. |
 
+## How these identities relate
+
+```mermaid
+flowchart TB
+    P["Project scope\nproject_id"] --> CONT["Authoritative D-Continuum"]
+    REG["DServer structural registry"] --> DN["D-Node\nnode_id"]
+    DN --> CONT
+
+    HOST["Physical host / VM"] --> AG["DATUM / SmartSentinel process"]
+    AG --> CFG["agent config\nnode_id"]
+    AG --> LOC["local D-Code identity\nnode_id"]
+
+    CFG -. should correspond to .-> DN
+    LOC -. must match authorization for .-> DN
+    AG --> HB["Sentinel registration / heartbeat"]
+```
+
+The dotted arrows mean **correlation**, not “these are the same object.” That distinction is one of the most important DATUM safety properties.
+
 ## 1. Choose tutorial identities
 
 ```sh
@@ -57,6 +76,13 @@ curl -fsS -X PUT \
 The path `node_id` must match the body `node_id`. An identical redeclaration is idempotent. Changing the existing node's structural facts in place is not the current v0.1 model; remove/redeclare is the explicit path for a genuine structural change.
 
 ### What these fields mean
+
+```mermaid
+flowchart LR
+    DN["D-Node declaration"] --> PLAT["platform\nOS + architecture"]
+    DN --> CAP["capacity\nstructural CPU + memory"]
+    DN --> ABI["capabilities\nsupported D-Node ABI"]
+```
 
 `platform` is declared structure, not an observed kernel probe. `capacity` is static structural capacity used by placement feasibility, not current free CPU/RAM. `dnode_abi_versions` is the set of host-independent D-Node ABI versions the node can host; Phase 114D2 recognizes `datum-dnode/0` for canonical D-Code.
 

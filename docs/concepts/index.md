@@ -1,6 +1,21 @@
 # Concepts and vocabulary
 
-DATUM names responsibilities very deliberately. Two objects can refer to the same application or machine and still represent fundamentally different claims. This page is the quick vocabulary; the [entity encyclopedia](entities.md) gives the detailed version and [identity and references](identities-and-references.md) explains how objects are correlated safely.
+DATUM names responsibilities very deliberately. Two objects can refer to the same application or machine and still represent fundamentally different claims. This page is the quick vocabulary; the [visual guide](visual-guide.md) gives the picture-first version, the [entity encyclopedia](entities.md) gives the detailed version, and [identity and references](identities-and-references.md) explains how objects are correlated safely.
+
+## Start with this mental model
+
+```mermaid
+flowchart LR
+    DG["D-Graph\nDescribe"] --> DD["D-Deploy\nPropose + accept"]
+    DD --> DM["D-Map\nPlacement authority"]
+    DM --> RT["Runtime\nRealize"]
+    RT --> MON["DMonitor\nObserve"]
+    MON --> RDY["Readiness\nDerive"]
+```
+
+If you remember only one thing at first, remember that these boxes are **different claims**. Description is not placement; placement is not execution; execution is not evidence; evidence is not automatically readiness.
+
+[Open the full visual guide](visual-guide.md) for diagrams of entities, artifacts, DForward/DIoT, DMonitor and the complete source-to-deploy journey.
 
 ## Application and execution
 
@@ -20,6 +35,15 @@ Defining a reference-model concept does not prove that its complete implementati
 
 ## Placement, continuum and middleware
 
+```mermaid
+flowchart TB
+    CONT["D-Continuum\nstructural inventory"] --> NODE["D-Node"]
+    PROP["D-Deploy proposal"] --> ACC["accept"] --> MAP["D-Map"]
+    MAP -->|"places"| NODE
+    DF["D-Forward"] --> DIOT["DIoT"]
+    MAP -->|"DMap/2 can place"| DIOT
+```
+
 | Concept | Meaning | What it establishes | What it does not establish |
 |---|---|---|---|
 | D-Continuum | Structural continuum inventory and constraints | Declared nodes/capabilities/capacity | Current utilization or liveness |
@@ -35,6 +59,11 @@ Defining a reference-model concept does not prove that its complete implementati
 DMap/2 extends placement authority with DForward/DIoT realization semantics. Logical identity, placement identity and runtime-binding identity intentionally remain separate.
 
 ## Observation and governance
+
+```mermaid
+flowchart LR
+    O["Observation"] --> F["Freshness"] --> C["Exact correlation"] --> V["Convergence"] --> H["Admitted health"] --> R["Readiness"]
+```
 
 | Concept | Question answered |
 |---|---|
@@ -72,7 +101,7 @@ DMap/2 extends placement authority with DForward/DIoT realization semantics. Log
 
 ## Where to continue
 
-Read the [entity encyclopedia](entities.md) for entity-by-entity detail, [identity and references](identities-and-references.md) for correlation rules, [lifecycle and authority flow](../architecture/lifecycle.md) for the end-to-end model, and [canonical contracts](../reference/contracts.md) for field-level reference.
+Read the [visual guide](visual-guide.md) for picture-first explanations, the [entity encyclopedia](entities.md) for entity-by-entity detail, [identity and references](identities-and-references.md) for correlation rules, [lifecycle and authority flow](../architecture/lifecycle.md) for the end-to-end model, and [canonical contracts](../reference/contracts.md) for field-level reference.
 
 ## Sources
 

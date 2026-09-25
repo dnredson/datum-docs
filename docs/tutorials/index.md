@@ -5,6 +5,22 @@ These tutorials turn the Phase 114D2 model into concrete operator/developer work
 !!! important "What 'deploy' means in this edition"
     DATUM currently separates **accepted placement authority** from **runtime realization**. D-Deploy creates and explicitly accepts a canonical D-Map; acceptance does not, by itself, copy a WASM module to a D-Node, pull/start a container, or prove runtime health. Those are separate operational steps with separate evidence.
 
+## The journey at a glance
+
+```mermaid
+flowchart LR
+    I["Install"] --> C["Configure\nDServer + identities"]
+    C --> A["Author\nartifacts"]
+    A --> G["Describe\nD-Graph"]
+    G --> P["Plan\nproposal"]
+    P --> X["Accept\nD-Map"]
+    X --> R["Realize\nruntime"]
+    R --> O["Observe\nDMonitor"]
+    O --> Q["Query\nreadiness"]
+```
+
+The first six boxes build **authority**. Runtime realization and evidence are intentionally separate boxes.
+
 ## Recommended path
 
 1. [Install from source](install.md) — build DServer and the DATUM agent/runtime tools.
@@ -15,7 +31,19 @@ These tutorials turn the Phase 114D2 model into concrete operator/developer work
 6. [Realize the accepted deployment](runtime-realization.md) — understand the operational reconciler and the governed D-Code execution path.
 7. [Troubleshoot common failures](troubleshooting.md) — map errors/findings back to the authority boundary that produced them.
 
+Need the conceptual picture before commands? Open the [Visual guide to DATUM](../concepts/visual-guide.md).
+
 ## The components you will meet
+
+```mermaid
+flowchart TB
+    OP["You\nDeveloper / Operator"] --> DS["DServer\ncontrol plane"]
+    DS --> DN["D-Node\nstructural runtime"]
+    DS --> DM["D-Map\naccepted placement"]
+    DM --> AG["DATUM / SmartSentinel\nnode-side realization"]
+    AG --> EV["DMonitor evidence"]
+    EV --> DS
+```
 
 | Component | Role in the tutorial |
 |---|---|
@@ -38,6 +66,14 @@ These tutorials turn the Phase 114D2 model into concrete operator/developer work
 ## Two software paths exist today
 
 The baseline has two intentionally distinct software-description/execution families.
+
+```mermaid
+flowchart LR
+    S["D-Serv"] --> SA["ServiceArtifact"]
+    S --> DA["datum.dserv-artifact/1"]
+    SA --> OP["Container / native-process\noperational reconciliation"]
+    DA --> DC["Content-addressed WASM\ngoverned D-Code"]
+```
 
 ### Operational software: `ServiceArtifact`
 

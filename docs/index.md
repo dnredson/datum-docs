@@ -9,7 +9,25 @@ It gives application structure, accepted placement and runtime observations dist
 !!! info "Development documentation · Phase 114D2 baseline"
     This edition describes checkpoint `3e0baa8f415b`, not a stable release. DMonitor-backed application readiness and provider-specific `any_element` dependency readiness are implemented at this baseline; Phase 114E live multinode validation remains open. See [status and limitations](overview/status.md).
 
+## DATUM in one picture
+
+```mermaid
+flowchart LR
+    A["Describe\nD-Graph"] --> B["Place\nD-Deploy + D-Map"]
+    B --> C["Realize\nnode runtime"]
+    C --> D["Observe\nDMonitor"]
+    D --> E["Decide\nreadiness"]
+```
+
+Each box is a different claim. DATUM deliberately avoids treating “planned”, “accepted”, “running”, “observed Healthy” and “Ready” as synonyms.
+
 <div class="grid cards" markdown>
+
+- **See the visual model first**
+
+    Learn DATUM through diagrams: application structure, continuum, placement, artifacts, DIoT, DMonitor and the complete authority-to-evidence journey.
+
+    [Open the visual guide](concepts/visual-guide.md)
 
 - **Follow the source-to-deploy tutorial**
 

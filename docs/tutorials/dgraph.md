@@ -2,6 +2,15 @@
 
 A D-Graph describes **what the application is**, not where it runs. In the canonical `datum.dgraph/1` model, vertices are D-Servs and edges are D-Calls. Placement belongs to D-Map/D-Deploy; host/runtime health belongs to DMonitor evidence.
 
+## See the idea before the JSON
+
+```mermaid
+flowchart LR
+    P["D-Serv\nproducer"] -->|"D-Call\nproducer-to-consumer"| C["D-Serv\nconsumer"]
+```
+
+That is a complete conceptual D-Graph: services plus semantic calls. There is intentionally no node, container, IP address or process in the picture.
+
 ## The minimal contract
 
 A D-Graph contains:
@@ -87,6 +96,28 @@ For a two-service application:
 
 A canonical D-Call does not embed a destination node or container endpoint. Runtime routing is derived later from accepted placement and artifact/transport authority.
 
+## D-Graph versus D-Map
+
+```mermaid
+flowchart TB
+    subgraph G["D-Graph · what exists"]
+        S1["producer"] -->|"D-Call"| S2["consumer"]
+    end
+
+    subgraph N["D-Continuum · where execution can exist"]
+        E["edge-01"]
+        F["fog-01"]
+    end
+
+    M["Accepted D-Map · where each D-Serv is placed"]
+    S1 --> M
+    S2 --> M
+    M -->|"producer"| E
+    M -->|"consumer"| F
+```
+
+The top graph does not change merely because the placement below changes.
+
 ## Validation rules that matter immediately
 
 - `schema` must be exactly `datum.dgraph/1`.
@@ -99,6 +130,13 @@ A canonical D-Call does not embed a destination node or container endpoint. Runt
 - every call source/target must name a declared service.
 
 ### Cycles are legal
+
+```mermaid
+flowchart LR
+    A["service-a"] --> B["service-b"]
+    B --> A
+    A --> A
+```
 
 Do not impose a DAG rule that the canonical contract does not have. A two-service cycle and even a self-call are legal D-Graph structures. Validation rejects dangling call endpoints, not cycles.
 
