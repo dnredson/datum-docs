@@ -73,7 +73,7 @@ curl -fsS -X PUT \
   --data-binary @tutorial-node.json
 ```
 
-The path `node_id` must match the body `node_id`. An identical redeclaration is idempotent. Changing the existing node's structural facts in place is not the current v0.1 model; remove/redeclare is the explicit path for a genuine structural change.
+The path `node_id` must match the body `node_id`. An identical redeclaration is idempotent. DATUM v1 does not silently edit an existing node's structural facts in place; remove/redeclare is the explicit path for a genuine structural change.
 
 ### What these fields mean
 
@@ -84,7 +84,7 @@ flowchart LR
     DN --> ABI["capabilities\nsupported D-Node ABI"]
 ```
 
-`platform` is declared structure, not an observed kernel probe. `capacity` is static structural capacity used by placement feasibility, not current free CPU/RAM. `dnode_abi_versions` is the set of host-independent D-Node ABI versions the node can host; Phase 114D2 recognizes `datum-dnode/0` for canonical D-Code.
+`platform` is declared structure, not an observed kernel probe. `capacity` is static structural capacity used by placement feasibility, not current free CPU/RAM. `dnode_abi_versions` is the set of host-independent D-Node ABI versions the node can host; DATUM v1 recognizes `datum-dnode/0` for canonical D-Code.
 
 ## 3. Inspect the structural registry
 
@@ -93,7 +93,7 @@ curl -fsS "$DSERVER_URL/api/v1/dnodes"
 curl -fsS "$DSERVER_URL/api/v1/dnodes/$NODE_ID"
 ```
 
-Notice that these are `/dnodes` routes. Earlier `/nodes` routes in DServer belong to a different snapshot/legacy subsystem and must not be substituted for structural D-Node authority.
+Notice that these are `/dnodes` routes. The `/nodes` routes in DServer belong to a different snapshot/compatibility subsystem and must not be substituted for structural D-Node authority.
 
 ## 4. Ask DServer for the authoritative D-Continuum
 
@@ -143,8 +143,8 @@ You now have a project scope, a structural D-Node, a server-derived D-Continuum 
 
 ## Source trail
 
-- [D-Node registry API](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/api/dnode_registry.rs)
-- [D-Node registry core](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/dnode_registry.rs)
-- [D-Continuum contract](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/agent/canonical_dcontinuum.rs)
-- [DATUM example configuration](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/config.toml)
-- [D-Code local identity initializer](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/bin/smartsentinel-dcode-init.rs)
+- [D-Node registry API](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/api/dnode_registry.rs)
+- [D-Node registry core](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/core/dnode_registry.rs)
+- [D-Continuum contract](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/DATUM/src/agent/canonical_dcontinuum.rs)
+- [DATUM example configuration](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/DATUM/config.toml)
+- [D-Code local identity initializer](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/DATUM/src/bin/smartsentinel-dcode-init.rs)

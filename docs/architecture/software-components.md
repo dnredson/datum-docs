@@ -1,6 +1,6 @@
 # Software component model
 
-“Software component” can mean several different objects in a distributed system. DATUM intentionally gives each stage a different identity so that source meaning, topology, executable bytes, execution policy, placement and observed runtime state do not overwrite one another.
+“Software component” can mean several different objects in a distributed system. DATUM intentionally gives each representation a different identity so that source meaning, topology, executable bytes, execution policy, placement and observed runtime state do not overwrite one another.
 
 ## One component, many representations
 
@@ -41,7 +41,7 @@ The production D-Compile submission supplies an explicit `services[]` mapping. E
 - the set of `function_ids` assigned to it;
 - structural CPU/memory requirements.
 
-In the current v1 model the function mapping forms an exact partition: the mapping is part of compile intent and gets its own canonical digest. It is not inferred later from container names or runtime state.
+In DATUM v1 the function mapping forms an exact partition: the mapping is part of compile intent and gets its own canonical digest. It is not inferred later from container names or runtime state.
 
 ## 3. D-Graph: the logical distributed application
 
@@ -53,7 +53,7 @@ It still does not answer where a service runs or which executable revision is ac
 
 ## 4. D-Code module: the exact executable bytes
 
-For D-Code v0.1, the executable is WebAssembly. The module's SHA-256 digest is content identity. Two byte-different modules are two different content identities even if both implement the same logical D-Serv.
+For D-Code in DATUM v1, the executable is WebAssembly. The module's SHA-256 digest is content identity. Two byte-different modules are two different content identities even if both implement the same logical D-Serv.
 
 ```text
 logical service:  probe
@@ -185,9 +185,9 @@ stateDiagram-v2
 
 The key transition is **accept P2**, not register D2 and not install H2.
 
-## Current migration connection
+## Migration connection
 
-Phase 119 extends the same authority discipline across node migration. A migration is not a file copy. The application transitions from one accepted placement authority to another through a new governed acceptance; target realization and source cleanup occur under explicit governed mechanisms, and rollback is another new transition rather than a history rewind.
+DATUM v1 applies the same authority discipline across node migration. A migration is not a file copy. The application transitions from one accepted placement authority to another through a new governed acceptance; target realization and source cleanup occur under explicit governed mechanisms, and rollback is another new transition rather than a history rewind.
 
 ## Source trail
 
@@ -195,4 +195,3 @@ Phase 119 extends the same authority discipline across node migration. A migrati
 - [production D-Compile submission](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/core/dcompile_submission.rs)
 - [canonical D-Serv artifact](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/core/dserv_artifact.rs)
 - [D-Code authorization](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/core/dcode_authorization.rs)
-- [Phase 119I closure review](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/documentation/reference/phase119i-independent-final-migration-closure-review.md)

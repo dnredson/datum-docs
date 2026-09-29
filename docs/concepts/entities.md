@@ -3,7 +3,7 @@
 This page describes the main DATUM entities as **claims with ownership boundaries**. For each entity, ask: what does it mean, who owns its truth, how is it identified, who consumes it, and what must never be inferred from it?
 
 !!! note "Model versus implementation"
-    Some names come from the DATUM architectural model; others are concrete v0.1 implementation records. The tables below say which role each object serves at the documented Phase 114D2 baseline.
+    Some names come from the DATUM architectural model; others are concrete implementation records. The tables below say which role each object serves in DATUM v1.
 
 ## Scope entities
 
@@ -59,11 +59,11 @@ Canonical D-Graph accepts cycles and self-calls because a communication graph is
 
 ### D-Code
 
-**Purpose:** executable application code of a D-Serv. The v0.1 implementation targets WebAssembly under the `datum-dnode/0` ABI.
+**Purpose:** executable application code of a D-Serv. DATUM v1 targets WebAssembly under the `datum-dnode/0` ABI.
 
 **Identity:** content-addressed module identity inside a canonical D-Serv artifact.
 
-**Important boundary:** D-Code is application code. It is not the legacy Controlled/Management WASM mechanism used by older agent-management paths.
+**Important boundary:** D-Code is application code. It is not the legacy Controlled/Management WASM mechanism used by agent-management paths.
 
 ### D-Serv artifact (`datum.dserv-artifact/1`)
 
@@ -75,7 +75,7 @@ Canonical D-Graph accepts cycles and self-calls because a communication graph is
 
 **Storage boundary:** DServer stores canonical metadata/digest identity; the module bytes live in the node-local content-addressed module store.
 
-**v0.1 immutability:** the DCode registry allows one immutable artifact per `(application_id, dserv_id)`; a different descriptor at the same key conflicts rather than silently replacing it.
+**Revision model:** the D-Code registry stores immutable descriptor revisions keyed by `(application_id, dserv_id, descriptor_digest)`. Multiple immutable revisions can coexist; current execution authority selects the exact revision rather than mutating one descriptor in place.
 
 ### D-Serv artifact port
 
@@ -103,7 +103,7 @@ A D-Serv artifact port is an input or output declaration with `port`, `payload_s
 
 **Not the same as:** a physical machine identity, a Sentinel registration, a Sentinel process instance or a telemetry record. Those objects can correlate operationally but have different authority.
 
-At the baseline, DServer keeps a global structural D-Node registry keyed by `node_id` and derives authoritative project-scoped D-Continuum documents from that registry.
+In DATUM v1, DServer keeps a global structural D-Node registry keyed by `node_id` and derives authoritative project-scoped D-Continuum documents from that registry.
 
 ### D-Link
 
@@ -111,11 +111,11 @@ At the baseline, DServer keeps a global structural D-Node registry keyed by `nod
 
 **Identity:** `link_id` with `from_node_id` and `to_node_id`.
 
-The current DServer-derived authoritative D-Continuum path produces an empty link set; therefore links in the canonical type should not be confused with a fully implemented network-topology authority in this baseline.
+The current DServer-derived authoritative D-Continuum path produces an empty link set; therefore links in the canonical type should not be confused with a fully implemented network-topology authority. Richer topology authority can be added later without changing the current placement/evidence boundary.
 
 ### D-Engine
 
-Architectural grouping of D-Nodes that support a D-Application. It is useful as a conceptual responsibility boundary, but this documentation does not claim a single first-class `DEngine` runtime object exists in the Phase 114D2 implementation.
+Architectural grouping of D-Nodes that support a D-Application. It is useful as a conceptual responsibility boundary, but DATUM v1 does not expose a single first-class `DEngine` runtime object.
 
 ## Placement and deployment entities
 
@@ -131,7 +131,7 @@ A D-Map is not a planner and not a proposal. It is the authoritative result that
 
 ### D-Serv placement
 
-A D-Serv placement binds one `service_id` to one `node_id`. In the v0.1 DMap model, one service has one canonical placement. It is desired/accepted authority, not proof that a corresponding runtime process currently exists.
+A D-Serv placement binds one `service_id` to one `node_id`. In the current DMap model, one service has one canonical placement. It is desired/accepted authority, not proof that a corresponding runtime process currently exists.
 
 ### DIoT placement
 
@@ -153,7 +153,7 @@ DServer owns authoritative D-Map identity/revision at acceptance. The accepted D
 
 ### Active placement authority
 
-An implementation-level view used by DServer consumers to access the currently accepted placement regardless of DMap/1 versus DMap/2. D2 readiness, runtime binding and D-Call realization consumers use this shared authority rather than accepting replacement topology from callers.
+An implementation-level view used by DServer consumers to access the currently accepted placement regardless of DMap/1 versus DMap/2. Readiness, runtime binding and D-Call realization consumers use this shared authority rather than accepting replacement topology from callers.
 
 ## D-Forward and middleware entities
 
@@ -183,9 +183,9 @@ A named logical interface offered or required by a DIoT. Interface compatibility
 
 ### DForward requirement scope
 
-`same_element` means the requirement is local to the same element semantics and does not enter the Phase 114D2 cross-node dynamic gate.
+`same_element` means the requirement is local to the same element semantics and does not enter the cross-node dynamic readiness gate.
 
-`any_element` allows the provider to be another element. Phase 114D2 resolves the exact provider through current accepted topology and evaluates that provider placement's readiness.
+`any_element` allows the provider to be another element. DATUM v1 resolves the exact provider through current accepted topology and evaluates that provider placement's readiness.
 
 ### DForward chain and hop
 
@@ -207,7 +207,7 @@ A DForward support job carries a job identity, artifact requirement and desired 
 
 **Derived identity:** DIoT/node, DMap, DForward and artifact-execution authority are derived from current accepted authority; the caller supplies the placement context and broker URI, not replacement authority.
 
-**Transport:** `mqtt` in v0.1; broker URI accepts `mqtt`/`mqtts` structural forms. Credentials are not embedded in the URI.
+**Transport:** the current implementation uses `mqtt`; broker URI accepts `mqtt`/`mqtts` structural forms. Credentials are not embedded in the URI.
 
 **Important:** the binding performs no MQTT I/O and proves no liveness. It is operational configuration/identity. DMonitor evidence is what can later support liveness/readiness.
 
@@ -229,7 +229,7 @@ DMap/2 can state that a D-Call is realized `via_diot_pubsub`, binding the call t
 
 **Purpose:** short-lived, single-use authorization to perform a delivery under a specific authority chain.
 
-At the baseline the fixed grant lifetime is 30 seconds. Only a hash of the grant token is persisted. Redemption is one-time and durable. This is an authorization artifact, not the D-Call itself.
+In DATUM v1 the fixed grant lifetime is 30 seconds. Only a hash of the grant token is persisted. Redemption is one-time and durable. This is an authorization artifact, not the D-Call itself.
 
 ## D-Monitor and evidence entities
 
@@ -249,7 +249,7 @@ At the baseline the fixed grant lifetime is 30 seconds. Only a hash of the grant
 
 ### DMonitor subject
 
-The observation subject is typed rather than being inferred from names. Supported subject kinds at the baseline include:
+The observation subject is typed rather than being inferred from names. Supported subject kinds in DATUM v1 include:
 
 | Subject kind | Meaning |
 |---|---|
@@ -286,7 +286,7 @@ Aggregate D1 result over required D-Serv and DIoT placements. It can be NotReady
 
 ### DForward dependency readiness
 
-Phase 114D2 result for `scope = any_element`. It resolves the provider from **current accepted DForward/DMap/2 authority** and consumes the exact provider placement's D1 readiness. States are `satisfied` or `blocked`.
+The `scope = any_element` readiness result resolves the provider from **current accepted DForward/DMap/2 authority** and consumes the exact provider placement's D1 readiness. States are `satisfied` or `blocked`.
 
 This is deliberately not whole-application readiness, raw health, convergence alone or static DForward projection.
 
@@ -302,11 +302,11 @@ Operational agent-lifecycle records. They represent agent presence/lease-like st
 
 ### ServiceArtifact
 
-An older/operational service artifact domain used by deployment/executor paths. It can contain container/runtime information and eligibility constraints. It is **not** `datum.dserv-artifact/1` and must never be treated as D-Code identity.
+A project-scoped operational service artifact domain used by deployment/executor paths. It can contain container/native-process runtime information and eligibility constraints. It is **not** `datum.dserv-artifact/1` and must never be treated as D-Code identity.
 
 ### OperationalDGraph
 
-An operational/derived desired-state projection used by older/executor-oriented subsystems. It is not the canonical application-plane `datum.dgraph/1`. Similar names do not imply interchangeable authority.
+An operational/derived desired-state projection used by executor-oriented subsystems. It is not the canonical application-plane `datum.dgraph/1`. Similar names do not imply interchangeable authority.
 
 ## Entity relationship snapshot
 

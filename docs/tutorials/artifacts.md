@@ -1,6 +1,6 @@
 # Author software artifacts
 
-The current baseline has two artifact families with different responsibilities. Keeping them separate avoids one of the easiest DATUM mistakes: treating an operational deployment descriptor and an application D-Code descriptor as interchangeable.
+DATUM v1 has two artifact families with different responsibilities. Keeping them separate avoids one of the easiest DATUM mistakes: treating an operational deployment descriptor and an application D-Code descriptor as interchangeable.
 
 ## Quick comparison
 
@@ -133,9 +133,9 @@ POST /api/v1/service-artifacts/:artifact_id/image-identity/resolve
 
 The resolver records platform-specific OCI identity through a server-owned compare-and-swap update.
 
-### Current stage constraint caveat
+### `target_stages` constraint caveat
 
-The canonical D-Continuum currently has no authoritative node-to-stage mapping. Therefore do not assume a free-text `target_stages` value can be verified during canonical D-Deploy planning. For portable tutorial flows, prefer explicit `target_nodes` and an empty `target_stages` list.
+The canonical D-Continuum currently has no authoritative node-to-stage mapping. Therefore do not assume a free-text `target_stages` value can be verified during canonical D-Deploy planning. For portable tutorial flows, prefer explicit `target_nodes` and an empty `target_stages` list. An authoritative node classification model can be implemented later without turning free-text labels into current placement truth.
 
 ## Canonical D-Code artifact
 
@@ -181,7 +181,7 @@ Submit the returned canonical artifact directly to:
 POST /api/v1/dcode/artifacts
 ```
 
-At Phase 119I the registry is **versioned and immutable per descriptor revision**. The effective key is:
+The DATUM v1 registry is **versioned and immutable per descriptor revision**. The effective key is:
 
 ```text
 (application_id, dserv_id, descriptor_digest)
@@ -228,11 +228,11 @@ cargo run --locked --manifest-path DATUM/Cargo.toml \
   --store-root "$DNODE_ROOT"
 ```
 
-The local content-addressed store verifies bytes during install and again during load. Automatic module distribution remains outside v0.1.
+The local content-addressed store verifies bytes during install and again during load. Automatic D-Code module distribution is not implemented yet; it will be added as a separate governed capability.
 
 ## Registration and installation are not activation
 
-The Phase 117 H1→H2 live proof established the intended model:
+The live revision-switching proof demonstrates the intended model:
 
 ```text
 register D2/H2
@@ -244,7 +244,7 @@ Only a new explicitly accepted D-Deploy authority bound to D2 changes governed r
 
 ## Current overlap between artifact families
 
-The repository still contains an operational `ServiceArtifact` domain and a canonical D-Code artifact domain. Do not force one to impersonate the other.
+The repository contains an operational `ServiceArtifact` domain and a canonical D-Code artifact domain. Do not force one to impersonate the other.
 
 For an operational container/native service, follow:
 

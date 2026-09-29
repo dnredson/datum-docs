@@ -1,21 +1,36 @@
-# Documentation roadmap
+# DATUM v1 roadmap
 
-This roadmap tracks **documentation work**, not an implementation promise. Runtime capability status must remain grounded in the implementation repository and its evidence.
+This roadmap separates what is already documented/implemented in DATUM v1 from capabilities that are planned. It intentionally avoids internal development milestone numbering.
 
-| Increment | Documentation outcome | Evidence boundary | State |
-|---|---|---|---|
-| Foundations | Concepts, architecture, D-Graph/D-Map/DMonitor/readiness and source provenance | Historical pinned source/evidence checkpoints | Complete |
-| D-Code / DCompile | WebAssembly background, D-Code ABI/runtime, DScript→DCompile, immutable revision identity, exact DServer→D-Node flow | Phase 119I source + Phase 117 live/closure lineage | Complete |
-| Existing-service modeling | Explain how container/native software becomes a `ServiceArtifact`; concrete catalog examples | Phase 119I `ServiceArtifact` schema, native runtime, catalog | Complete |
-| End-to-end operational deploy | Model → register/pin → D-Graph → D-Deploy → D-Map → reconcile authorization → node execution | Current Phase 119I source; docs build does not rerun physical deployment | Complete as source-derived tutorial |
-| Migration lifecycle | Target acceptance/realization, governed source cleanup, rollback as new transition | Phase 119I independent migration closure | Complete |
-| Dashboard information model | Map existing authority/evidence domains into UI views without introducing a competing persisted truth | Dashboard phase implementation/design evidence when available | **Next documentation increment / planned** |
-| Generated API/schema reference | Machine-generated OpenAPI/schema material tied to implementation | Generation pipeline + compatibility policy | Planned |
-| Release editions | Separate stable/release docs from development baseline | Actual versioned release + compatibility policy | Planned |
+## Available and documented in v1
+
+| Area | Current documentation status |
+|---|---|
+| Core concepts | D-Application, D-Graph, D-Serv, D-Call, D-Continuum, D-Node, D-Map, DForward/DIoT, DMonitor and authority/evidence boundaries documented |
+| DCompile and D-Code | WebAssembly background, ABI/runtime, D-Script → DCompile, immutable descriptor revisions, exact authorization and DServer → D-Node execution documented |
+| Existing-service modeling | Container/native software → `ServiceArtifact`, including Mosquitto, PostgreSQL, local-build and native examples documented |
+| Governed deployment | Model → register/pin → D-Graph → proposal → acceptance → D-Map → reconciliation authorization → node execution documented |
+| Migration lifecycle | Target transition, source cleanup and rollback-as-new-transition documented |
+| API/reference | Canonical contracts, control-plane APIs, complete route catalog and source provenance documented |
+
+## Planned v1 increments
+
+These capabilities or documentation increments are not presented as already complete. They will be added when implemented and/or validated.
+
+| Planned increment | Intended outcome |
+|---|---|
+| **DATUM Console/dashboard** | Visual management of projects, artifacts, D-Graphs, placement proposals, accepted authority, runtime realization, evidence and readiness without introducing parallel authority |
+| **Reproducible live multinode tutorial** | Fresh end-to-end fog/cloud or equivalent multinode validation with captured commands and evidence |
+| **Production canonical D-Serv evidence path** | Complete production evidence generation/correlation for long-running D-Serv realizations where gaps remain |
+| **Automated D-Code distribution** | Governed delivery of exact WASM content to a target D-Node instead of requiring explicit local installation |
+| **Native package-manager acquisition** | Governed acquisition/provenance for packages/repositories such as `apt` rather than treating package installation as external preparation |
+| **Authoritative node classification** | A canonical model that can make placement constraints such as fog/cloud classes verifiable instead of relying on free-text labels |
+| **Generated API/schema reference** | Machine-generated OpenAPI/schema material tied directly to implementation |
+| **Packaged installation/release workflow** | Installer/distribution and release documentation when a stable packaging policy exists |
 
 ## Dashboard preparation already present
 
-The documentation now uses a UI-friendly lifecycle vocabulary:
+The documentation uses a UI-friendly lifecycle vocabulary:
 
 ```text
 Modeled
@@ -33,7 +48,7 @@ Modeled
 
 Migration can additionally expose **cleanup pending/completed** for an old source node.
 
-These are **derived documentation concepts**, not a new canonical DATUM state enum. The dashboard phase should preserve the architecture by deriving each visual state from its owning source of truth:
+These are **derived documentation concepts**, not a new canonical DATUM state enum. The DATUM Console should preserve the architecture by deriving each visual state from its owning source of truth:
 
 - artifact registry for registered/execution identity;
 - D-Deploy/D-Map for proposal/acceptance/placement;
@@ -46,4 +61,4 @@ That separation should make the dashboard more useful: it can show exactly *wher
 
 ## Documentation evidence rule
 
-Source-inspected tutorials may explain current control flow and commands, but a statement such as “clean-host end-to-end deployment reproduced” requires captured runtime evidence from that scenario. The documentation site should continue distinguishing source-derived instructions from newly executed validation.
+Source-inspected tutorials may explain current control flow and commands, but a statement such as “clean-host end-to-end deployment reproduced” requires captured runtime evidence from that scenario. Planned capabilities are labeled as planned until implementation/evidence exists.

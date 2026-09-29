@@ -156,7 +156,7 @@ sudo apt update
 sudo apt install mosquitto
 ```
 
-At the current Phase 119I baseline, **the `apt` transaction itself is not a native `ServiceArtifact` acquisition mechanism**. Native acquisition v0.1 consumes one already-existing local Linux executable from an absolute source path and requires an exact lowercase SHA-256.
+In DATUM v1, **the `apt` transaction itself is not a native `ServiceArtifact` acquisition mechanism**. Native acquisition consumes one already-existing local Linux executable from an absolute source path and requires an exact lowercase SHA-256.
 
 So the boundary is:
 
@@ -253,7 +253,7 @@ The artifact then freezes that exact content identity. A current-compatible nati
 Replace both the source path and digest with values from the actual target host. `acquisition.source` must be a POSIX-absolute local path; the managed `entrypoint` must be a safe **relative** path inside DATUM's materialized artifact directory.
 
 !!! warning "The package manager is still outside this artifact"
-    If `apt upgrade` later replaces `/usr/sbin/mosquitto`, that does not silently mutate the already-materialized content identity. Model the new binary as a new artifact generation/digest and reconcile it explicitly.
+    If `apt upgrade` later replaces `/usr/sbin/mosquitto`, that does not silently mutate the already-materialized content identity. Model the new binary as a new artifact generation/digest and reconcile it explicitly. Native package-manager acquisition will require a separately governed mechanism when implemented.
 
 !!! note "Native configuration is a separate reproducibility concern"
     The example passes `/etc/mosquitto/mosquitto.conf` as a process argument. Unlike the container shape, the current native-process payload does not expose the same `configuration_mounts` structure. Therefore this host configuration remains an external input unless you govern it through another supported mechanism. Do not call this example fully content-closed merely because the executable itself is pinned.
@@ -270,9 +270,9 @@ The current artifact validator rejects lifecycle program paths. `program` is an 
 
 ## `target_stages` caveat
 
-Several catalog artifacts preserve stage labels such as `fog` or `cloud`. The canonical D-Continuum used by current D-Deploy does not provide an authoritative node-to-stage mapping for this constraint. In the canonical planning path, a non-empty `target_stages` constraint therefore fails closed instead of being guessed from labels or telemetry.
+Several catalog artifacts preserve labels such as `fog` or `cloud` in `target_stages`. The canonical D-Continuum used by current D-Deploy does not provide an authoritative node-to-stage mapping for this constraint. In the canonical planning path, a non-empty `target_stages` constraint therefore fails closed instead of being guessed from labels or telemetry.
 
-For a current tutorial deploy, use an explicit `target_nodes` list and an empty `target_stages` list unless/until authoritative stage mapping exists.
+For a current tutorial deploy, use an explicit `target_nodes` list and an empty `target_stages` list unless an authoritative node classification model is implemented.
 
 ## When should this be D-Code instead?
 
@@ -304,7 +304,7 @@ See [WebAssembly and D-Code](../concepts/webassembly-and-dcode.md) and [DServer 
 | reconciliation executed | node performed/attempted host realization | health/readiness still separate |
 | evidence admitted | runtime was observed under an identity | not necessarily Ready |
 
-This state separation will also be useful when a future dashboard is designed: each row is a different fact and should not be collapsed into a single ambiguous “deployed” badge.
+This state separation will also be useful when the DATUM Console is implemented: each row is a different fact and should not be collapsed into a single ambiguous “deployed” badge.
 
 ## Sources
 

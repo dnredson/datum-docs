@@ -1,6 +1,6 @@
 # Canonical contracts
 
-This page is a field-oriented map of the main canonical contracts at the Phase 114D2 baseline. It summarizes source types and invariants; the pinned Rust implementation remains authoritative for exact serialization/validation behavior.
+This page is a field-oriented map of the main canonical contracts in DATUM v1. It summarizes source types and invariants; the pinned Rust implementation remains authoritative for exact serialization/validation behavior.
 
 ## Common design rules
 
@@ -40,7 +40,7 @@ CanonicalDServV1
     memory_bytes
 ```
 
-At v0.1, `dnode_abi` must be `datum-dnode/0`. Resource requirements are static declared requirements, not measurements.
+In DATUM v1, `dnode_abi` must be `datum-dnode/0`. Resource requirements are static declared requirements, not measurements.
 
 ### D-Call
 
@@ -233,13 +233,13 @@ DIoTPlacementV2
 ```text
 DCallRealizationV2
   call_id
-  realization_kind   # v0.1: via_diot_pubsub
+  realization_kind   # current: via_diot_pubsub
   diot_placement_id
   interface
   channel
 ```
 
-Channels containing MQTT wildcard `+` or `#` are rejected by v0.1 validation.
+Channels containing MQTT wildcard `+` or `#` are rejected by the current DATUM v1 validation.
 
 ### External port binding
 
@@ -300,7 +300,7 @@ DServArtifactAbiV1
   allowed_imports[]
 ```
 
-For v0.1 the ABI resolves to `datum-dnode/0`. The required export semantic set is:
+In DATUM v1 the ABI resolves to `datum-dnode/0`. The required export semantic set is:
 
 ```text
 memory
@@ -330,11 +330,11 @@ max_message_bytes
 max_emits_per_invocation
 ```
 
-All must be non-zero in v0.1.
+All must be non-zero in DATUM v1.
 
 ### Safety/state invariants
 
-The zero-import v0.1 model requires filesystem/network/host-command/Docker/side-effect safety booleans to be false. `state_model` is `stateless`; `instantiation` is `fresh_instance_per_invocation`.
+The zero-import DATUM v1 model requires filesystem/network/host-command/Docker/side-effect safety booleans to be false. `state_model` is `stateless`; `instantiation` is `fresh_instance_per_invocation`.
 
 ## `datum.dmonitor-observation/1`
 
@@ -412,7 +412,7 @@ A proposal includes identity/scope, source (`operator`, `deterministic`, `ai`), 
 
 ### `datum.ddeploy-acceptance/1`
 
-Acceptance records the explicit transition that creates/activates authoritative D-Map state. The caller-supplied `accepted_by` field is audit provenance in the current prototype, not a cryptographically authenticated operator identity.
+Acceptance records the explicit transition that creates/activates authoritative D-Map state. The caller-supplied `accepted_by` field is audit provenance in DATUM v1, not a cryptographically authenticated operator identity.
 
 ## Server-owned operational record: DIoT runtime binding
 

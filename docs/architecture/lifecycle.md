@@ -1,6 +1,6 @@
 # Lifecycle and authority flow
 
-This page follows one application from structural declaration to evidence-derived readiness. The purpose is not to prescribe one deployment workflow for every future release; it is to make the **authority transitions at the Phase 114D2 baseline** explicit.
+This page follows one application from structural declaration to evidence-derived readiness. Its purpose is to make the **DATUM v1 authority transitions** explicit.
 
 ## End-to-end flow
 
@@ -31,7 +31,7 @@ flowchart TD
 
 The D-Node registry records structural facts: `node_id`, platform, static capacity and supported D-Node ABI versions. This is server-owned structural inventory, not Sentinel liveness.
 
-Re-declaring identical content is an idempotent no-op. Attempting to mutate an existing declaration in place fails closed in v0.1; remove and redeclare is the explicit structural transition.
+Re-declaring identical content is an idempotent no-op. DATUM v1 does not silently mutate an existing structural declaration in place; remove and redeclare is the explicit structural transition.
 
 Relevant API: `GET /api/v1/dnodes`, `PUT|GET|DELETE /api/v1/dnodes/:node_id`.
 
@@ -45,15 +45,21 @@ Relevant API: `GET /api/v1/dcontinuum/authoritative`.
 
 The application plane declares D-Servs and D-Calls without placement. D-Serv resource requirements and D-Node ABI requirements are structural requirements used later during placement validation/planning.
 
-D-Graph itself has no endpoint in the core set that simply “activates” a graph. D-Deploy proposal/acceptance carries/retains validated source snapshots and materializes placement authority around them.
+D-Graph itself has no endpoint that simply “activates” a graph. D-Deploy proposal/acceptance carries validated source snapshots and materializes placement authority around them.
 
 ## 4. Declare D-Serv artifacts / D-Code identity
 
-Each D-Serv executable is described by `datum.dserv-artifact/1`: content-addressed WebAssembly identity, ABI, ports, limits and safety constraints.
+Each D-Code D-Serv executable is described by `datum.dserv-artifact/1`: content-addressed WebAssembly identity, ABI, ports, limits and safety constraints.
 
-The declaration is immutable per `(application_id, dserv_id)` in v0.1. The server registry stores metadata/digests; module bytes stay in node-local content-addressed storage.
+The registry stores immutable descriptor revisions keyed by `(application_id, dserv_id, descriptor_digest)`. Multiple revisions may coexist. Current execution authority selects one exact revision; module bytes stay in node-local content-addressed storage.
 
-Relevant API: `POST /api/v1/dcode/artifacts`, `GET /api/v1/dcode/artifacts/:application_id/:dserv_id`.
+Relevant APIs:
+
+```text
+POST /api/v1/dcode/artifacts
+GET  /api/v1/dcode/artifacts/:application_id/:dserv_id
+GET  /api/v1/dcode/artifacts/:application_id/:dserv_id/:descriptor_digest
+```
 
 ## 5. Create and validate a D-Deploy proposal
 
@@ -84,13 +90,18 @@ DMap/1 covers D-Serv placement. DMap/2 additionally binds DForward, DIoT placeme
 
 Relevant APIs: `GET /api/v1/ddeploy/active` and `GET /api/v1/ddeploy/v2/authority`.
 
-## 8. Authorize D-Code and D-Call execution
+## 8. Authorize and realize execution
 
-D-Code authorization checks the current authority chain before allowing an invocation. D-Call route derivation reuses that authorization for source/destination and derives destination from active authority rather than accepting a caller-selected target.
+For operational container/native services, accepted placement is projected into a node-specific operational slice. Real host mutation requires separate reconciliation authorization and node-side enforcement.
+
+For D-Code, fresh authorization checks the current D-Map/D-Graph/D-Node and exact descriptor binding immediately before invocation.
+
+D-Call route derivation reuses governed source authority and derives destination from active authority rather than accepting a caller-selected target.
 
 Relevant APIs include:
 
 ```text
+POST /api/v1/nodes/:node_id/operational-reconciliation/authorize
 POST /api/v1/dcode/authorize
 GET  /api/v1/dcall/calls/:project_id/:application_id/:source_service_id
 POST /api/v1/dcall/grants
@@ -141,7 +152,7 @@ Relevant API: `GET /api/v1/dmonitor/readiness/:project_id/:application_id`.
 
 ## 13. Resolve an `any_element` provider
 
-For a consumer DIoT requirement, Phase 114D2 reads the **current accepted** DForward topology. It resolves the candidate provider through chains/hops and then resolves that logical provider to its exact current DIoT placement.
+For a consumer DIoT requirement, DATUM v1 reads the **current accepted** DForward topology. It resolves the candidate provider through chains/hops and then resolves that logical provider to its exact current DIoT placement.
 
 Provider selection is not caller input. Zero/multiple candidates or placements fail closed.
 
@@ -178,4 +189,4 @@ Examples include unknown nodes, digest mismatches, stale proposal snapshots, mis
 
 ## Sources
 
-[D-Node registry](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/dnode_registry.rs), [D-Deploy](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/ddeploy.rs), [D-Serv artifact](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/dserv_artifact.rs), [D-Call](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/dcall.rs), [DIoT runtime binding](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/diot_runtime_binding.rs), [DMonitor model](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/agent/canonical_dmonitor.rs), [D1 readiness](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/dmonitor_readiness.rs), [D2 dependency readiness](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/dforward_dependency_readiness.rs).
+[D-Node registry](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/core/dnode_registry.rs), [D-Deploy](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/core/ddeploy.rs), [D-Serv artifact](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/core/dserv_artifact.rs), [D-Call](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/core/dcall.rs), [DIoT runtime binding](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/core/diot_runtime_binding.rs), [DMonitor model](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/DATUM/src/agent/canonical_dmonitor.rs), [D1 readiness](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/core/dmonitor_readiness.rs), [D2 dependency readiness](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/core/dforward_dependency_readiness.rs).

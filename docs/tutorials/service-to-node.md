@@ -308,7 +308,7 @@ flowchart LR
 - **Healthy**: admitted observations report a healthy condition.
 - **Ready**: current readiness policy positively admits fresh, authority-correlated evidence for all required realizations.
 
-This distinction is especially useful for troubleshooting and for a future dashboard.
+This distinction is especially useful for troubleshooting and for the planned DATUM Console.
 
 ## Container, native and D-Code paths compared
 
@@ -344,7 +344,7 @@ See [DCompile and D-Code API](../reference/dcompile-dcode-api.md) for the exact-
 
 ## Migration is another governed transition
 
-Once the service is running on node A, moving it to B is not “copy and kill”. Phase 119's model is:
+Once the service is running on node A, moving it to B is not “copy and kill”. DATUM v1 uses a governed sequence:
 
 ```mermaid
 flowchart LR
@@ -358,7 +358,7 @@ Rollback is another new acceptance. Source cleanup is a separate governed operat
 
 ## A dashboard-friendly lifecycle vocabulary
 
-The dashboard phase has not been specified here, but the existing architecture naturally exposes several independent facts worth visualizing separately:
+The DATUM Console will be implemented separately, but the existing architecture naturally exposes several independent facts worth visualizing separately:
 
 | View concept | Backing fact today |
 |---|---|
@@ -376,7 +376,7 @@ The dashboard phase has not been specified here, but the existing architecture n
 | **Cleanup pending** | historical source realization no longer desired but not yet removed |
 
 !!! note
-    These labels are a documentation/UI mental model, **not a new canonical state enum**. A future dashboard should derive them from current authoritative/evidence domains rather than persist a second competing truth.
+    These labels are a documentation/UI mental model, **not a new canonical state enum**. The dashboard should derive them from current authoritative/evidence domains rather than persist a second competing truth.
 
 ## Sources
 
@@ -386,4 +386,3 @@ The dashboard phase has not been specified here, but the existing architecture n
 - [Operational reconciliation API](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/api/operational_dgraph.rs)
 - [Node-side reconciliation engine](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/DATUM/src/agent/operational_reconciliation.rs)
 - [Native acquisition](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/DATUM/src/agent/native_process_acquisition.rs)
-- [Phase 119I closure review](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/documentation/reference/phase119i-independent-final-migration-closure-review.md)
