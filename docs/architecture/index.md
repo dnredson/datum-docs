@@ -1,16 +1,16 @@
 # Architecture overview
 
-The architecture separates application semantics, structural continuum facts, accepted placement, operational bindings and runtime evidence. DServer evaluates these together without allowing an observation to become placement authority.
+DATUM v1 separates application semantics, structural continuum facts, accepted placement, operational realization and runtime evidence. DServer evaluates these domains together without allowing one domain to silently become authority for another.
 
 ## Responsibility planes
 
 | Plane | Main entities | Question answered |
 |---|---|---|
 | Application | D-Graph, D-Serv, D-Call, D-Serv artifact/D-Code | What does the application consist of and execute? |
-| Continuum | D-Continuum, D-Node | What structural execution resources/capabilities are declared? |
+| Continuum | D-Continuum, D-Node | What structural execution resources and capabilities are declared? |
 | Placement | D-Deploy, D-Map | Where are required entities accepted to run? |
 | Middleware | D-Forward, DIoT, chains/interfaces | How is middleware/data-path composition modeled? |
-| Operational realization | D-Call routes/grants, DIoT runtime bindings | How does accepted authority resolve to concrete runtime transport? |
+| Operational realization | reconciliation, D-Call routes/grants, DIoT runtime bindings | How does accepted authority resolve to concrete runtime behavior? |
 | Observation | DMonitor observation | What did a collector actually observe? |
 | Interpretation | convergence, health assessment, readiness | What does current admitted evidence prove? |
 
@@ -20,11 +20,26 @@ The architecture separates application semantics, structural continuum facts, ac
 |---|---|
 | Canonical contracts | Describe application, continuum, placement and middleware semantics |
 | DServer | Govern acceptance, retain control state, derive authority, ingest evidence and compute views |
-| SmartSentinel / node-side producers | Observe local runtime state and publish evidence through supported paths |
-| D-Node execution paths | Run governed application D-Code and support D-Call realization |
-| Deployment/executor paths | Perform concrete lifecycle operations only when separately authorized |
+| SmartSentinel / node-side producers | Realize authorized node state, observe local runtime state and publish evidence through supported paths |
+| D-Node execution paths | Run governed application D-Code and supported runtime workloads |
+| Reconciliation/executor paths | Perform concrete host mutations only when separately authorized |
 
-## The readiness relationship
+## Authority flows one way
+
+```mermaid
+flowchart LR
+    MODEL["Application / service model"] --> PROP["D-Deploy proposal"]
+    PROP -->|"explicit acceptance"| MAP["Active D-Map"]
+    MAP --> AUTH["Runtime authorization"]
+    AUTH --> REAL["Runtime realization"]
+    REAL --> OBS["Evidence"]
+    MAP --> READY["Readiness evaluation"]
+    OBS --> READY
+```
+
+The direction matters. Evidence can confirm or contradict an accepted realization, but it does not create placement authority. A running process does not rewrite the D-Map; a D-Map does not prove that a process is running.
+
+## Readiness relationship
 
 ```mermaid
 flowchart TD
@@ -44,30 +59,41 @@ flowchart TD
     R --> D
 ```
 
-This is an interpretation/authority dependency diagram, not network topology and not an automatic remediation loop.
+This is an authority/evidence dependency diagram, not network topology and not an automatic remediation loop.
 
 ## State ownership
 
-The structural D-Node registry is DServer's source of truth for declared D-Node facts. DDeploy acceptance exposes active placement authority. DMap/2 additionally carries accepted DForward context and DIoT placements/realizations. Operational runtime bindings attach concrete realization information to that authority. DMonitor records observations; it cannot choose placement.
+The structural D-Node registry is DServer's source of truth for declared D-Node facts. D-Deploy acceptance establishes active placement authority. DMap/2 additionally carries accepted DForward context and DIoT placements/realizations. Operational runtime bindings attach concrete realization information to that authority. DMonitor records observations; it cannot choose placement.
 
-D1 readiness uses a coherent in-process snapshot and server-owned evaluation time/policy. D2 resolves `any_element` providers from current accepted DMap/2/DForward authority and evaluates their exact placement readiness under D1 governance. Both are derived on read rather than persisted as independent truth booleans.
+D1 readiness evaluates application/placement readiness from a coherent server-owned view of current authority and admitted evidence. D2 resolves `any_element` providers from current accepted DMap/2/DForward authority and evaluates the exact provider placement. Both are derived views rather than separately persisted truth booleans.
 
-## Canonical versus operational/legacy surfaces
+## Canonical and operational surfaces
 
-DServer contains code accumulated across multiple development stages. Therefore names such as `graph`, `operational-dgraph`, `dgraph`, Controlled WASM and canonical D-Graph can coexist while representing different models.
+DATUM v1 contains several different representations because they answer different questions. Names such as canonical D-Graph, operational desired state, ServiceArtifact, D-Code descriptor and runtime binding should not be collapsed into one generic “deployment object”.
 
-This documentation uses these rules:
+Use these rules:
 
-- a schema/ADR-backed canonical entity is described as **canonical**;
-- a server-owned concrete realization record is described as **operational**;
-- older compatibility/planning/executor surfaces are documented because they exist, but they do not silently inherit canonical authority;
-- an HTTP route is not evidence that its payload is a canonical DATUM contract.
+- a schema-backed semantic contract is described as **canonical**;
+- a server-owned concrete runtime/realization record is described as **operational**;
+- compatibility or auxiliary surfaces remain bounded by their own contracts and do not silently inherit canonical authority;
+- the existence of an HTTP route does not by itself make that route's payload a canonical DATUM contract;
+- derived projections may repeat current authority for consumption, but must not originate competing placement decisions.
 
-See the [complete HTTP API](../reference/http-api.md) for route inventory and the [core API](../reference/core-api.md) for the canonical control-plane subset.
+See the [complete HTTP API](../reference/http-api.md) for route inventory and the [core API](../reference/core-api.md) for the main control-plane surfaces.
 
 ## Observation and correction
 
-SmartSentinel's broader responsibilities can be described as preventive governance, detective observation and explicitly governed corrective execution. Canonical DMonitor itself is **detective**: observing divergence does not authorize or execute a correction.
+SmartSentinel's responsibilities can be described as **preventive**, **detective** and **corrective**:
+
+- preventive governance constrains what may be proposed, accepted or executed;
+- detective paths observe runtime state and report evidence;
+- corrective execution changes host/runtime state only through explicit governed authorization.
+
+DMonitor itself is detective. Detecting divergence does not automatically authorize a correction.
+
+## What is not implemented yet
+
+Some architectural directions are intentionally documented as future work rather than implied by historical development labels. Examples include the consolidated management dashboard, automatic D-Code module distribution and richer governed acquisition mechanisms for native software.
 
 Continue with [desired state, authority and evidence](authority-and-evidence.md), the [end-to-end lifecycle](lifecycle.md), and the [entity encyclopedia](../concepts/entities.md).
 
