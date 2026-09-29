@@ -1,10 +1,10 @@
 # First examples: D1 and D2 readiness governance
 
-**Type:** real DServer subprocess integration fixtures. **Scope:** local governance proofs. **Documentation execution:** source inspected at the pinned checkpoint; runtime tests were not rerun for this documentation edition.
+**Type:** real DServer subprocess integration fixtures. **Scope:** local governance proofs. **Documentation execution:** source inspected at the pinned implementation commit; runtime tests were not rerun for this documentation edition.
 
 ## Obtain an isolated checkout
 
-These commands create a separate directory. They do not switch your existing Phase-114 worktree. GitHub access to the implementation repository is required.
+These commands create a separate directory. They do not switch your existing development worktree. GitHub access to the implementation repository is required.
 
 ```bash
 git clone --no-checkout https://github.com/dnredson/datum.git datum-readiness-example
@@ -51,7 +51,7 @@ This is the key D2 distinction: dependency readiness consumes the exact provider
 
 ## What these examples do not establish
 
-They do not run a live two-machine deployment, demonstrate the full Phase 114E fog/cloud validation, or implement a production DServ collector. D1 canonical DServ evidence in the fixture is intentionally constructed for governance testing.
+They do not run a live two-machine deployment or implement a production DServ collector. A reproducible live fog/cloud validation tutorial will be added when that validation is completed. D1 canonical DServ evidence in the fixture is intentionally constructed for governance testing.
 
 If a run fails, preserve the command, commit and test output. Diagnose build or environment errors separately from failed governance assertions. Do not alter policy values merely to make a readiness assertion pass.
 
