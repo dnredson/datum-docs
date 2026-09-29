@@ -6,11 +6,11 @@ This documentation has its own repository and publication cycle. Changes to pros
 
 A concept page should explain its purpose, represented information, producers/consumers, relationships, a concrete example and the corresponding pinned contract. A task guide should state prerequisites, commands, expected outcomes and validation limits.
 
-Use English for the main pages. Keep canonical terms consistent and write phase-specific status in the status/provenance pages. Diagrams describe explicit relationships, not implied capabilities.
+Use English for the main pages and present the public documentation as **DATUM v1**. Internal numbered development phases/stages are not reader vocabulary and should not appear in public prose. If a capability is not implemented, state that directly. Diagrams describe explicit relationships, not implied capabilities.
 
 ## Validation and publication
 
-Local and CI validation check navigation, Markdown links, baseline references, the Zensical build and rendered internal links. Pull requests validate without publishing. Pushes to `main` publish after validation when GitHub Pages is configured for Actions.
+Local and CI validation check navigation, Markdown links, source-revision references, public-version wording, the Zensical build and rendered internal links. Pull requests validate without publishing. Pushes to `main` publish after validation when GitHub Pages is configured for Actions.
 
 The full contributor procedure lives in the repository's `CONTRIBUTING.md`. No workflow writes to the implementation repository or updates its branches.
 

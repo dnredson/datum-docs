@@ -1,8 +1,8 @@
 # Status and limitations
 
-**Edition:** development. **Current documentation baseline:** Phase 119I, `c08ccc4d715d9eb76644e3f1bd7d80a7945265c4`. **Documentation review date:** 2026-09-29.
+**Version:** DATUM v1. **Source revision:** `c08ccc4d715d9eb76644e3f1bd7d80a7945265c4`. **Documentation review date:** 2026-09-29.
 
-Phase 119I is the independent final migration closure review. Its implementation-repository verdict is **PASS WITH NON-BLOCKING LIMITATIONS**. The docs use that closure commit as the current source anchor while preserving immutable older source links where a page documents historical evidence from an earlier checkpoint.
+This page describes what the current v1 implementation and documentation can support. Internal development milestone numbers are intentionally not part of the public documentation vocabulary.
 
 ## Current documented capability areas
 
@@ -16,49 +16,49 @@ This edition covers, at source-inspected depth:
 - operational node slices, finite reconciliation authorization and node-side execution;
 - versioned immutable D-Code descriptor revisions;
 - exact-revision D-Code authorization and isolated WASM execution;
-- DMonitor/readiness concepts from the earlier evidence work;
-- governed Phase 119 migration, target realization, source cleanup and rollback-as-new-transition.
+- DMonitor observations, convergence and readiness;
+- governed migration, target realization, source cleanup and rollback as an explicit new transition.
 
-## New practical service examples
+## Practical service examples
 
-The tutorial set now includes a source-grounded progression from real software to node execution:
+The tutorial set includes a source-grounded progression from real software to node execution:
 
-- a real checked-in Mosquitto container artifact, including port 1883, configuration mount and runtime probes;
-- a full Mosquitto walk-through from artifact registration through D-Deploy acceptance and governed `--execute` reconciliation;
-- PostgreSQL as an example of persistent volume + configuration + secret references;
+- Mosquitto as a real checked-in container artifact, including port 1883, configuration mount and runtime probes;
+- a full Mosquitto walk-through from artifact registration through D-Deploy acceptance and governed reconciliation;
+- PostgreSQL as an example of persistent volume, configuration and secret references;
 - a locally built LoRa simulator as an example of `local_build`, dependencies and secrets;
-- a current-compatible native-process Mosquitto shape showing how a repository-installed executable can be frozen by local path + SHA-256 after the external package-manager step.
-
-The documentation explicitly does **not** claim that current native acquisition executes `apt`/`dnf`/`yum`. Package-manager installation is external preparation at this baseline; DATUM native acquisition begins from an existing absolute local executable and exact digest.
+- native-process modeling that freezes an existing Linux executable by local path + SHA-256.
 
 ## Current D-Code boundary
 
-DServer stores canonical D-Code descriptors and authority. **It does not store or execute WASM module bytes.** Module bytes remain in the D-Node-local content-addressed store. Distribution/fetching of those bytes onto a node is still explicitly outside D-Code v0.1.
+DServer stores canonical D-Code descriptors and authority. **It does not store or execute WASM module bytes.** Module bytes remain in the D-Node-local content-addressed store.
 
-For each governed invocation the node-side client requests fresh DServer authorization, fetches the exact immutable descriptor revision named by that authorization, cross-checks the identities and loads the exact local bytes by module digest before isolated execution.
+For each governed invocation, the node-side client requests fresh DServer authorization, fetches the exact immutable descriptor revision named by that authorization, cross-checks identities and loads the exact local bytes by module digest before isolated execution.
 
 ## Important limitations
 
-**No automatic D-Code module distribution.** Copying/installing module content remains a separate operational step and must not be mistaken for activation.
+**Automatic D-Code module distribution is not implemented yet.** Copying/installing module content remains a separate operational step and must not be mistaken for activation.
 
-**No native package-manager acquisition primitive.** `native_process_executable` consumes an already-present local Linux executable. A future package/repository acquisition feature would need its own governed content/provenance model rather than being simulated with arbitrary lifecycle shell commands.
+**Native package-manager acquisition is not implemented yet.** `native_process_executable` consumes an already-present local Linux executable. A future package/repository acquisition capability will need its own governed content/provenance model rather than arbitrary shell execution.
 
-**Residual distributed TOCTOU.** D-Code authorization is freshly derived immediately before execution, but DServer and a remote node do not participate in one distributed atomic transaction. Immutable revisions prevent in-place artifact mutation but do not remove every authority-movement race after response delivery.
+**A distributed TOCTOU window can remain.** D-Code authorization is freshly derived immediately before execution, but DServer and a remote node do not participate in one distributed atomic transaction. Immutable revisions prevent in-place artifact mutation but do not eliminate every authority-movement race after response delivery.
 
-**Stage labels are not canonical node-stage authority.** Existing catalog metadata can include `target_stages`, but current canonical D-Continuum does not provide the authoritative mapping required to verify those values during canonical planning. Tutorial paths use explicit node eligibility where necessary.
+**`target_stages` is not authoritative placement data.** Existing artifact metadata can include `target_stages`, but the current canonical D-Continuum does not provide the authoritative node-to-stage mapping required to verify those values during canonical planning. Tutorial paths use explicit node eligibility where necessary.
 
 **Runtime realization is not readiness.** A container/process/module can execute successfully while evidence is absent, stale, unhealthy or correlated to obsolete authority.
 
-## Dashboard preparation
+## Dashboard
 
-The dashboard implementation phase is not documented as completed here. The service lifecycle pages intentionally expose a UI-friendly set of **derived facts** — Modeled, Registered, Execution identity complete, Proposed, Accepted, Assigned, Authorized, Realized, Observed, Healthy, Ready, Cleanup pending — because these correspond to existing authority/evidence boundaries.
+The management dashboard is **not implemented yet**. It is the next major usability increment planned for DATUM v1.
 
-Those labels are documentation concepts, not a new persisted canonical state enum. A future dashboard should read/derive current truth from the existing domains instead of becoming another source of placement/runtime authority.
+The service lifecycle pages already expose UI-friendly derived facts — Modeled, Registered, Execution identity complete, Proposed, Accepted, Assigned, Authorized, Realized, Observed, Healthy, Ready and Cleanup pending. These are documentation/UI concepts, not a new persisted canonical state enum.
+
+The dashboard should derive each view from the existing authority and evidence domains rather than becoming another source of placement/runtime truth.
 
 ## Verification boundary
 
-This docs build validates navigation, immutable source pins, Markdown/site rendering and internal links. It does not rerun the implementation repository's Rust suites or physical-node live proofs.
+This docs build validates navigation, immutable source pins, public-version wording, Markdown/site rendering and internal links. It does not rerun the implementation repository's Rust suites or physical-node live validation.
 
-The new deployment examples are **source-derived and artifact-grounded**, not a claim that the documentation workflow itself launched Mosquitto on a clean machine.
+The deployment examples are **source-derived and artifact-grounded**. They should not be read as a claim that the documentation workflow itself launched every example on a clean machine.
 
 See [service modeling](../tutorials/model-existing-service.md), [Mosquitto end to end](../tutorials/mosquitto-end-to-end.md), [service-to-node lifecycle](../tutorials/service-to-node.md), [sources and provenance](../reference/sources.md) and [roadmap](../project/roadmap.md).

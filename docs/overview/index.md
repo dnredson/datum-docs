@@ -19,16 +19,18 @@ The IoTinuum is the heterogeneous environment spanning devices and edge resource
 | DATUM | Architecture and information model |
 | DServer | Current D-Controller implementation |
 | SmartSentinel | Distributed agent implementing D-Agent responsibilities and governed executor paths |
-| D-Node | Runtime that executes application D-Code according to its execution contract |
+| D-Node | Runtime abstraction that hosts supported execution contracts |
 
 DATUM is not a synonym for an executor or for one server binary. A read-only observation and a readiness evaluation are useful outcomes even when no deployment occurs.
 
-## Scope of this edition
+## Scope of DATUM v1
 
-This edition introduces canonical vocabulary and the evidence path through Phase 114D2. It explains both application readiness and provider-specific `any_element` dependency readiness and points to reproducible integration fixtures. It does not present the entire reference architecture as fully implemented, and it does not claim Phase 114E live multinode validation.
+This edition documents the current v1 architecture and implemented control/runtime paths: application structure, continuum and placement authority, operational artifacts, D-Code, reconciliation, observations and readiness.
+
+Not every reference-architecture idea is implemented yet. Where a capability is missing, this site states that directly and records it as planned rather than referring to an internal development milestone. A fully reproduced multi-machine deployment guide is one example of documentation that will be expanded as validation is completed.
 
 Continue with the [concept glossary](../concepts/index.md), [architecture](../architecture/index.md) and [current limitations](status.md).
 
 ## Sources
 
-[DATUM concept](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/documentation/concepts/datum.md), [IoTinuum](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/documentation/concepts/iotinuum.md), and [canonical vocabulary](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/documentation/adr/ADR-0001-canonical-datum-vocabulary.md).
+Current source provenance is maintained in [Sources and provenance](../reference/sources.md).
