@@ -2,7 +2,7 @@
 
 **Version:** DATUM v1. **Source revision:** `c08ccc4d715d9eb76644e3f1bd7d80a7945265c4`. **Documentation review date:** 2026-09-29.
 
-This page describes what the current v1 implementation and documentation can support. Internal development milestone numbers are intentionally not part of the public documentation vocabulary.
+This page describes what the current DATUM v1 implementation and documentation can support. Public documentation uses product concepts and implemented capabilities rather than internal development numbering.
 
 ## Current documented capability areas
 
@@ -17,7 +17,7 @@ This edition covers, at source-inspected depth:
 - versioned immutable D-Code descriptor revisions;
 - exact-revision D-Code authorization and isolated WASM execution;
 - DMonitor observations, convergence and readiness;
-- governed migration, target realization, source cleanup and rollback as an explicit new transition.
+- governed migration, target realization, source cleanup and rollback as explicit transitions.
 
 ## Practical service examples
 

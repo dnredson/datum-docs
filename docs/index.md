@@ -4,7 +4,7 @@
 
 DATUM is an architectural framework and information model for distributed applications across the **IoTinuum**: heterogeneous resources spanning devices, edge, fog and cloud environments.
 
-!!! info "DATUM v1 · development documentation"
+!!! info "DATUM v1"
     This edition documents the current DATUM v1 implementation and is grounded in source revision `c08ccc4d715d9eb76644e3f1bd7d80a7945265c4`. See [status and limitations](overview/status.md).
 
 ## From source or existing software to governed execution

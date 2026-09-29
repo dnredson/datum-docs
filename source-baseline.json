@@ -2,7 +2,7 @@
   "repository": "dnredson/datum",
   "commit": "c08ccc4d715d9eb76644e3f1bd7d80a7945265c4",
   "documentation_version": "v1",
-  "channel": "development",
+  "channel": "v1",
   "reviewed_on": "2026-09-29",
   "verification": "source-inspected against the pinned implementation revision; referenced runtime evidence was not rerun by this documentation build",
   "open_items": [
