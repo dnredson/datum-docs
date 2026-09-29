@@ -33,7 +33,7 @@ A logical object answers *what is it?* A placement answers *which accepted reali
 | D-Call | `call_id` | DMap/2 D-Call realization and later route/grant |
 | D-Code | `(application_id, dserv_id)` plus content identity | Invocation evidence / authorized D-Node execution |
 
-For DIoT in particular, `diot_id` and `placement_id` must not be interchanged. Phase 114D2 evaluates provider readiness by the **exact provider placement**, not merely by logical `diot_id`.
+For DIoT in particular, `diot_id` and `placement_id` must not be interchanged. DATUM v1 evaluates provider readiness by the **exact provider placement**, not merely by logical `diot_id`.
 
 ## Canonical references
 
