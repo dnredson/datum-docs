@@ -23,9 +23,11 @@ The IoTinuum is the heterogeneous environment spanning devices and edge resource
 
 DATUM is not a synonym for an executor or for one server binary. A read-only observation and a readiness evaluation are useful outcomes even when no deployment occurs.
 
-## Scope of this edition
+## Scope of DATUM v1 documentation
 
-This edition introduces canonical vocabulary and the evidence path through Phase 114D2. It explains both application readiness and provider-specific `any_element` dependency readiness and points to reproducible integration fixtures. It does not present the entire reference architecture as fully implemented, and it does not claim Phase 114E live multinode validation.
+This edition documents the implemented DATUM v1 concepts and workflows: canonical application/continuum/placement models, operational artifacts, governed deployment and realization, D-Code/WebAssembly execution, DMonitor evidence and readiness, and migration/cleanup semantics.
+
+Capabilities that are not yet implemented or not yet reproducibly validated are described explicitly as planned. In particular, the documentation does not claim a fully reproduced live multinode tutorial, automatic D-Code distribution or native package-manager acquisition today; those will be added when implemented and validated.
 
 Continue with the [concept glossary](../concepts/index.md), [architecture](../architecture/index.md) and [current limitations](status.md).
 

@@ -67,7 +67,7 @@ It is explicitly an isolated-laboratory configuration, not a production security
 
 ## 2. Adapt catalog eligibility to the tutorial node
 
-The checked-in catalog artifact targets the historical `fog-01`/`cloud-01` laboratory and carries stage labels. For this one-node tutorial, copy it and change **eligibility**, not runtime semantics:
+The checked-in catalog artifact targets historical laboratory nodes and carries `target_stages` labels. For this one-node tutorial, copy it and change **eligibility**, not runtime semantics:
 
 ```sh
 cp artifacts/catalog/mosquitto.json /tmp/mosquitto-tutorial.json
@@ -81,7 +81,7 @@ jq --arg node "$NODE_ID" '
 mv /tmp/mosquitto-tutorial.tmp /tmp/mosquitto-tutorial.json
 ```
 
-Why clear `target_stages`? Current canonical D-Continuum authority does not provide a node→stage mapping that D-Deploy can verify, so a non-empty stage constraint fails closed in this path.
+Why clear `target_stages`? Current canonical D-Continuum authority does not provide a node→stage mapping that D-Deploy can verify, so a non-empty constraint fails closed in this path.
 
 Why clear the historical Docker network? The checked-in artifact assumes `datum-fog-net`; a generic tutorial node may not have it. This change makes the example use the default Docker network while preserving the important image/configuration/port/probe behavior.
 
@@ -416,9 +416,9 @@ See [Model an existing service](model-existing-service.md) for the native artifa
 
 ## Where migration fits
 
-Phase 119 makes the lifecycle symmetric across nodes. If a later accepted D-Map moves `mqtt` from node A to node B, the new authority makes B desired and A historical. Target realization is reconciled on B; source cleanup on A is a **separate governed `cleanup` operation** with its own authorization and `--cleanup` node-side path. Rollback is a new accepted transition, not a rewind of history.
+DATUM v1 keeps the lifecycle governed across nodes. If a later accepted D-Map moves `mqtt` from node A to node B, the new authority makes B desired and A historical. Target realization is reconciled on B; source cleanup on A is a **separate governed `cleanup` operation** with its own authorization and `--cleanup` node-side path. Rollback is a new accepted transition, not a rewind of history.
 
-That matters for future UI design: “placed on B” and “old A runtime cleaned up” are separate progress facts.
+That matters for the planned DATUM Console: “placed on B” and “old A runtime cleaned up” are separate progress facts.
 
 ## Sources
 

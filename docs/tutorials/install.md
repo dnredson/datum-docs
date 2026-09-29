@@ -1,6 +1,6 @@
 # Install DATUM from source
 
-The Phase 114D2 repository does not expose a packaged `apt`, Homebrew, container-image or one-command production installer for DATUM itself. The supported documentation claim here is therefore **source installation**: obtain the pinned source, build the two Rust crates, configure DServer, then run the required binaries.
+DATUM v1 does not currently expose a packaged `apt`, Homebrew, container-image or one-command production installer for DATUM itself. The supported documentation claim here is therefore **source installation**: obtain the pinned source, build the two Rust crates, configure DServer, then run the required binaries. A packaged installer can be added later without changing the architecture described here.
 
 ## What you are installing
 
@@ -17,15 +17,15 @@ You need Git, a Rust/Cargo toolchain capable of building the checked-in lockfile
 
 `jq` is used in examples only as a convenience for extracting JSON fields. It is not a DATUM runtime dependency.
 
-## 1. Obtain the documented revision
+## 1. Obtain the documented DATUM v1 revision
 
 ```sh
 git clone https://github.com/dnredson/datum.git
 cd datum
-git checkout --detach 3e0baa8f415b822f69eef86c0cbfe2a3681e3a65
+git checkout --detach c08ccc4d715d9eb76644e3f1bd7d80a7945265c4
 ```
 
-A detached checkout is useful for following this documentation because every source claim is pinned to exactly this revision. Normal development should happen on an appropriate branch instead.
+A detached checkout is useful for following this documentation because current v1 claims are pinned to exactly this source revision. Normal development should happen on an appropriate branch instead.
 
 ## 2. Build DServer
 
@@ -74,9 +74,9 @@ cp dserver/config.toml dserver/config.tutorial.toml
 export DATUM_DSERVER_CONFIG_PATH="$PWD/dserver/config.tutorial.toml"
 ```
 
-The current application config contains a `[server]` section, a required `[firebase]` section and optional CORS configuration. The checked-in example binds `0.0.0.0:8080` and contains project/collection names used by older snapshot/analysis surfaces.
+The current application config contains a `[server]` section, a required `[firebase]` section and optional CORS configuration. The checked-in example binds `0.0.0.0:8080` and contains project/collection names used by compatibility/analysis surfaces.
 
-This tutorial's canonical D-Node/D-Deploy/D-Code control-state workflow is primarily SQLite-backed, but DServer still initializes its broader Firebase client because the process also exposes earlier/auxiliary APIs. Treat the checked-in configuration as a development example, not a production security template.
+The canonical D-Node/D-Deploy/D-Code control-state workflow is primarily SQLite-backed, but DServer still initializes its broader Firebase client because the process also exposes auxiliary/compatibility APIs. Treat the checked-in configuration as a development example, not a production security template.
 
 ## 6. Start DServer
 
@@ -104,8 +104,8 @@ The next tutorial performs those configuration steps explicitly: [configure the 
 
 ## Source trail
 
-- [DServer manifest](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/Cargo.toml)
-- [DATUM manifest](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/Cargo.toml)
-- [DServer configuration loader](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/config.rs)
-- [DServer startup/router](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/main.rs)
-- [SQLite control state](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/storage/control_state.rs)
+- [DServer manifest](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/Cargo.toml)
+- [DATUM manifest](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/DATUM/Cargo.toml)
+- [DServer configuration loader](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/config.rs)
+- [DServer startup/router](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/main.rs)
+- [SQLite control state](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/storage/control_state.rs)

@@ -1,6 +1,6 @@
 # Realize an accepted deployment
 
-Accepted placement authority and running software are intentionally different facts. At the Phase 119I baseline, DATUM has two important realization paths: **operational reconciliation** for container/native services and **governed D-Code invocation** for application WebAssembly.
+Accepted placement authority and running software are intentionally different facts. DATUM v1 has two important realization paths: **operational reconciliation** for container/native services and **governed D-Code invocation** for application WebAssembly.
 
 For a complete practical example, see [Mosquitto end to end](mosquitto-end-to-end.md). For the reusable lifecycle, see [From service model to execution on a node](service-to-node.md).
 
@@ -105,7 +105,7 @@ For containers, the agent uses the supported governed container lifecycle/pinnin
 
 ## Native process realization
 
-Native acquisition v0.1 is deliberately narrow:
+Native acquisition in DATUM v1 is deliberately narrow:
 
 ```text
 absolute local Linux source path
@@ -121,7 +121,7 @@ governed managed process
 
 The acquisition layer rejects relative source paths, malformed hashes and path traversal. The runtime persists identity needed to distinguish/recover the process safely.
 
-A distribution package manager such as `apt` can be used as external host preparation, but the current native acquisition does not itself mean “run apt”. See [Model an existing service](model-existing-service.md).
+A distribution package manager such as `apt` can be used as external host preparation, but DATUM v1 native acquisition does not itself mean “run apt”. A governed package-manager acquisition capability is planned separately. See [Model an existing service](model-existing-service.md).
 
 ## Container realization
 
@@ -174,7 +174,7 @@ A new accepted D-Deploy authority must bind/select D2 before fresh authorization
 
 For operational ServiceArtifacts, the same broad principle holds: a catalog/registry record and locally available Docker image/native source do not themselves create D-Map placement authority or a host-mutation lease.
 
-## Phase 119 migration and cleanup
+## Migration and cleanup
 
 Migration adds an important post-cutover realization fact.
 
@@ -222,4 +222,3 @@ Operational reconciliation evidence, D-Code invocation evidence and canonical DM
 - [Operational authorization contract](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/core/operational_dgraph.rs)
 - [Native executable acquisition](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/DATUM/src/agent/native_process_acquisition.rs)
 - [D-Code governed client](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/DATUM/src/dcode/client.rs)
-- [Phase 119I migration closure](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/documentation/reference/phase119i-independent-final-migration-closure-review.md)

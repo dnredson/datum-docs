@@ -38,7 +38,7 @@ the JSON `node_id` must also be `tutorial-node`.
 
 ### `dnode_structural_conflict`
 
-A node with that ID already exists with different structural platform/capacity/ABI data. The v0.1 registry does not silently edit structural facts in place. Review the change and use the explicit remove/redeclare lifecycle if that is genuinely intended.
+A node with that ID already exists with different structural platform/capacity/ABI data. DATUM v1 does not silently edit structural facts in place. Review the change and use the explicit remove/redeclare lifecycle if that is genuinely intended.
 
 ### Invalid ABI
 
@@ -113,7 +113,7 @@ Do not bypass this by constructing a D-Map manually. Re-plan against current sta
 
 That is not evidence that D-Deploy failed. D-Deploy acceptance establishes placement authority; runtime reconciliation is a distinct plane.
 
-Check whether the node has the operational resource/binding/context needed by `smartsentinel-operational-reconcile`, whether execution authorization/pinning prerequisites are satisfied, and whether you intentionally requested `--execute`. The base tutorial does not claim a turnkey 114E live runtime bridge yet.
+Check whether the node has the operational resource/binding/context needed by `smartsentinel-operational-reconcile`, whether execution authorization/pinning prerequisites are satisfied, and whether you intentionally requested `--execute`. A fully reproducible live multinode tutorial will be added when that validation is completed.
 
 ## D-Code descriptor registration fails
 
@@ -139,15 +139,15 @@ datum_dealloc
 datum_handle
 ```
 
-`allowed_imports` must be empty in v0.1.
+`allowed_imports` must be empty in DATUM v1.
 
 ### Safety/state-model failure
 
 The zero-import model requires the host capability booleans to be false. The current artifact supports `state_model = "stateless"` and `instantiation = "fresh_instance_per_invocation"`.
 
-### Conflict on the same application/service
+### Multiple revisions make logical lookup ambiguous
 
-The v0.1 D-Code registry is immutable per `(application_id, dserv_id)`. Changing artifact content at the same key is not implemented as an in-place version transition.
+DATUM v1 permits multiple immutable descriptor revisions for the same `(application_id, dserv_id)`, distinguished by `descriptor_digest`. The logical two-key GET intentionally returns `409 dserv_artifact_lookup_ambiguous` once more than one revision exists. Governed execution uses the exact-revision endpoint named by current authority rather than guessing “latest”.
 
 ## D-Code install fails
 
@@ -157,14 +157,14 @@ The module store also verifies already-present content rather than trusting a di
 
 ## Governed D-Code invocation fails
 
-Check all four identities together:
+Check the authority chain together:
 
 1. local D-Node identity;
 2. active D-Map placement for the service;
-3. DServer canonical D-Serv artifact metadata/digest;
-4. locally installed module bytes.
+3. exact authorized D-Serv descriptor revision;
+4. locally installed module bytes matching the authorized module digest.
 
-A stale placement or stale artifact must fail instead of executing historical authority.
+A stale placement or stale descriptor binding must fail instead of executing historical authority.
 
 The governed invocation path intentionally does not accept a normal caller-chosen `--node-id` override.
 
@@ -187,7 +187,7 @@ For DForward `any_element` dependencies, query the D2 endpoint for the consumer 
 
 Do not paper over a missing implementation by adding undocumented fields, treating `/api/v1/dmap` as canonical D-Deploy authority, using `/api/v1/nodes` as the structural D-Node registry, or equating Sentinel liveness with DMonitor canonical readiness.
 
-If a required step is genuinely absent at Phase 114D2, preserve that boundary in the documentation and extend the tutorial only when the corresponding implementation/evidence lands.
+If a required capability is genuinely not implemented in DATUM v1, preserve that boundary in the documentation and say that it will be implemented rather than inventing an intermediate mechanism.
 
 ## Source trail
 

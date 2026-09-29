@@ -1,6 +1,6 @@
 # DCompile and D-Code API
 
-This reference describes the production compile and governed D-Code surfaces at the Phase 119I baseline.
+This reference describes the production compile and governed D-Code surfaces in DATUM v1.
 
 ## Responsibility map
 
@@ -226,6 +226,8 @@ Examples include:
 - `dcode_artifact_stage_constraint_unverifiable`;
 - `dcode_active_binding_missing`;
 - `stale_dcode_authorization` on explicit re-verification of an older authorization.
+
+`dcode_artifact_stage_constraint_unverifiable` is an API finding name. It is a literal current error identifier, not a reference to an internal development milestone.
 
 ## Client governed preflight
 

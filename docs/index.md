@@ -4,8 +4,8 @@
 
 DATUM is an architectural framework and information model for distributed applications across the **IoTinuum**: heterogeneous resources spanning devices, edge, fog and cloud environments.
 
-!!! info "Development documentation · Phase 119I baseline"
-    This edition is anchored at `c08ccc4d715d9eb76644e3f1bd7d80a7945265c4`, the independent Phase 119 migration closure commit. It is a development checkpoint, not a stable release. See [status and limitations](overview/status.md).
+!!! info "DATUM v1 · development documentation"
+    This edition documents DATUM v1 and is anchored at implementation commit `c08ccc4d715d9eb76644e3f1bd7d80a7945265c4`. Features not yet available are described as planned rather than assigned internal development milestone numbers. See [status and limitations](overview/status.md).
 
 ## From source or existing software to governed execution
 
@@ -100,4 +100,4 @@ DATUM keeps different questions in different authority/evidence domains:
 
 This separation is also a strong foundation for a future dashboard. A UI can show these facts together without inventing a single ambiguous “deployed” state that hides whether the service is merely accepted, physically running, healthy, stale, migrating or awaiting cleanup.
 
-Source links are immutable and [provenance is explicit](reference/sources.md). Historical pages may intentionally link to their original evidence checkpoint rather than pretending they were produced at Phase 119I.
+Source links are immutable and [provenance is explicit](reference/sources.md). Older evidence may intentionally remain linked to the exact implementation commit that produced it while the public documentation continues to evolve as DATUM v1.

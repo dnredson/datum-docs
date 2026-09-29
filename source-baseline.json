@@ -1,13 +1,13 @@
 {
   "repository": "dnredson/datum",
   "commit": "c08ccc4d715d9eb76644e3f1bd7d80a7945265c4",
-  "checkpoint": "Phase 119I",
+  "version": "v1",
   "channel": "development",
   "reviewed_on": "2026-09-29",
-  "verification": "source-inspected at the independent Phase 119 closure commit; referenced live evidence is reported by the implementation repository and was not rerun by this docs build",
-  "pending_at_baseline": [
-    "automated D-Code module distribution remains outside v0.1",
-    "distributed TOCTOU remains possible between fresh authorization and actual guest execution",
+  "verification": "source-inspected at the current DATUM v1 implementation baseline; referenced live evidence is reported by the implementation repository and was not rerun by this docs build",
+  "planned_or_open": [
+    "automated D-Code module distribution is not implemented yet",
+    "distributed TOCTOU can still occur between fresh authorization and actual guest execution",
     "DScript v1 is a canonical source representation, not a general-purpose source-language parser or SDK"
   ]
 }

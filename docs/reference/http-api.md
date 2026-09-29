@@ -1,9 +1,9 @@
 # Complete DServer HTTP API
 
-This page inventories the HTTP routes mounted by DServer at the Phase 114D2 baseline. It is intentionally broader than the [core control-plane API](core-api.md).
+This page inventories the HTTP routes mounted by DServer in the current DATUM v1 source baseline. It is intentionally broader than the [core control-plane API](core-api.md).
 
 !!! important "How to read this catalog"
-    **Existence is not authority.** DServer contains canonical, operational, legacy/compatibility and tooling subsystems from multiple development stages. This catalog documents what is mounted in the router; it does not declare every payload a canonical DATUM contract or every route equally stable.
+    **Existence is not authority.** DServer contains canonical, operational, legacy/compatibility and tooling subsystems that coexist for different responsibilities. This catalog documents what is mounted in the router; it does not declare every payload a canonical DATUM contract or every route equally stable.
 
 ## Classification
 
@@ -11,7 +11,7 @@ This page inventories the HTTP routes mounted by DServer at the Phase 114D2 base
 |---|---|
 | **Core** | Current canonical/control-plane authority, execution authorization or canonical evidence/readiness |
 | **Operational** | Concrete runtime/deployment/agent records surrounding authority |
-| **Legacy** | Earlier graph/topology/snapshot/Controlled-WASM surfaces retained in the prototype |
+| **Legacy** | Earlier graph/topology/snapshot/Controlled-WASM surfaces retained for compatibility |
 | **Auxiliary** | Dashboard, analysis, AI, planning/materialization or inspection tooling |
 
 The classification is architectural guidance for readers, not an API support guarantee.
@@ -47,16 +47,16 @@ These are analysis/planning surfaces, not active D-Map placement authority by th
 | GET | `/api/v1/nodes/:node_id/deployment-secrets-preflight` | Operational | Secret-resolution preflight |
 | GET | `/api/v1/nodes/:node_id/deployment-secrets-contract` | Operational | Secret resolver contract/introspection |
 
-## Legacy `ServiceArtifact` registry
+## Operational `ServiceArtifact` registry
 
 | Method | Path | Class | Purpose |
 |---|---|---|---|
-| POST | `/api/v1/service-artifacts` | Operational | Create/register legacy/executor service artifact |
+| POST | `/api/v1/service-artifacts` | Operational | Create/register operational service artifact |
 | GET | `/api/v1/service-artifacts` | Operational | List service artifacts |
 | GET | `/api/v1/service-artifacts/:artifact_id` | Operational | Read service artifact |
 | PUT | `/api/v1/service-artifacts/:artifact_id` | Operational | Replace/update service artifact |
 | DELETE | `/api/v1/service-artifacts/:artifact_id` | Operational | Delete service artifact |
-| POST | `/api/v1/service-artifacts/:artifact_id/image-identity/resolve` | Operational | Resolve container image identity |
+| POST | `/api/v1/service-artifacts/:artifact_id/image-identity/resolve` | Operational | Resolve and pin container image identity |
 
 Do not confuse this domain with canonical `datum.dserv-artifact/1` D-Code metadata under `/api/v1/dcode/artifacts`.
 
@@ -79,15 +79,16 @@ Resource-registry records are not the canonical D-Node structural registry. In p
 |---|---|---|---|
 | GET | `/api/v1/projects` | Operational | List operational projects |
 | POST | `/api/v1/projects` | Operational | Register operational project |
-| PUT | `/api/v1/operational-dgraph` | Operational | Set operational desired graph |
+| PUT | `/api/v1/operational-dgraph` | Operational | Set operational desired graph when canonical placement authority is not active |
 | GET | `/api/v1/operational-dgraph` | Operational | Read operational desired graph |
 | GET | `/api/v1/nodes/:node_id/operational-dgraph-slice` | Operational | Read node-scoped slice |
 | POST | `/api/v1/nodes/:node_id/operational-reconciliation/authorize` | Operational | Authorize reconciliation |
 | POST | `/api/v1/nodes/:node_id/operational-reconciliation/rollback-authorize` | Operational | Authorize reconciliation rollback |
+| POST | `/api/v1/nodes/:node_id/operational-reconciliation/cleanup-authorize` | Operational | Authorize governed cleanup of a historically vacated source realization |
 | POST | `/api/v1/operational-evidence` | Operational | Submit operational evidence |
 | GET | `/api/v1/operational-evidence` | Operational | List operational evidence |
 
-`OperationalDGraph` is not canonical `datum.dgraph/1`.
+`OperationalDGraph` is not canonical `datum.dgraph/1`. When canonical D-Map authority is active, the operational projection is derived from that authority rather than becoming a parallel placement source.
 
 ## Analysis context and observed graph
 
@@ -95,7 +96,7 @@ Resource-registry records are not the canonical D-Node structural registry. In p
 |---|---|---|---|
 | POST | `/api/v1/analysis-context/passive/:node_id` | Auxiliary | Acquire passive analysis context |
 | POST | `/api/v1/analysis-context/active` | Auxiliary | Acquire active analysis context |
-| GET | `/api/v1/observed-dgraph` | Operational | Read legacy/operational observed graph |
+| GET | `/api/v1/observed-dgraph` | Operational | Read compatibility/operational observed graph |
 
 ## SmartSentinel registration and telemetry
 
@@ -112,7 +113,7 @@ Resource-registry records are not the canonical D-Node structural registry. In p
 
 Sentinel telemetry is not automatically canonical DMonitor evidence. Canonical evidence uses `/api/v1/dmonitor/observations/:project_id` and typed `datum.dmonitor-observation/1`.
 
-## Controlled/Management WASM legacy path
+## Controlled/Management WASM compatibility path
 
 | Method | Path | Class | Purpose |
 |---|---|---|---|
@@ -171,7 +172,7 @@ These `/nodes` routes differ from canonical structural `/dnodes` routes.
 | POST | `/api/v1/dmap` | Legacy | Set older DMap representation |
 | GET | `/api/v1/dmap` | Legacy | Read older DMap representation |
 
-These routes predate/are distinct from canonical D-Deploy-owned `datum.dmap/1|2` acceptance. Use `/api/v1/ddeploy/...` for current canonical placement governance.
+These routes are distinct from canonical D-Deploy-owned `datum.dmap/1|2` acceptance. Use `/api/v1/ddeploy/...` for current canonical placement governance.
 
 ## Canonical D-Deploy: DMap/1
 
@@ -204,13 +205,15 @@ These routes predate/are distinct from canonical D-Deploy-owned `datum.dmap/1|2`
 | DELETE | `/api/v1/dnodes/:node_id` | Core | Remove structural D-Node |
 | GET | `/api/v1/dcontinuum/authoritative` | Core | Read server-derived authoritative D-Continuum |
 
-## Canonical D-Code
+## Canonical D-Compile and D-Code
 
 | Method | Path | Class | Purpose |
 |---|---|---|---|
-| POST | `/api/v1/dcode/artifacts` | Core | Declare canonical D-Serv artifact/D-Code metadata |
-| GET | `/api/v1/dcode/artifacts/:application_id/:dserv_id` | Core | Read canonical D-Serv artifact |
-| POST | `/api/v1/dcode/authorize` | Core | Authorize D-Code invocation under current authority |
+| POST | `/api/v1/dcompile/compile` | Core | Compile canonical D-Script submission into canonical graph/artifact outputs |
+| POST | `/api/v1/dcode/artifacts` | Core | Declare immutable canonical D-Serv artifact/D-Code metadata revision |
+| GET | `/api/v1/dcode/artifacts/:application_id/:dserv_id` | Core | Read current canonical D-Serv artifact revision |
+| GET | `/api/v1/dcode/artifacts/:application_id/:dserv_id/:descriptor_digest` | Core | Read one exact immutable descriptor revision |
+| POST | `/api/v1/dcode/authorize` | Core | Authorize exact-revision D-Code invocation under current authority |
 
 ## D-Call
 
@@ -349,10 +352,10 @@ The following similarly named paths represent different domains and should be ch
 | `/api/v1/nodes` vs `/api/v1/dnodes` | legacy snapshot nodes vs canonical structural D-Nodes |
 | `/api/v1/dmap` vs `/api/v1/ddeploy/...` | older DMap surface vs canonical D-Deploy-owned placement authority |
 | `/api/v1/graph/*`, `/api/v1/dgraph/*`, canonical `datum.dgraph/1` | historical/materialized views vs canonical application contract |
-| `/api/v1/service-artifacts` vs `/api/v1/dcode/artifacts` | executor/container artifact domain vs canonical D-Code descriptor |
-| Sentinel telemetry vs DMonitor observations | generic/legacy agent telemetry vs typed canonical evidence |
+| `/api/v1/service-artifacts` vs `/api/v1/dcode/artifacts` | operational container/native-process artifact domain vs canonical D-Code descriptor |
+| Sentinel telemetry vs DMonitor observations | generic/compatibility agent telemetry vs typed canonical evidence |
 | Controlled WASM vs D-Code | management/executor WASM path vs application D-Serv code |
 
 ## Source
 
-All paths and methods above are transcribed from the pinned [DServer Axum router](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/main.rs). Consult the individual API/core modules before relying on request/response field details that are not explicitly documented on this page.
+All paths and methods above are transcribed from the pinned [DServer Axum router](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/main.rs). Consult the individual API/core modules before relying on request/response field details that are not explicitly documented on this page.

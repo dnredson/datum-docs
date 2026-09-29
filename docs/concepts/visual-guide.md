@@ -1,6 +1,6 @@
 # Visual guide to DATUM
 
-This page is a **picture-first introduction** to the Phase 114D2 DATUM model. Use it before the detailed [entity encyclopedia](entities.md) when you want the mental model first and the field-level details second.
+This page is a **picture-first introduction** to the DATUM v1 model. Use it before the detailed [entity encyclopedia](entities.md) when you want the mental model first and the field-level details second.
 
 !!! tip "How to use this page"
     Read the diagrams from top to bottom. Each picture answers one question. When a term becomes familiar, follow the links to the detailed concept, tutorial or reference page.
@@ -127,7 +127,7 @@ stateDiagram-v2
 
 A planner can recommend a placement. It cannot silently turn that recommendation into active authority.
 
-## Two artifact families at this baseline
+## Two artifact families in DATUM v1
 
 This is one of the easiest parts of the current implementation to confuse.
 
@@ -243,7 +243,7 @@ flowchart TB
     P1 --> APP
 ```
 
-A specific provider dependency can be satisfied while the overall application is still NotReady because another required placement is missing or unhealthy. Phase 114D2 intentionally evaluates these questions separately.
+A specific provider dependency can be satisfied while the overall application is still NotReady because another required placement is missing or unhealthy. DATUM v1 intentionally evaluates these questions separately.
 
 ## One complete journey
 
@@ -280,7 +280,7 @@ The sequence is intentionally explicit because DATUM does not collapse governanc
 | container running = Ready | Runtime state still needs fresh, exactly-correlated canonical evidence. |
 | Healthy = Ready | Healthy is an observation condition; Ready is a derived governance result. |
 | broker URI = broker healthy | Runtime binding gives operational identity, not liveness evidence. |
-| ServiceArtifact = D-Code artifact | They are separate artifact families at the current baseline. |
+| ServiceArtifact = D-Code artifact | They are separate artifact families in DATUM v1. |
 | D-Call = TCP/HTTP endpoint | D-Call is semantic application communication; transport is derived later. |
 | `target_nodes` = placement authority | It constrains proposal eligibility; accepted D-Map becomes placement authority. |
 
@@ -292,5 +292,5 @@ The sequence is intentionally explicit because DATUM does not collapse governanc
 - Want the exact contract fields? Open [canonical contracts](../reference/contracts.md).
 - Want the end-to-end authority transition? Read [lifecycle and authority flow](../architecture/lifecycle.md).
 
-!!! note "Baseline boundary"
-    The pictures summarize the documented Phase 114D2 model. They do not imply that Phase 114E live multinode validation or the canonical production DServ evidence emitter has already closed.
+!!! note "DATUM v1 boundary"
+    The pictures summarize the current DATUM v1 model. Reproducible live multinode validation and a production canonical DServ evidence emitter are not yet documented as completed; those capabilities will be added when implemented and validated.

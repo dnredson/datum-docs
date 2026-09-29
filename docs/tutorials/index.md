@@ -1,6 +1,6 @@
 # Tutorials
 
-These tutorials describe the current Phase 119I development baseline and keep **modeling, authority, realization and evidence** as separate steps.
+These tutorials describe DATUM v1 and keep **modeling, authority, realization and evidence** as separate steps.
 
 !!! important "What 'deploy' means"
     DATUM does not use one overloaded `deployed=true` fact. A service can be modeled, registered, proposed, accepted, authorized, realized, observed and Ready at different times. D-Deploy acceptance creates placement authority; it does not by itself copy a WASM module, pull/start a container, materialize a native executable or prove health.
@@ -31,7 +31,7 @@ flowchart LR
 6. [Perform a basic governed deploy](basic-deploy.md) — create/review a placement proposal and explicitly accept its D-Map.
 7. [Follow Mosquitto end to end](mosquitto-end-to-end.md) — real catalog artifact → pinning → D-Graph → D-Deploy → finite reconcile authorization → running container.
 8. [Use the reusable service-to-node lifecycle](service-to-node.md) — generic checklist for adding another service and understanding every state boundary.
-9. [Understand runtime realization](runtime-realization.md) — compare operational container/native realization with governed D-Code execution and Phase 119 cleanup.
+9. [Understand runtime realization](runtime-realization.md) — compare operational container/native realization with governed D-Code execution, migration and cleanup.
 10. [Troubleshoot common failures](troubleshooting.md) — map failures back to the authority/identity gate that refused them.
 
 Need the architecture before commands? Start with the [Visual guide](../concepts/visual-guide.md), [WebAssembly and D-Code](../concepts/webassembly-and-dcode.md), or [software component model](../architecture/software-components.md).
@@ -91,7 +91,7 @@ This diagram is a learning model, not a new persisted DATUM state machine. For e
 
 ## Why this matters for the future dashboard
 
-The architecture already offers better UI semantics than a single “running/not running” badge. A dashboard can eventually show independent facts such as:
+The architecture already offers better UI semantics than a single “running/not running” badge. The DATUM Console can show independent facts such as:
 
 - artifact registered and execution identity complete;
 - current proposal versus current accepted D-Map;
@@ -102,10 +102,10 @@ The architecture already offers better UI semantics than a single “running/not
 - readiness;
 - migration target realization and source cleanup.
 
-The dashboard has not been specified by these tutorials. The rule for that future work should be: **visualize existing authority/evidence; do not create a second competing source of truth in the UI.**
+The dashboard will be implemented separately. Its governing rule should be: **visualize existing authority/evidence; do not create a second competing source of truth in the UI.**
 
-## Baseline and evidence boundary
+## Source and evidence boundary
 
-Current-source additions in this tutorial set are pinned to Phase 119I commit `c08ccc4d715d9eb76644e3f1bd7d80a7945265c4`. Historical pages may retain older immutable source links when they document older evidence. The documentation build validates links/navigation/rendering; it does not rerun the implementation test suite or physical-node proofs.
+Current-source additions in this tutorial set are pinned to DATUM v1 implementation commit `c08ccc4d715d9eb76644e3f1bd7d80a7945265c4`. Older pages may retain older immutable source links when they document evidence produced by that exact code. The documentation build validates links/navigation/rendering; it does not rerun the implementation test suite or physical-node proofs.
 
 See [sources and provenance](../reference/sources.md) and [status and limitations](../overview/status.md).
