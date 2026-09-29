@@ -41,7 +41,7 @@ A semantic invocation edge from one D-Serv to another. It declares `call_id`, `s
 
 ### D-Code
 
-Executable application code of a D-Serv. DATUM v1 uses WebAssembly with the `datum-dnode/0` ABI. D-Code is application code; it is separate from management/controlled-WASM mechanisms used by older operational paths.
+Executable application code of a D-Serv. DATUM v1 uses WebAssembly with the `datum-dnode/0` ABI. D-Code is application code; it is separate from management/controlled-WASM mechanisms used for operational decision paths.
 
 ### D-Serv artifact (`datum.dserv-artifact/1`)
 
