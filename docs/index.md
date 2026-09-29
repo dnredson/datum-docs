@@ -1,86 +1,80 @@
 # DATUM
 
-**Understand the application. Locate its realizations. Evaluate the evidence.**
+**Describe software. Govern where it runs. Execute exact content. Observe what really happened.**
 
 DATUM is an architectural framework and information model for distributed applications across the **IoTinuum**: heterogeneous resources spanning devices, edge, fog and cloud environments.
 
-It gives application structure, accepted placement and runtime observations distinct meanings. That separation makes it possible to ask both *what is authorized to run* and *what the available evidence proves now*.
+!!! info "Development documentation · Phase 119I baseline"
+    This edition is anchored at `c08ccc4d715d9eb76644e3f1bd7d80a7945265c4`, the independent Phase 119 migration closure commit. It is a development checkpoint, not a stable release. See [status and limitations](overview/status.md).
 
-!!! info "Development documentation · Phase 114D2 baseline"
-    This edition describes checkpoint `3e0baa8f415b`, not a stable release. DMonitor-backed application readiness and provider-specific `any_element` dependency readiness are implemented at this baseline; Phase 114E live multinode validation remains open. See [status and limitations](overview/status.md).
-
-## DATUM in one picture
+## From source meaning to governed execution
 
 ```mermaid
 flowchart LR
-    A["Describe\nD-Graph"] --> B["Place\nD-Deploy + D-Map"]
-    B --> C["Realize\nnode runtime"]
-    C --> D["Observe\nDMonitor"]
-    D --> E["Decide\nreadiness"]
+    S["D-Script\nsource meaning"] --> C["D-Compile\npure lowering"]
+    C --> G["D-Graph\nlogical topology"]
+    C --> A["D-Serv artifact\nexact D-Code identity"]
+    G --> P["D-Deploy\nproposal + acceptance"]
+    A --> P
+    P --> M["Active D-Map\nplacement + exact revision binding"]
+    M --> X["D-Node\ngoverned execution"]
+    X --> O["DMonitor\nobserved reality"]
 ```
 
-Each box is a different claim. DATUM deliberately avoids treating “planned”, “accepted”, “running”, “observed Healthy” and “Ready” as synonyms.
+The arrows do **not** collapse these concepts. Compilation is not deployment. Registration is not activation. Having WASM bytes on a node is not authorization to execute them. A running module is not automatically Ready.
 
 <div class="grid cards" markdown>
 
+- **Understand WebAssembly and D-Code**
+
+    Learn what `.wasm` actually is, modules/imports/exports/linear memory, why DATUM uses WebAssembly, the `datum-dnode/0` ABI, sandboxing and runtime limits.
+
+    [WebAssembly and D-Code](concepts/webassembly-and-dcode.md)
+
+- **See how software is represented**
+
+    Follow one software component through D-Function, D-Serv, D-Code module bytes, immutable descriptor revision, D-Map binding, execution and evidence.
+
+    [Software component model](architecture/software-components.md)
+
+- **See what DServer sends to a D-Node**
+
+    Step through fresh authorization, exact descriptor fetch, local content-addressed module loading and isolated Wasmtime execution.
+
+    [DServer → D-Node execution flow](architecture/dserver-dnode-dcode-flow.md)
+
+- **Read the production API contract**
+
+    Inspect `POST /api/v1/dcompile/compile`, versioned D-Code registration, exact-revision fetch and authorization fields.
+
+    [DCompile and D-Code API](reference/dcompile-dcode-api.md)
+
 - **See the visual model first**
 
-    Learn DATUM through diagrams: application structure, continuum, placement, artifacts, DIoT, DMonitor and the complete authority-to-evidence journey.
+    Learn DATUM through diagrams: application structure, continuum, placement, artifacts, DIoT, DMonitor and the authority-to-evidence journey.
 
     [Open the visual guide](concepts/visual-guide.md)
 
-- **Follow the source-to-deploy tutorial**
+- **Follow the tutorials**
 
-    Build DServer and DATUM, configure identities, declare a D-Node, author artifacts and a D-Graph, create a deterministic proposal, explicitly accept a D-Map, then understand the separate runtime-realization paths.
+    Work through installation, identities, artifacts, D-Graph, governed deployment and runtime realization.
 
     [Start the tutorials](tutorials/index.md)
 
-- **Learn the vocabulary and entities**
-
-    Start from D-Application, D-Graph, D-Serv, D-Call, D-Node, D-Map, D-Forward, D-IoT, D-Monitor and their concrete identities.
-
-    [Open the entity encyclopedia](concepts/entities.md)
-
-- **Understand authority**
-
-    Follow the distinction between desired state, accepted authority, operational binding, observed evidence, convergence and readiness.
-
-    [Read the lifecycle](architecture/lifecycle.md)
-
-- **Read the contracts**
-
-    Inspect canonical schemas, important fields, invariants and cross-contract relationships.
-
-    [Open the contract reference](reference/contracts.md)
-
-- **Use the API**
-
-    Start with the canonical control-plane surfaces, then use the complete route catalog when debugging or integrating older subsystems.
-
-    [Open the core API](reference/core-api.md)
-
-- **Understand readiness**
-
-    Distinguish health, freshness, convergence, application readiness and provider-specific dependency readiness.
-
-    [Read the readiness guide](operations/readiness.md)
-
-- **Run validation scenarios**
-
-    Follow the existing D1 and D2 DServer subprocess integration proofs in an isolated source checkout.
-
-    [Open the validation examples](examples/first-validation.md)
-
 </div>
 
-## Three questions, three responsibilities
+## The core rule
+
+DATUM keeps five questions separate:
 
 | Question | Primary representation |
 |---|---|
-| What does the application contain and call? | D-Graph: D-Serv vertices and D-Call edges |
-| Where are the required realizations accepted to run? | D-Map, materialized through governed D-Deploy acceptance |
-| What was observed, and does it support use now? | D-Monitor evidence plus server-derived convergence and readiness |
+| What functionality did the author describe? | D-Script / D-Functions |
+| What logical application was compiled? | D-Graph / D-Serv / D-Call |
+| What exact executable content describes a D-Serv revision? | `datum.dserv-artifact/1` + WASM content digest |
+| Where and which exact revision is currently authorized? | accepted D-Map/D-Deploy authority + D-Code revision binding |
+| What actually happened at runtime? | D-Node execution evidence and DMonitor observations |
 
-A fourth question appears when D-Forward crosses elements: *is the exact provider placement for this dependency usable now?* Phase 114D2 answers it with provider-specific dependency readiness, without replacing D-Map placement authority.
+This separation is why two immutable WASM revisions can coexist on one node without either becoming executable merely because its bytes are present. Current authority selects the exact revision; the governed client fetches that exact descriptor and verifies the local bytes against its content digest before execution.
 
-The documentation covers concepts, architecture, source-derived tutorials, contracts, API surfaces, task guides, technical reference and validation boundaries. Source links are pinned to the [documented revision](reference/sources.md). Some implementation links require repository access.
+Source links are immutable and [provenance is explicit](reference/sources.md). Historical pages may intentionally link to their original evidence checkpoint rather than pretending they were produced at Phase 119I.

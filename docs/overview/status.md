@@ -1,44 +1,41 @@
 # Status and limitations
 
-**Edition:** development. **Documented implementation:** Phase 114D2 checkpoint, `3e0baa8f415b822f69eef86c0cbfe2a3681e3a65`. **Documentation review date:** 2026-09-25.
+**Edition:** development. **Current documentation baseline:** Phase 119I, `c08ccc4d715d9eb76644e3f1bd7d80a7945265c4`. **Documentation review date:** 2026-09-29.
 
-The baseline is an explicit historical feature-branch checkpoint. It does not track the implementation branch automatically and does not claim to describe changes after that revision.
+Phase 119I is the independent final migration closure review. Its implementation-repository verdict is **PASS WITH NON-BLOCKING LIMITATIONS**. The docs use that closure commit as the current source anchor while preserving immutable older source links where a page documents historical evidence from an earlier checkpoint.
 
-## Capability status at the baseline
+## What materially changed since the previous docs baseline
 
-| Capability | Status | Evidence boundary |
-|---|---|---|
-| Canonical DMonitor observations and ingestion | Implemented | Typed wire contract, ingestion/state modules and ADR-0024 |
-| Freshness and authority correlation | Implemented | Server-derived interpretation |
-| DIoT runtime evidence production | Implemented | Governed listener emitter described in ADR-0024 |
-| Placement and application readiness | Implemented | D1 core and read-only API retained at the D2 checkpoint |
-| Dynamic `any_element` dependency readiness | Implemented | D2 core, read-only API and dedicated integration proof inspected |
-| Phase 114 live multinode validation | Open | Next source work begins with 114E0 preflight; a live scenario is not closed by D2 |
-| Canonical DServ production evidence emitter | Open | The generic telemetry bridge does not infer DServ identity |
-| Automatic correction driven by readiness | Outside D2 | No readiness-triggered restart, redeployment or placement mutation |
+The earlier site baseline was Phase 114D2. The implementation has since added and closed several major application-code/control-plane layers that are now documented here:
 
-## Validation claims
+- canonical `datum.dscript/1` as a compile-time source representation;
+- production D-Compile at `POST /api/v1/dcompile/compile`;
+- deterministic lowering into a D-Graph plus canonical D-Serv artifact candidates;
+- versioned, immutable D-Code artifact revisions;
+- explicit D-Deploy binding of an active service to an exact descriptor revision;
+- exact-revision governed D-Code preflight and execution;
+- live H1→H2 evidence showing that registering/installing a new module revision does not activate it;
+- governed migration with explicit target acceptance, target realization, source cleanup and rollback as a new transition;
+- Phase 119 independent closure of that migration lifecycle.
 
-The earlier D1 checkpoint report supplied by the maintainer records 30 focused D1 core/API tests, 181 DServer DMonitor tests, one explicitly executed D1 integration proof, 39 DATUM canonical-DMonitor tests and 54 projection tests passing. Those figures remain historical **reported checkpoint results**, not new executions performed while building this documentation.
+## Current D-Code boundary
 
-For D2, this edition inspected the accepted core, handler and dedicated subprocess integration proof. The D2 integration source explicitly exercises blocked-before-evidence, satisfied-with-exact-provider-Healthy evidence while whole-application readiness remains NotReady, and blocked-again-after-fresh-provider-Unhealthy evidence. The documentation build did not rerun that runtime test suite.
+DServer stores canonical descriptors and authority. **It does not store or execute WASM module bytes.** Module bytes remain in the D-Node-local content-addressed store. Distribution/fetching of those bytes onto a node is still explicitly outside D-Code v0.1.
 
-## Practical limitations
+For each governed invocation the node-side client requests a fresh authorization from DServer, then fetches the exact immutable descriptor revision named by that authorization. The authorization binds current D-Map, D-Graph, node, module digest, full descriptor digest and ABI. The client independently cross-checks the response, loads the exact local module bytes by digest, and executes them in an isolated worker process.
 
-An application with required DServ placements can remain `not_ready` when only generic SmartSentinel telemetry is available. The D1 integration proof supplies canonical DServ fixtures to exercise governance. That fixture is not a production collector.
+## Important limitations
 
-A broker URI or runtime-binding registration alone does not prove runtime liveness. Healthy evidence can age out or refer to obsolete authority. The readiness policy does not accept those observations as proof of current readiness.
+**No automatic D-Code module distribution.** Installing a module on a D-Node remains explicit. A future distribution mechanism must not be confused with D-Deploy authority: copying bytes must never silently activate a revision.
 
-Static DForward projection still uses `pending_fresh_evidence` for `any_element`: it is an authority-only view and does not become a live health assertion. D2 adds a separate dynamic, evidence-aware dependency-readiness evaluation against the exact current provider placement.
+**Residual distributed TOCTOU.** Authorization is freshly derived immediately before execution, but a distributed control-plane state change can still occur after the HTTP response and before guest execution. Immutable revisions eliminate in-place revision mutation, but do not make the control plane and remote guest execution one atomic transaction.
 
-D2 does not by itself establish a live fog/cloud deployment. Phase 114E validation and its live tutorial remain intentionally pending.
+**D-Script is not a general source-language SDK.** `datum.dscript/1` is the canonical compile-time representation: a set of D-Functions with conservative string annotations. It is not a Python/Rust/JavaScript parser and does not itself carry executable bytes, placement, runtime state or control flow.
 
-The new tutorial section is **source-derived onboarding**, not a claim of a freshly reproduced clean-environment installation. It explains the current install/configure/artifact/D-Graph/D-Deploy/runtime boundaries from pinned source. Runtime commands were not rerun as part of the documentation build.
+**D-Compile does not verify submitted WASM bytes.** The production compiler receives declared module content identity/size as D-Code input and generates candidate descriptors deterministically. Byte verification occurs at module installation/load/execution boundaries, not inside the pure compile endpoint.
 
 ## Documentation coverage
 
-This edition includes conceptual introduction, entity/identity reference, authority boundaries, canonical contracts, a complete DServer route catalog, D1 readiness policy/findings, D2 provider-specific dependency readiness, source-derived installation/configuration/artifact/D-Graph/basic-governed-deploy tutorials, both read-only readiness API surfaces and integration-test entry points.
+This edition adds detailed material for WebAssembly, D-Code, software-component identities, DCompile, exact-revision governance, DServer-to-D-Node execution and the Phase 119I baseline. Older readiness/tutorial/reference pages remain valuable but some still describe the exact checkpoint at which their evidence was originally captured; their immutable source links make that provenance visible.
 
-Still intentionally pending are a packaged production installer, a freshly reproduced clean-environment onboarding proof, generated schemas/OpenAPI, and the captured live multinode tutorial gated on Phase 114E.
-
-See [tutorials](../tutorials/index.md), [source provenance](../reference/sources.md) and [roadmap](../project/roadmap.md).
+See [WebAssembly and D-Code](../concepts/webassembly-and-dcode.md), [software component model](../architecture/software-components.md), [DServer-to-D-Node execution](../architecture/dserver-dnode-dcode-flow.md), [DCompile and D-Code API](../reference/dcompile-dcode-api.md), and [sources and provenance](../reference/sources.md).

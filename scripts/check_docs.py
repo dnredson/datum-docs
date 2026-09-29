@@ -1,4 +1,4 @@
-"""Check authored navigation, source baseline and local Markdown link targets."""
+"""Check authored navigation, immutable source links, baseline and local Markdown links."""
 import json
 from pathlib import Path
 import re
@@ -35,9 +35,13 @@ for path in DOCS.rglob('*.md'):
     if relative not in seen:
         errors.append(f'Page not in navigation: {relative}')
     text = path.read_text()
+    # Source links may intentionally cite an older evidence checkpoint, but
+    # every implementation link must remain immutable. Branch names such as
+    # main or feature refs are therefore rejected; only full 40-char SHAs
+    # are accepted as provenance.
     for found in re.finditer(re.escape(source_prefix) + r'([^/\s)]+)/', text):
-        if found.group(1) != sha:
-            errors.append(f'{relative}: source link does not match baseline')
+        if not re.fullmatch(r'[0-9a-f]{40}', found.group(1)):
+            errors.append(f'{relative}: source link is not pinned to a full commit SHA')
     text = re.sub(r'```.*?```', '', text, flags=re.S)
     for target in re.findall(r'\]\(([^)\s]+)', text):
         parsed = urlsplit(target)
@@ -51,4 +55,4 @@ for path in [ROOT / 'overrides/main.html', ROOT / 'docs/overview/status.md', ROO
         errors.append(f'{path.name}: missing current baseline marker')
 if errors:
     raise SystemExit('\n'.join(errors))
-print(f'OK: {len(seen)} navigation pages; local Markdown links and baseline {sha[:12]}')
+print(f'OK: {len(seen)} navigation pages; local Markdown links; immutable source pins; baseline {sha[:12]}')
