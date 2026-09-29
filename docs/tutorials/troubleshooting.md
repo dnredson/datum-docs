@@ -12,17 +12,15 @@ Set an explicit path:
 export DATUM_DSERVER_CONFIG_PATH="$PWD/dserver/config.tutorial.toml"
 ```
 
-The process otherwise searches its documented local candidates.
-
 ### Control-state database errors
 
-Confirm `DATUM_CONTROL_STATE_DB_PATH` points to a writable tutorial location:
+Use a writable, isolated path for tutorials:
 
 ```sh
 export DATUM_CONTROL_STATE_DB_PATH="$PWD/.local/datum-control-plane.db"
 ```
 
-Do not delete retained state as a generic cure for validation errors: proposals, acceptances and other authority records are intentionally durable. Use a disposable tutorial database when you genuinely want a clean environment.
+Do not delete retained state as a generic cure for validation errors. Use a disposable tutorial database when you genuinely want a clean environment.
 
 ## D-Node declaration fails
 
@@ -38,21 +36,27 @@ the JSON `node_id` must also be `tutorial-node`.
 
 ### `dnode_structural_conflict`
 
-A node with that ID already exists with different structural platform/capacity/ABI data. The v0.1 registry does not silently edit structural facts in place. Review the change and use the explicit remove/redeclare lifecycle if that is genuinely intended.
+A node with that ID already exists with different structural platform/capacity/ABI data. DATUM v1 does not silently redefine structural authority. Review the change and use the explicit structural lifecycle intended by the implementation.
 
 ### Invalid ABI
 
-The current canonical D-Code ABI is `datum-dnode/0`. A made-up `datum-dnode/1` capability is not accepted merely because the string is syntactically non-empty.
+The current canonical D-Code ABI is `datum-dnode/0`. A made-up ABI value is not accepted merely because it is syntactically non-empty.
 
-## Authoritative D-Continuum is unavailable
+## D-Continuum is unavailable or incomplete
 
-If no structural D-Node has been declared, DServer cannot derive an authoritative `datum.dcontinuum/1` for placement. Declare at least one valid D-Node first.
+DServer derives the authoritative D-Continuum from structural D-Node declarations. Declare the required nodes first and verify:
+
+```sh
+curl -fsS \
+  "$DSERVER_URL/api/v1/dcontinuum/authoritative" \
+  -H "X-Datum-Project: $PROJECT_ID"
+```
 
 ## ServiceArtifact creation fails
 
-### `at least one control_plane.target_nodes or target_stages entry is required`
+### Missing eligibility scope
 
-The artifact must declare an eligibility scope. For this tutorial use:
+A ServiceArtifact must declare an allowed scope. For the simple tutorial:
 
 ```json
 "target_nodes": ["tutorial-node"],
@@ -61,75 +65,86 @@ The artifact must declare an eligibility scope. For this tutorial use:
 
 ### `target_stage_constraint_unverifiable`
 
-This arises later in D-Deploy if the artifact declares non-empty `target_stages`. Current canonical D-Continuum authority has no node-stage mapping, so D-Deploy rejects the constraint fail-closed. Use structural node eligibility for the current basic flow instead of pretending self-reported stage metadata is authoritative.
+The current canonical D-Continuum does not provide authoritative node-to-stage mapping. Non-empty `target_stages` constraints therefore fail closed in canonical planning. Use explicit structural node eligibility when following the v1 tutorial.
 
 ### Container fields rejected
 
-Check `runtime.kind == "container"`, a non-empty container name/image, supported `image_source_kind`, valid port protocols and a supported execution probe.
+Check:
+
+- `runtime.kind == "container"`;
+- non-empty container name and image;
+- supported `image_source_kind`;
+- valid port protocols;
+- supported execution/health/availability probes.
 
 ### `resolved_image_identity is server-owned`
 
-Do not paste resolved image identity into ordinary create/update requests. Use the explicit image-identity resolve endpoint so DServer owns the resolution record and related generation/digest transition.
+Do not paste a resolved OCI identity into ordinary artifact create/update requests. Use:
 
-### WASM decision fields rejected
+```text
+POST /api/v1/service-artifacts/:artifact_id/image-identity/resolve
+```
 
-The current ServiceArtifact policy requires an explicit decision module/function and requires explicit invocation while forbidding imports, effects and auto-execution in this management-decision surface.
+DServer owns the resolution record and associated execution projection/generation transition.
 
 ## D-Deploy planning fails
 
 ### `artifact_not_found`
 
-The canonical D-Graph service has no resolvable project-scoped ServiceArtifact. Register exactly one artifact whose `service_id`, `artifact_id` or declared alias resolves that canonical service.
+The D-Graph service has no uniquely resolvable project-scoped ServiceArtifact. Register a matching artifact.
 
 ### `artifact_ambiguous`
 
-More than one artifact resolves the same D-Serv. D-Deploy refuses to guess which artifact is intended. Remove the ambiguity instead of relying on ordering.
+More than one ServiceArtifact resolves the same D-Serv. D-Deploy refuses to choose by ordering. Remove the ambiguity.
 
-### `node_not_eligible` / no feasible placement
+### No feasible placement
 
-Check the ServiceArtifact `target_nodes`, D-Node ABI capabilities, per-service CPU/memory requirements, node structural capacity and capacity already committed by other active applications.
+Check:
 
-The deterministic planner uses structural facts, not current telemetry. Freeing live RAM does not fix a declared structural-capacity mismatch.
+- `target_nodes` eligibility;
+- D-Node ABI capabilities;
+- per-service CPU/memory requirements;
+- structural node capacity;
+- capacity already committed by accepted deployments.
 
-### D-Graph validation findings
-
-Common causes include duplicate IDs, revision 0, a dangling D-Call endpoint, invalid `datum-dnode/0` requirement or zero resource requirements. See [Create a valid D-Graph](dgraph.md).
+The deterministic planner uses structural facts, not current free RAM/CPU telemetry.
 
 ## Acceptance fails after planning succeeded
 
-This can be correct behavior.
+This can be correct. Acceptance revalidates current authority and can reject a formerly valid proposal when:
 
-A pending proposal is not a reservation against a frozen world. Acceptance rechecks load-bearing current authority. Failures can include:
-
-- the authoritative D-Node registry changed after planning;
-- another accepted deployment changed project capacity commitments;
-- the currently active D-Map revision no longer matches what the proposal expected;
+- structural D-Node facts changed;
+- project capacity commitments changed;
+- expected active D-Map revision became stale;
 - ServiceArtifact eligibility/content changed;
-- the submitted proposal digest does not match the immutable proposal.
+- proposal digest does not match.
 
-Do not bypass this by constructing a D-Map manually. Re-plan against current state.
+Re-plan against current state instead of manually constructing placement authority.
 
-## Accepted D-Map exists, but no container appears
+## Accepted D-Map exists, but no process/container appears
 
-That is not evidence that D-Deploy failed. D-Deploy acceptance establishes placement authority; runtime reconciliation is a distinct plane.
+D-Deploy acceptance establishes placement authority. Runtime realization is separate.
 
-Check whether the node has the operational resource/binding/context needed by `smartsentinel-operational-reconcile`, whether execution authorization/pinning prerequisites are satisfied, and whether you intentionally requested `--execute`. The base tutorial does not claim a turnkey 114E live runtime bridge yet.
+Check:
 
-## D-Code descriptor registration fails
+- operational resource binding;
+- node-specific operational slice;
+- required-complete artifact identity/pinning;
+- finite reconciliation authorization;
+- local policy;
+- whether `--execute` was intentionally requested.
+
+A turnkey packaged deployment orchestrator is not implemented yet; the current path intentionally exposes these governance boundaries.
+
+## D-Code registration/lookup issues
 
 ### Content identity mismatch
 
-`dcode.uri`, `dcode.sha256` and `dcode.content_id` must identify the same content. The URI form is:
-
-```text
-datum-blob://sha256/<64 lowercase hex>
-```
-
-Do not hash the filename/path; hash the actual WASM bytes.
+`dcode.uri`, `dcode.sha256` and `dcode.content_id` must identify the same bytes.
 
 ### ABI failure
 
-The current supported descriptor ABI is `datum-dnode/0` with the required export set:
+The supported ABI is `datum-dnode/0` and the required exports are:
 
 ```text
 memory
@@ -139,56 +154,61 @@ datum_dealloc
 datum_handle
 ```
 
-`allowed_imports` must be empty in v0.1.
+The current D-Code runtime accepts no host imports.
 
-### Safety/state-model failure
+### Multiple revisions exist
 
-The zero-import model requires the host capability booleans to be false. The current artifact supports `state_model = "stateless"` and `instantiation = "fresh_instance_per_invocation"`.
+This is valid. The registry identity is:
 
-### Conflict on the same application/service
+```text
+(application_id, dserv_id, descriptor_digest)
+```
 
-The v0.1 D-Code registry is immutable per `(application_id, dserv_id)`. Changing artifact content at the same key is not implemented as an in-place version transition.
+Multiple immutable descriptor revisions may coexist for the same logical D-Serv. Therefore the logical GET can fail with `409 dserv_artifact_lookup_ambiguous`; governed execution uses the exact descriptor digest selected by current authority.
+
+Registration of a new revision does not activate it.
 
 ## D-Code install fails
 
-The local installer recomputes the module SHA-256 and refuses a declared digest mismatch. Rebuild the descriptor from the exact bytes you are installing; do not alter one side merely to make the strings agree.
+The local installer recomputes module SHA-256 and refuses mismatched bytes. Rebuild the descriptor from the exact WASM you are installing rather than changing a digest merely to make strings agree.
 
-The module store also verifies already-present content rather than trusting a digest-shaped filename.
+Automatic D-Code module distribution is not implemented yet; module bytes must reach the node through a separate operational process before governed invocation.
 
 ## Governed D-Code invocation fails
 
-Check all four identities together:
+Check these identities together:
 
 1. local D-Node identity;
-2. active D-Map placement for the service;
-3. DServer canonical D-Serv artifact metadata/digest;
-4. locally installed module bytes.
+2. active D-Map placement;
+3. exact descriptor digest bound by current authority;
+4. locally installed module content digest;
+5. currently declared D-Node ABI support.
 
-A stale placement or stale artifact must fail instead of executing historical authority.
-
-The governed invocation path intentionally does not accept a normal caller-chosen `--node-id` override.
+A stale placement or stale revision must fail closed instead of executing historical authority.
 
 ## Service is running but readiness is `not_ready`
 
-Running software and canonical readiness are different facts. D1 readiness requires fresh DMonitor evidence correlated to exact current placement/runtime authority. Generic SmartSentinel telemetry is not automatically canonical DServ realization evidence.
-
-Check:
+Running software and canonical readiness are different facts. D1 readiness requires fresh evidence correlated to exact current authority.
 
 ```sh
 curl -fsS \
   "$DSERVER_URL/api/v1/dmonitor/readiness/$PROJECT_ID/$APPLICATION_ID"
 ```
 
-Then inspect the finding codes and the placement-level reason rather than assuming runtime health from a container/process check.
+Inspect the finding codes rather than inferring readiness from Docker/process status.
 
-For DForward `any_element` dependencies, query the D2 endpoint for the consumer node and inspect provider-resolution/readiness findings separately.
+For DForward `any_element` dependencies, query the D2 dependency-readiness endpoint for the consumer node and inspect provider-specific findings separately.
 
-## When not to “fix” the tutorial
+## Migration cleanup fails
 
-Do not paper over a missing implementation by adding undocumented fields, treating `/api/v1/dmap` as canonical D-Deploy authority, using `/api/v1/nodes` as the structural D-Node registry, or equating Sentinel liveness with DMonitor canonical readiness.
+Cleanup is not ordinary rollback. A vacated source node can receive a dedicated governed cleanup directive and requires cleanup-specific authorization before host mutation.
 
-If a required step is genuinely absent at Phase 114D2, preserve that boundary in the documentation and extend the tutorial only when the corresponding implementation/evidence lands.
+Use the current `--cleanup` path only for derived source-cleanup directives. Do not reuse ordinary reconcile/rollback semantics to remove arbitrary services.
+
+## When something is genuinely missing
+
+Do not invent fields, bypass current authority with legacy routes, or reinterpret telemetry as canonical state. If a required capability is not implemented yet, keep that boundary explicit and document it as planned.
 
 ## Source trail
 
-See [sources and provenance](../reference/sources.md), [core control-plane API](../reference/core-api.md), [complete HTTP API](../reference/http-api.md) and the source links embedded throughout the preceding tutorial pages.
+See [sources and provenance](../reference/sources.md), [core control-plane API](../reference/core-api.md) and [HTTP API catalog](../reference/http-api.md).
