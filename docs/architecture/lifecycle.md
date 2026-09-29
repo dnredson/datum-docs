@@ -1,181 +1,169 @@
 # Lifecycle and authority flow
 
-This page follows one application from structural declaration to evidence-derived readiness. The purpose is not to prescribe one deployment workflow for every future release; it is to make the **authority transitions at the Phase 114D2 baseline** explicit.
+DATUM v1 separates application modeling, placement authority, runtime realization and evidence. This page shows the end-to-end control flow without treating “deployment” as one undifferentiated state.
 
-## End-to-end flow
+## High-level lifecycle
 
 ```mermaid
-flowchart TD
-    N["1. Declare D-Nodes"] --> C["2. Derive structural D-Continuum"]
-    G["3. Define canonical D-Graph"] --> P["5. Create/validate D-Deploy proposal"]
-    A["4. Declare D-Serv artifacts / D-Code identity"] --> P
-    C --> P
-    F["Optional D-Forward for DMap/2"] --> P
-    P --> X["6. Explicit D-Deploy acceptance"]
-    X --> M["7. Active canonical D-Map"]
-    M --> E["8. Authorize/realize execution"]
-    M --> B["9. Register DIoT runtime binding"]
-    E --> O["10. Emit DMonitor observations"]
-    B --> O
-    M --> I["11. Convergence interpretation"]
-    B --> I
-    O --> I
-    I --> R["12. D1 placement/application readiness"]
-    M --> Q["13. Resolve any_element provider"]
-    F --> Q
-    Q --> D["14. D2 dependency readiness"]
-    R --> D
+flowchart LR
+    MODEL["Model application/service"] --> ART["Register artifacts"]
+    ART --> GRAPH["D-Graph"]
+    GRAPH --> PLAN["D-Deploy proposal"]
+    PLAN --> ACCEPT["Explicit acceptance"]
+    ACCEPT --> MAP["Active D-Map"]
+    MAP --> AUTH["Runtime authorization"]
+    AUTH --> REAL["Node realization"]
+    REAL --> OBS["Evidence"]
+    OBS --> READY["Readiness"]
 ```
 
-## 1. Declare structural D-Nodes
+Each transition has different ownership and meaning.
 
-The D-Node registry records structural facts: `node_id`, platform, static capacity and supported D-Node ABI versions. This is server-owned structural inventory, not Sentinel liveness.
+## 1. Model application intent
 
-Re-declaring identical content is an idempotent no-op. Attempting to mutate an existing declaration in place fails closed in v0.1; remove and redeclare is the explicit structural transition.
+The canonical D-Graph describes D-Servs and D-Calls without embedding placement, runtime addresses or live health.
 
-Relevant API: `GET /api/v1/dnodes`, `PUT|GET|DELETE /api/v1/dnodes/:node_id`.
+Existing operational software is modeled separately through `ServiceArtifact`. Canonical D-Code is described through immutable `datum.dserv-artifact/1` descriptor revisions.
 
-## 2. Derive authoritative D-Continuum
+## 2. Establish structural continuum authority
 
-DServer can derive a project-scoped `datum.dcontinuum/1` from the current structural registry. The same global node inventory is stamped with the requested project scope; this does not imply project ownership of physical nodes.
+DServer's D-Node registry declares structural node platform, static capacity and supported ABI versions. DServer derives the authoritative project-scoped D-Continuum from that structural registry.
 
-Relevant API: `GET /api/v1/dcontinuum/authoritative`.
+Generic telemetry or Sentinel heartbeat does not redefine structural node authority.
 
-## 3. Define the canonical application D-Graph
+## 3. Create a placement proposal
 
-The application plane declares D-Servs and D-Calls without placement. D-Serv resource requirements and D-Node ABI requirements are structural requirements used later during placement validation/planning.
+D-Deploy evaluates the D-Graph against current structural continuum facts, project commitments and artifact eligibility. The result is an immutable proposal candidate.
 
-D-Graph itself has no endpoint in the core set that simply “activates” a graph. D-Deploy proposal/acceptance carries/retains validated source snapshots and materializes placement authority around them.
+A proposal is not placement authority.
 
-## 4. Declare D-Serv artifacts / D-Code identity
+## 4. Explicitly accept placement
 
-Each D-Serv executable is described by `datum.dserv-artifact/1`: content-addressed WebAssembly identity, ABI, ports, limits and safety constraints.
-
-The declaration is immutable per `(application_id, dserv_id)` in v0.1. The server registry stores metadata/digests; module bytes stay in node-local content-addressed storage.
-
-Relevant API: `POST /api/v1/dcode/artifacts`, `GET /api/v1/dcode/artifacts/:application_id/:dserv_id`.
-
-## 5. Create and validate a D-Deploy proposal
-
-A proposal is a candidate mapping, not authority. It carries project/application context, source provenance and exact source contract references/snapshots. Validation checks structure and cross-contract consistency.
-
-DMap/1 proposal surfaces are under `/api/v1/ddeploy/...`; DMap/2 surfaces are under `/api/v1/ddeploy/v2/...`.
-
-A deterministic planner may produce candidate placements, but a planner decision is still not an active D-Map.
-
-## 6. Explicitly accept the proposal
-
-Acceptance is the authority transition. The server assigns/materializes canonical D-Map identity/revision after fail-closed checks, persists acceptance, and activates it for the project/application.
-
-A proposal can be stale if active authority or authoritative D-Continuum changed after proposal creation. Compare-and-swap style checks prevent silent acceptance under different assumptions.
-
-Relevant APIs:
+Acceptance revalidates load-bearing current facts and materializes the canonical D-Map.
 
 ```text
-POST /api/v1/ddeploy/proposals/:proposal_id/accept
-POST /api/v1/ddeploy/v2/proposals/:proposal_id/accept
+proposal
+   ↓ explicit acceptance
+D-Map authority
 ```
 
-## 7. Active D-Map becomes placement authority
+The accepted D-Map now answers *where is each required logical entity authorized to run?*
 
-After acceptance, consumers should use active placement authority rather than re-reading eligibility hints as if those hints still selected placement.
+## 5. Derive operational node state
 
-DMap/1 covers D-Serv placement. DMap/2 additionally binds DForward, DIoT placements, D-Call realizations and external port bindings.
+DServer projects accepted placement into node-specific operational desired state. The projection does not create a second placement authority: it is derived from the accepted D-Map.
 
-Relevant APIs: `GET /api/v1/ddeploy/active` and `GET /api/v1/ddeploy/v2/authority`.
+For operational container/native realization, DServer resolves exact ServiceArtifact assignments and execution projection/generation data.
 
-## 8. Authorize D-Code and D-Call execution
+For D-Code, current D-Deploy authority also selects the exact immutable descriptor revision used by governed invocation.
 
-D-Code authorization checks the current authority chain before allowing an invocation. D-Call route derivation reuses that authorization for source/destination and derives destination from active authority rather than accepting a caller-selected target.
+## 6. Authorize mutation or invocation
 
-Relevant APIs include:
+Placement alone is not permission to mutate a host.
+
+Operational reconciliation requires current resource binding, exact node/graph/artifact snapshot and finite authorization before host mutation.
+
+D-Code uses fresh execution authorization that binds current D-Map, D-Graph, D-Node and exact descriptor revision.
+
+## 7. Realize runtime state
+
+Depending on service type:
 
 ```text
-POST /api/v1/dcode/authorize
-GET  /api/v1/dcall/calls/:project_id/:application_id/:source_service_id
-POST /api/v1/dcall/grants
-POST /api/v1/dcall/grants/:grant_id/redeem
+container      → governed Docker realization
+native process → verified content materialization + managed process
+D-Code         → exact local WASM digest + isolated Wasmtime invocation
 ```
 
-A D-Call grant is short-lived and single-use. It binds authority at issuance/delivery rather than becoming a permanent route declaration.
+Runtime realization is an observed operational fact, not a change to D-Graph semantics.
 
-## 9. Register DIoT runtime bindings for DMap/2 realizations
+## 8. Observe
 
-A DIoT runtime binding resolves one accepted DIoT placement to a concrete MQTT broker URI. Its DIoT/node/DMap/DForward/artifact identities are server-derived from current authority.
+DMonitor observations and other runtime evidence describe what actually happened. Evidence can be healthy, unhealthy, degraded, missing or stale.
 
-Registration does not contact the broker. It says *this is the concrete operational transport configuration currently bound to this placement*, not *the broker is alive*.
+When exact canonical correlation cannot be established, evidence should remain unbound rather than guessing identity from hostnames/container names.
 
-Relevant APIs:
+## 9. Derive convergence and readiness
+
+DServer combines admitted evidence with current accepted authority and freshness policy.
 
 ```text
-PUT /api/v1/diot/runtime-bindings/:project_id/:application_id/:placement_id
-GET /api/v1/diot/runtime-bindings/:project_id/:application_id/:placement_id
-GET /api/v1/diot/runtime-bindings/:project_id/:application_id/:placement_id/current
+accepted placement
++ exact-current realization correlation
++ fresh admitted evidence
++ health policy
+= readiness conclusion
 ```
 
-The `/current` view is useful when a consumer wants a binding only if its recorded authority still matches the active authority.
+A service can therefore be:
 
-## 10. Emit canonical DMonitor evidence
+- accepted but not realized;
+- realized but not observed;
+- observed but stale;
+- converged but unhealthy;
+- healthy at one moment but later NotReady when evidence expires.
 
-Collectors publish one `datum.dmonitor-observation/1` at a time. Typed subject identity tells the server what was actually observed; exact refs, when available, correlate it to authority.
+## Migration lifecycle
 
-Relevant API: `POST /api/v1/dmonitor/observations/:project_id`.
+Placement changes create two distinct operational obligations:
 
-Ingestion retains stream ordering semantics and does not convert evidence into desired state.
+```mermaid
+flowchart LR
+    OLD["old accepted placement"] --> NEW["new accepted placement"]
+    NEW --> TARGET["realize target"]
+    NEW --> SOURCE["derive source cleanup obligation"]
+    SOURCE --> CLEAN["cleanup authorization + --cleanup"]
+```
 
-## 11. Derive convergence
+The target must realize current desired state. The old source may need governed cleanup when history/current authority proves that the service was previously placed there and is no longer desired there.
 
-Convergence asks whether admitted evidence matches the current desired realization. For a DIoT placement, exact DMap, DForward and runtime-binding correlation can all matter.
+Cleanup is a dedicated operation, intentionally distinct from ordinary rollback.
 
-Relevant API: `POST /api/v1/dmonitor/convergence/:project_id/:application_id/evaluate`.
+## Rollback
 
-Convergence is not health. A realization can be exactly current (`Converged`) and still report `Unhealthy`.
+Rollback is an explicit new operation/transition. DATUM does not treat rollback as “go back in time and pretend old authority is still current.” The rollback path must itself be governed by current authorization and execution semantics.
 
-## 12. Derive D1 readiness
+## D-Code revision changes
 
-D1 combines governed convergence with admitted current health and freshness policy. A placement needs positive proof; missing/stale/ambiguous/unhealthy evidence fails closed to NotReady.
-
-Application readiness aggregates required D-Serv and DIoT placements.
-
-Relevant API: `GET /api/v1/dmonitor/readiness/:project_id/:application_id`.
-
-## 13. Resolve an `any_element` provider
-
-For a consumer DIoT requirement, Phase 114D2 reads the **current accepted** DForward topology. It resolves the candidate provider through chains/hops and then resolves that logical provider to its exact current DIoT placement.
-
-Provider selection is not caller input. Zero/multiple candidates or placements fail closed.
-
-## 14. Derive D2 dependency readiness
-
-The final dependency state is `satisfied` only if the exact current provider placement is Ready under D1 governance. It is otherwise `blocked` with a dependency-specific finding.
-
-Relevant API:
+Multiple immutable descriptor revisions may coexist for one logical D-Serv:
 
 ```text
-GET /api/v1/dforward/dependency-readiness/:project_id/:application_id/:node_id
+D1/H1
+D2/H2
+D3/H3
 ```
 
-The `node_id` identifies the consumer node to evaluate; it is not a caller-selected provider node.
+Registering a new descriptor or installing its bytes does not activate it. Current accepted D-Deploy authority must bind the exact revision before fresh D-Code authorization can select it.
 
-## What changes authority and what only changes evidence?
+## What the planned dashboard should show
 
-| Event | Placement authority changes? | Evidence/derived view can change? |
-|---|---:|---:|
-| New D-Node declaration | No active D-Map automatically | Yes, future proposal feasibility/source continuum changes |
-| Create proposal | No | No active placement change |
-| Accept proposal | **Yes** | Yes, old evidence/bindings can become stale |
-| Register new DIoT runtime binding | No D-Map change | Yes, realization identity changes |
-| Publish DMonitor observation | No | **Yes** |
-| Observation becomes stale with time | No | **Yes** |
-| Query readiness | No | Computes current derived result |
-| Query dependency readiness | No | Computes current derived result |
+The lifecycle maps naturally to derived UI states:
 
-## Failure-closed philosophy
+```text
+Modeled
+Registered
+Execution identity complete
+Proposed
+Accepted
+Assigned
+Authorized
+Realized
+Observed
+Healthy
+Ready
+Cleanup pending/completed
+```
 
-Several domains follow the same rule: when the system cannot positively establish the exact current authority/evidence relationship, it does not guess.
+These should remain derived from the domains that own each fact; the dashboard should not persist an independent `deployment_status` truth.
 
-Examples include unknown nodes, digest mismatches, stale proposal snapshots, missing provider placement, ambiguous provider, stale runtime binding, missing readiness and conflicting health. This is why identifiers and exact references are part of architecture rather than merely metadata.
+## Capabilities not implemented yet
+
+- packaged turnkey installation;
+- automatic D-Code module distribution;
+- native package-manager acquisition;
+- the new management dashboard;
+- a fully reproduced clean multi-machine deployment guide in this documentation.
 
 ## Sources
 
-[D-Node registry](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/dnode_registry.rs), [D-Deploy](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/ddeploy.rs), [D-Serv artifact](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/dserv_artifact.rs), [D-Call](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/dcall.rs), [DIoT runtime binding](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/diot_runtime_binding.rs), [DMonitor model](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/agent/canonical_dmonitor.rs), [D1 readiness](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/dmonitor_readiness.rs), [D2 dependency readiness](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/dforward_dependency_readiness.rs).
+See [Sources and provenance](../reference/sources.md), [Authority and evidence](authority-and-evidence.md), [Service-to-node lifecycle](../tutorials/service-to-node.md) and [Runtime realization](../tutorials/runtime-realization.md).
