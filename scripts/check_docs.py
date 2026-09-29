@@ -16,6 +16,11 @@ seen = set()
 # vocabulary. Real API/contract versions such as /api/v1, datum.dgraph/1,
 # DMap/1, DMap/2 and D1/D2 are not matched by this rule.
 internal_milestone = re.compile(r'\b(?:phase|stage)(?:\s+|-)\d+[a-z0-9._-]*\b', re.I)
+# DATUM's public documentation line is v1. Historical prose labels such as
+# "the v0.1 implementation" should not leak into reader-facing copy. Exact
+# machine values inside fenced examples (for example "version": "0.1.0") are
+# deliberately excluded because fenced code is stripped before this check.
+legacy_product_version = re.compile(r'\bv0\.1\b', re.I)
 
 
 def visit(value):
@@ -38,6 +43,10 @@ def check_public_wording(path, label):
     for found in internal_milestone.finditer(prose):
         errors.append(
             f"{label}: internal development label is not DATUM v1 public vocabulary: {found.group(0)!r}"
+        )
+    for found in legacy_product_version.finditer(prose):
+        errors.append(
+            f"{label}: historical product label is not DATUM v1 public vocabulary: {found.group(0)!r}"
         )
     return text
 
