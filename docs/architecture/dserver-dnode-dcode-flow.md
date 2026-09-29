@@ -81,7 +81,7 @@ flowchart LR
     BIND --> ART["registered immutable artifact revision"]
 ```
 
-If an active exact binding exists, DServer consults only that descriptor digest. If no binding exists and exactly one revision exists, the legacy-compatible unambiguous fallback can resolve it. Once multiple revisions exist, absence of an explicit binding fails closed with `dcode_active_binding_missing` rather than selecting “latest”.
+If an active exact binding exists, DServer consults only that descriptor digest. If no binding exists and exactly one revision exists, the unambiguous fallback can resolve it. Once multiple revisions exist, absence of an explicit binding fails closed with `dcode_active_binding_missing` rather than selecting “latest”.
 
 ## Step 3 — what the authorization contains
 
@@ -139,13 +139,13 @@ The client uses the authorization's descriptor digest to call:
 GET /api/v1/dcode/artifacts/:application_id/:dserv_id/:descriptor_digest
 ```
 
-This is the governed path. The older logical endpoint:
+This is the governed path. The logical endpoint:
 
 ```text
 GET /api/v1/dcode/artifacts/:application_id/:dserv_id
 ```
 
-is compatibility/debug only. It returns `409` when more than one revision exists, because choosing one would be ambiguous.
+is suitable only when lookup is unambiguous. It returns `409` when more than one revision exists, because choosing one implicitly would be unsafe.
 
 ## Step 5 — client independently verifies what it received
 
@@ -214,11 +214,11 @@ flowchart TB
     P2["Accept new D-Deploy proposal binding D2"] --> AUTH2["authorization now names D2/H2"]
 ```
 
-This is one of the most important safety properties in the current design: **content availability is not execution authority**.
+This is one of the most important safety properties in DATUM v1: **content availability is not execution authority**.
 
 ## Fresh does not mean atomic
 
-The authorization is freshly derived immediately before execution and immutable artifact revisions cannot mutate underneath an exact digest. However, DServer and a remote D-Node do not participate in one distributed atomic transaction. Current authority could theoretically move after the authorization response and before guest execution. This residual distributed TOCTOU limitation is explicitly documented; the implementation does not claim otherwise.
+The authorization is freshly derived immediately before execution and immutable artifact revisions cannot mutate underneath an exact digest. However, DServer and a remote D-Node do not participate in one distributed atomic transaction. Current authority could theoretically move after the authorization response and before guest execution. This residual distributed TOCTOU limitation is explicitly documented; DATUM v1 does not claim otherwise.
 
 ## Sources
 
