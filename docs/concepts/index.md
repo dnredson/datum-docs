@@ -2,7 +2,7 @@
 
 DATUM names responsibilities deliberately. Two objects can refer to the same application or machine and still represent fundamentally different claims. Start with the [visual guide](visual-guide.md); then read [WebAssembly and D-Code](webassembly-and-dcode.md) when you want to understand the executable layer.
 
-## Current source-to-execution mental model
+## Source-to-execution mental model
 
 ```mermaid
 flowchart LR
@@ -28,7 +28,7 @@ If you remember only one thing, remember that each arrow crosses a responsibilit
 | D-Compile | pure deterministic lowering from canonical source/mapping into candidates | registration or D-Deploy |
 | D-Graph | logical D-Serv/D-Call topology | placement |
 | D-Serv | logical application service | container or artifact revision |
-| D-Code | governed executable of a D-Serv; Wasm in v0.1 | arbitrary `.wasm` file |
+| D-Code | governed executable of a D-Serv; WebAssembly in DATUM v1 | arbitrary `.wasm` file |
 | D-Serv artifact | exact host-independent D-Code descriptor revision | the `.wasm` bytes themselves |
 | module digest | SHA-256 identity of exact executable bytes | descriptor digest |
 | descriptor digest | identity of whole artifact policy/metadata contract | module digest |
@@ -42,7 +42,7 @@ If you remember only one thing, remember that each arrow crosses a responsibilit
 | D-Node | governed runtime abstraction able to host supported D-Code ABI |
 | D-Deploy proposal | immutable candidate; never authority merely by existing |
 | D-Deploy acceptance | explicit transition that activates placement authority |
-| D-Map | accepted placement authority; newer flows can bind an exact D-Code descriptor revision |
+| D-Map | accepted placement authority; DATUM v1 can bind an exact D-Code descriptor revision |
 | D-Engine | conceptual set of D-Nodes supporting an application |
 
 ## Observation and governance
@@ -78,6 +78,6 @@ If you remember only one thing, remember that each arrow crosses a responsibilit
 - [Identity and references](identities-and-references.md) — correlation rules.
 - [DCompile and D-Code API](../reference/dcompile-dcode-api.md) — wire/API reference.
 
-## Current sources
+## Sources
 
 [Canonical D-Script](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/core/canonical_dscript.rs), [DCompile submission](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/core/dcompile_submission.rs), [D-Code authorization](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/core/dcode_authorization.rs).
