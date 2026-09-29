@@ -1,6 +1,6 @@
 # Visual guide to DATUM
 
-This page is a **picture-first introduction** to the Phase 114D2 DATUM model. Use it before the detailed [entity encyclopedia](entities.md) when you want the mental model first and the field-level details second.
+This page is a **picture-first introduction** to the DATUM v1 model. Use it before the detailed [entity encyclopedia](entities.md) when you want the mental model first and the field-level details second.
 
 !!! tip "How to use this page"
     Read the diagrams from top to bottom. Each picture answers one question. When a term becomes familiar, follow the links to the detailed concept, tutorial or reference page.
@@ -78,11 +78,7 @@ flowchart LR
     DECODER -->|"D-Call\nclassified-event"| ALERT["D-Serv\nalerting"]
 ```
 
-This picture means:
-
-- three logical D-Servs exist;
-- two semantic D-Calls connect them;
-- no node, IP, container, PID or broker address has been chosen yet.
+This picture means three logical D-Servs and two semantic D-Calls exist, but no node, IP, container, PID or broker address has been chosen yet.
 
 A useful test is: **if moving the service to another host changes the D-Graph, placement has leaked into the wrong contract.**
 
@@ -105,7 +101,6 @@ flowchart TB
     end
 
     DM["Accepted D-Map"]
-
     S1 --> DM
     S2 --> DM
     S3 --> DM
@@ -127,32 +122,25 @@ stateDiagram-v2
 
 A planner can recommend a placement. It cannot silently turn that recommendation into active authority.
 
-## Two artifact families at this baseline
-
-This is one of the easiest parts of the current implementation to confuse.
+## Two artifact families
 
 ```mermaid
 flowchart TB
     SERV["Canonical D-Serv\nservice_id = decoder"]
-
     SERV --> SA["ServiceArtifact\noperational deployment plane"]
     SERV --> CA["datum.dserv-artifact/1\ncanonical D-Code plane"]
-
     SA --> ELIG["D-Deploy eligibility\ntarget_nodes"]
     SA --> OP["container / native-process\nreconciliation"]
-
     CA --> ID["WASM digest + ABI + limits"]
     ID --> STORE["node-local\ncontent-addressed module store"]
     STORE --> INV["governed D-Code invocation"]
 ```
 
-`ServiceArtifact` and `datum.dserv-artifact/1` **are not aliases**. The first currently serves operational deployment/reconciliation and D-Deploy eligibility. The second describes canonical content-addressed D-Code.
+`ServiceArtifact` and `datum.dserv-artifact/1` **are not aliases**. The first serves operational deployment/reconciliation and D-Deploy eligibility. The second describes canonical content-addressed D-Code.
 
-See [Author software artifacts](../tutorials/artifacts.md) for the concrete JSON examples.
+See [Author software artifacts](../tutorials/artifacts.md) for concrete examples.
 
 ## D-Node is not the machine, agent or heartbeat
-
-Several identities may refer to the same physical environment without meaning the same thing.
 
 ```mermaid
 flowchart LR
@@ -161,14 +149,13 @@ flowchart LR
     AG["SmartSentinel agent\noperational process"]
     LOC["Local D-Code identity\nnode-side persisted identity"]
     TEL["Telemetry / heartbeat\nobserved operational state"]
-
     HOST -. may host .-> DN
     HOST -. runs .-> AG
     AG -. uses .-> LOC
     AG -. emits .-> TEL
 ```
 
-Only the D-Node structural registry contributes the structural node facts used to derive the authoritative D-Continuum. A heartbeat cannot invent structural capacity; a hostname cannot be guessed into a canonical node identity.
+Only the D-Node structural registry contributes structural node facts used to derive the authoritative D-Continuum. A heartbeat cannot invent structural capacity; a hostname cannot be guessed into a canonical node identity.
 
 ## Project scope versus application identity
 
@@ -190,7 +177,6 @@ A project can govern multiple applications. The canonical D-Graph carries `appli
 ```mermaid
 flowchart LR
     SRC["D-Serv A"] -->|"D-Call\nsemantic invocation"| DST["D-Serv B"]
-
     DM["Active D-Map"] -. resolves nodes .-> ROUTE["Derived runtime route"]
     ART["D-Serv artifacts"] -. resolve ports .-> ROUTE
     SRC -. call identity .-> ROUTE
@@ -201,14 +187,11 @@ The D-Call does not contain a socket address, destination node or broker URI. Ru
 
 ## D-Forward and DIoT: middleware plane
 
-D-Forward is deliberately separate from the D-Graph application-service plane.
-
 ```mermaid
 flowchart LR
     EXTIN["External input"] --> BRIDGE["DIoT\nbridge"]
     BRIDGE -->|"interface: telemetry"| BROKER["DIoT\nbroker"]
     BROKER --> EXT["External output"]
-
     P1["DIoT placement\nbridge @ edge-01"] -. realizes .-> BRIDGE
     P2["DIoT placement\nbroker @ fog-01"] -. realizes .-> BROKER
     BIND["Runtime binding\nmqtt://..."] -. operational endpoint .-> P2
@@ -229,10 +212,7 @@ flowchart LR
     HEALTH --> READY["Placement readiness"]
 ```
 
-This explains why `Healthy` and `Ready` are different words:
-
-- `Healthy` is part of what an observation reported;
-- readiness is a **current server-derived governance result** over freshness, exact authority correlation, convergence and admitted health.
+`Healthy` and `Ready` are different words: Healthy is part of what an observation reported; readiness is a **current server-derived governance result** over freshness, exact authority correlation, convergence and admitted health.
 
 ## Application readiness versus dependency readiness
 
@@ -243,7 +223,7 @@ flowchart TB
     P1 --> APP
 ```
 
-A specific provider dependency can be satisfied while the overall application is still NotReady because another required placement is missing or unhealthy. Phase 114D2 intentionally evaluates these questions separately.
+A specific provider dependency can be satisfied while the overall application is still NotReady because another required placement is missing or unhealthy. DATUM v1 intentionally evaluates these questions separately.
 
 ## One complete journey
 
@@ -253,7 +233,6 @@ sequenceDiagram
     participant DS as DServer
     participant Node as D-Node runtime
     participant Mon as DMonitor collector
-
     Dev->>DS: Declare structural D-Node
     Dev->>DS: Register ServiceArtifact
     Dev->>DS: Submit D-Graph to deterministic planner
@@ -280,17 +259,17 @@ The sequence is intentionally explicit because DATUM does not collapse governanc
 | container running = Ready | Runtime state still needs fresh, exactly-correlated canonical evidence. |
 | Healthy = Ready | Healthy is an observation condition; Ready is a derived governance result. |
 | broker URI = broker healthy | Runtime binding gives operational identity, not liveness evidence. |
-| ServiceArtifact = D-Code artifact | They are separate artifact families at the current baseline. |
+| ServiceArtifact = D-Code artifact | They are separate artifact families in DATUM v1. |
 | D-Call = TCP/HTTP endpoint | D-Call is semantic application communication; transport is derived later. |
 | `target_nodes` = placement authority | It constrains proposal eligibility; accepted D-Map becomes placement authority. |
 
 ## Where to continue
 
-- Want the precise meaning of every object? Read the [entity encyclopedia](entities.md).
-- Want IDs, digests and correlation rules? Read [identity and references](identities-and-references.md).
-- Want to build and deploy something? Start the [tutorial path](../tutorials/index.md).
-- Want the exact contract fields? Open [canonical contracts](../reference/contracts.md).
-- Want the end-to-end authority transition? Read [lifecycle and authority flow](../architecture/lifecycle.md).
+- [Entity encyclopedia](entities.md)
+- [Identity and references](identities-and-references.md)
+- [Tutorial path](../tutorials/index.md)
+- [Canonical contracts](../reference/contracts.md)
+- [Lifecycle and authority flow](../architecture/lifecycle.md)
 
-!!! note "Baseline boundary"
-    The pictures summarize the documented Phase 114D2 model. They do not imply that Phase 114E live multinode validation or the canonical production DServ evidence emitter has already closed.
+!!! note "Current implementation boundary"
+    These pictures summarize DATUM v1 behavior. A fully reproduced multi-machine validation guide and some production evidence collectors are not implemented/documented yet; they will be added as those capabilities are validated.
