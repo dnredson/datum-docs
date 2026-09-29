@@ -36,9 +36,11 @@ if baseline.get('version') != 'v1':
 if 'checkpoint' in baseline:
     errors.append("source-baseline.json must not expose an internal checkpoint label")
 
-# Internal development numbering is intentionally not part of the public docs.
-# Public pages describe DATUM v1 and use implemented/planned language instead.
-internal_milestone = re.compile(r'\b(?:Phase|Stage)\s+\d+[A-Za-z0-9._-]*\b', re.IGNORECASE)
+# Internal development numbering is intentionally not part of public DATUM
+# vocabulary. Catch prose forms ("Phase 119I"), compact source-link/file forms
+# ("phase119i"), and equivalent Stage spellings. Technical schema/version
+# identifiers such as datum.dgraph/1 or schema_version=0.2.0 are unaffected.
+internal_milestone = re.compile(r'\b(?:phase|stage)[ _-]?\d+[A-Za-z0-9._-]*', re.IGNORECASE)
 
 source_prefix = f"https://github.com/{baseline['repository']}/blob/"
 for path in DOCS.rglob('*.md'):
@@ -63,17 +65,29 @@ for path in DOCS.rglob('*.md'):
         if not local.is_file():
             errors.append(f'{relative}: missing local link {target}')
 
-readme = (ROOT / 'README.md').read_text()
-for match in internal_milestone.finditer(readme):
-    errors.append(f"README.md: internal milestone label is public: {match.group(0)!r}")
-
-baseline_text = (ROOT / 'source-baseline.json').read_text()
-for match in internal_milestone.finditer(baseline_text):
-    errors.append(f"source-baseline.json: internal milestone label is public: {match.group(0)!r}")
+# Check other public/user-facing repository surfaces too, so the site banner,
+# repository landing page and contribution material cannot reintroduce internal
+# milestone labels even if they are outside docs/*.md.
+public_extra_files = [
+    ROOT / 'README.md',
+    ROOT / 'CONTRIBUTING.md',
+    ROOT / 'NOTICE.md',
+    ROOT / 'source-baseline.json',
+    ROOT / 'zensical.toml',
+]
+public_extra_files.extend((ROOT / 'overrides').rglob('*.html'))
+for path in public_extra_files:
+    if not path.is_file():
+        continue
+    text = path.read_text()
+    for match in internal_milestone.finditer(text):
+        errors.append(
+            f"{path.relative_to(ROOT).as_posix()}: internal milestone label is public: {match.group(0)!r}"
+        )
 
 for path in [ROOT / 'overrides/main.html', ROOT / 'docs/overview/status.md', ROOT / 'README.md']:
     if sha[:12] not in path.read_text():
         errors.append(f'{path.name}: missing current baseline marker')
 if errors:
     raise SystemExit('\n'.join(errors))
-print(f'OK: DATUM v1; {len(seen)} navigation pages; local links; immutable source pins; baseline {sha[:12]}')
+print(f'OK: DATUM v1; {len(seen)} navigation pages; local links; immutable source pins; no internal milestones; baseline {sha[:12]}')
