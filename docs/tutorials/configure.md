@@ -1,38 +1,31 @@
-# Configure the control plane and identities
+# Configure DATUM v1 components
 
-DATUM deliberately uses different identities for different claims. This tutorial configures the minimum set needed to reason about a basic deployment without collapsing structural authority, agent configuration and local execution identity into one object.
+This tutorial establishes the identities and structural facts used by later deployment examples.
 
 ## Identity map
 
-| Identity/configuration | Owner | What it proves |
-|---|---|---|
-| `project_id` / `X-Datum-Project` | Request/control-plane scope | Which project's project-scoped state is being addressed. |
-| Structural D-Node declaration | DServer | The logical node exists structurally with declared platform, capacity and supported D-Node ABI versions. |
-| Authoritative D-Continuum | DServer-derived | Current structural node inventory stamped for one project scope. |
-| `DATUM/config.toml` agent `node_id` | Agent configuration | Which node the agent configuration intends to represent; not by itself canonical D-Node authority. |
-| D-Code local identity | Node-local file | Which logical D-Node a governed D-Code installation claims to be at invocation time. |
-| Sentinel registration/lease | Sentinel subsystem | Operational agent registration/liveness domain; deliberately not the structural D-Node registry. |
+Keep these concepts separate:
 
-## How these identities relate
+```text
+project_id
+  └─ operational/control-plane scope
 
-```mermaid
-flowchart TB
-    P["Project scope\nproject_id"] --> CONT["Authoritative D-Continuum"]
-    REG["DServer structural registry"] --> DN["D-Node\nnode_id"]
-    DN --> CONT
+node_id
+  └─ canonical structural D-Node identity
 
-    HOST["Physical host / VM"] --> AG["DATUM / SmartSentinel process"]
-    AG --> CFG["agent config\nnode_id"]
-    AG --> LOC["local D-Code identity\nnode_id"]
+D-Continuum
+  └─ server-derived structural view of declared D-Nodes
 
-    CFG -. should correspond to .-> DN
-    LOC -. must match authorization for .-> DN
-    AG --> HB["Sentinel registration / heartbeat"]
+SmartSentinel/Sentinel identity
+  └─ agent lifecycle/telemetry identity
+
+local D-Code identity
+  └─ persisted node-side identity used for governed D-Code execution
 ```
 
-The dotted arrows mean **correlation**, not “these are the same object.” That distinction is one of the most important DATUM safety properties.
+A heartbeat cannot create structural capacity. A local runtime identity cannot replace the DServer D-Node registry.
 
-## 1. Choose tutorial identities
+## 1. Set tutorial variables
 
 ```sh
 export DSERVER_URL=http://127.0.0.1:8080
@@ -40,8 +33,6 @@ export PROJECT_ID=tutorial-project
 export NODE_ID=tutorial-node
 export APPLICATION_ID=app:tutorial
 ```
-
-The project and application are not the same identity. The D-Graph is application-plane and deliberately contains `application_id`, not `project_id`.
 
 ## 2. Declare a structural D-Node
 
@@ -64,7 +55,7 @@ Create `tutorial-node.json`:
 }
 ```
 
-Declare it:
+Publish it:
 
 ```sh
 curl -fsS -X PUT \
@@ -73,29 +64,15 @@ curl -fsS -X PUT \
   --data-binary @tutorial-node.json
 ```
 
-The path `node_id` must match the body `node_id`. An identical redeclaration is idempotent. Changing the existing node's structural facts in place is not the current v0.1 model; remove/redeclare is the explicit path for a genuine structural change.
+The declaration states **structural** facts. CPU/memory are declared capacity, not live free resources.
 
-### What these fields mean
-
-```mermaid
-flowchart LR
-    DN["D-Node declaration"] --> PLAT["platform\nOS + architecture"]
-    DN --> CAP["capacity\nstructural CPU + memory"]
-    DN --> ABI["capabilities\nsupported D-Node ABI"]
-```
-
-`platform` is declared structure, not an observed kernel probe. `capacity` is static structural capacity used by placement feasibility, not current free CPU/RAM. `dnode_abi_versions` is the set of host-independent D-Node ABI versions the node can host; Phase 114D2 recognizes `datum-dnode/0` for canonical D-Code.
-
-## 3. Inspect the structural registry
+Inspect it:
 
 ```sh
-curl -fsS "$DSERVER_URL/api/v1/dnodes"
 curl -fsS "$DSERVER_URL/api/v1/dnodes/$NODE_ID"
 ```
 
-Notice that these are `/dnodes` routes. Earlier `/nodes` routes in DServer belong to a different snapshot/legacy subsystem and must not be substituted for structural D-Node authority.
-
-## 4. Ask DServer for the authoritative D-Continuum
+## 3. Inspect the authoritative D-Continuum
 
 ```sh
 curl -fsS \
@@ -104,19 +81,15 @@ curl -fsS \
   | tee tutorial-dcontinuum.json
 ```
 
-DServer builds this `datum.dcontinuum/1` from its own structural registry. The `project_id` is a wire scoping label over the server-owned global node set; it is not a new per-project physical-node ownership model.
+DServer derives this project-scoped continuum from structural D-Node authority. Do not substitute generic `/api/v1/nodes` telemetry for it.
 
-For the basic deterministic `/ddeploy/plan` workflow you do not send this D-Continuum back: the planner derives the authoritative D-Continuum server-side. Fetching it is nevertheless useful for understanding and debugging what placement sees.
+## 4. Understand structural updates
 
-## 5. Understand the DATUM agent config
+DATUM fails closed on conflicting structural declarations. If a D-Node ID already exists with different structural content, review the change explicitly rather than expecting a heartbeat or repeated PUT to silently redefine capacity/capability.
 
-The repository's `DATUM/config.toml` contains an `[agent]` section with a node ID and many operational collectors/outputs. It also contains HTTP output and dispatch settings from the broader SmartSentinel/DATUM runtime.
+## 5. Initialize local D-Code identity when needed
 
-Do not treat that TOML as the canonical D-Node declaration. If you configure `[agent].node_id = "tutorial-node"`, that is a node-side operational configuration choice; DServer's structural registry remains the source used to derive the canonical D-Continuum.
-
-## 6. Initialize local D-Code identity when needed
-
-Canonical governed D-Code invocation intentionally does not accept an arbitrary per-call `--node-id`. Instead the node installation has a local identity file.
+Canonical D-Code execution uses a node-local persisted identity in addition to DServer structural authority.
 
 ```sh
 export DNODE_ROOT="$HOME/.datum/$NODE_ID"
@@ -127,24 +100,34 @@ cargo run --locked --manifest-path DATUM/Cargo.toml \
   --dnode-root "$DNODE_ROOT"
 ```
 
-The node ID written here must match the structural D-Node identity that DServer will authorize for the service. A different root can represent a different logical D-Node even on the same physical host.
+This local identity does not declare the D-Node to DServer and does not prove liveness. It gives the governed node-side D-Code client a stable node identity to present against current server authority.
 
-This identity is deliberately separate from Sentinel registration/lease. It exists so governed D-Code execution can bind authorization to the installation's own persisted local identity instead of trusting a command-line claim.
+## 6. Resource binding for operational reconciliation
 
-## 7. Persistence and restart behavior
+Container/native-process host mutation requires operational resource/binding state in addition to canonical placement. The reconciliation APIs refuse execution when that prerequisite is missing.
 
-D-Node structural state and several other canonical/control-plane domains are stored in the SQLite database selected by `DATUM_CONTROL_STATE_DB_PATH`. Restarting DServer should therefore not be treated as permission to recreate or silently replace accepted authority.
+The exact resource-discovery/binding workflow depends on the node environment. The important authority rule is:
 
-The state layer uses current/history tables and fails closed on unsupported/corrupt retained state detected by domain loaders.
+```text
+accepted D-Map
+    ≠ active Resource Registry binding
+    ≠ finite reconciliation authorization
+```
 
-## Next step
+All applicable gates must agree before host mutation.
 
-You now have a project scope, a structural D-Node, a server-derived D-Continuum and—if you plan to run D-Code—a node-local execution identity. Continue with [authoring software artifacts](artifacts.md).
+## 7. Configuration checklist
 
-## Source trail
+Before continuing, verify:
 
-- [D-Node registry API](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/api/dnode_registry.rs)
-- [D-Node registry core](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/dnode_registry.rs)
-- [D-Continuum contract](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/agent/canonical_dcontinuum.rs)
-- [DATUM example configuration](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/config.toml)
-- [D-Code local identity initializer](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/bin/smartsentinel-dcode-init.rs)
+- DServer is reachable;
+- `X-Datum-Project` identifies the intended project;
+- the structural D-Node exists;
+- the authoritative D-Continuum contains that node;
+- the node advertises `datum-dnode/0` when D-Code is required;
+- local D-Code identity is initialized when using the D-Code path;
+- operational resource binding exists before expecting reconciler `--execute` to succeed.
+
+## Next
+
+Continue with [Model an existing service](model-existing-service.md) or [Author software artifacts](artifacts.md).
