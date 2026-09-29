@@ -1,100 +1,111 @@
 # Tutorials
 
-These tutorials turn the Phase 114D2 model into concrete operator/developer workflows. They intentionally describe **only what exists at the documented baseline**. Later phases can extend this section without rewriting the authority model introduced here.
+These tutorials describe the current Phase 119I development baseline and keep **modeling, authority, realization and evidence** as separate steps.
 
-!!! important "What 'deploy' means in this edition"
-    DATUM currently separates **accepted placement authority** from **runtime realization**. D-Deploy creates and explicitly accepts a canonical D-Map; acceptance does not, by itself, copy a WASM module to a D-Node, pull/start a container, or prove runtime health. Those are separate operational steps with separate evidence.
+!!! important "What 'deploy' means"
+    DATUM does not use one overloaded `deployed=true` fact. A service can be modeled, registered, proposed, accepted, authorized, realized, observed and Ready at different times. D-Deploy acceptance creates placement authority; it does not by itself copy a WASM module, pull/start a container, materialize a native executable or prove health.
 
-## The journey at a glance
+## Start with the full journey
 
 ```mermaid
 flowchart LR
-    I["Install"] --> C["Configure\nDServer + identities"]
-    C --> A["Author\nartifacts"]
-    A --> G["Describe\nD-Graph"]
-    G --> P["Plan\nproposal"]
-    P --> X["Accept\nD-Map"]
-    X --> R["Realize\nruntime"]
-    R --> O["Observe\nDMonitor"]
-    O --> Q["Query\nreadiness"]
+    I["Install"] --> C["Configure node/control plane"]
+    C --> M["Model service"]
+    M --> A["Register artifact"]
+    A --> G["Describe D-Graph"]
+    G --> P["Plan proposal"]
+    P --> X["Accept D-Map"]
+    X --> AU["Authorize realization"]
+    AU --> R["Execute on node"]
+    R --> O["Observe"]
+    O --> Q["Readiness"]
 ```
-
-The first six boxes build **authority**. Runtime realization and evidence are intentionally separate boxes.
 
 ## Recommended path
 
-1. [Install from source](install.md) — build DServer and the DATUM agent/runtime tools.
-2. [Configure the control plane and identities](configure.md) — DServer configuration, SQLite state, project scope, structural D-Nodes and local runtime identity.
-3. [Author software artifacts](artifacts.md) — understand the two artifact families currently present and create/register them correctly.
-4. [Create a valid D-Graph](dgraph.md) — describe application services and calls without embedding placement.
-5. [Perform a basic governed deploy](basic-deploy.md) — derive a deterministic placement proposal, review it and explicitly accept it.
-6. [Realize the accepted deployment](runtime-realization.md) — understand the operational reconciler and the governed D-Code execution path.
-7. [Troubleshoot common failures](troubleshooting.md) — map errors/findings back to the authority boundary that produced them.
+1. [Install from source](install.md) — build DServer and DATUM/SmartSentinel tooling.
+2. [Configure components](configure.md) — project scope, DServer state, structural D-Nodes and local identities.
+3. [Model an existing service](model-existing-service.md) — translate container/native software facts into a `ServiceArtifact`; see Mosquitto, PostgreSQL, a local simulator and repository-installed native software.
+4. [Author software artifacts](artifacts.md) — understand `ServiceArtifact` versus canonical `datum.dserv-artifact/1` and their current identity/governance roles.
+5. [Create a D-Graph](dgraph.md) — describe logical D-Serv/D-Call structure without embedding placement.
+6. [Perform a basic governed deploy](basic-deploy.md) — create/review a placement proposal and explicitly accept its D-Map.
+7. [Follow Mosquitto end to end](mosquitto-end-to-end.md) — real catalog artifact → pinning → D-Graph → D-Deploy → finite reconcile authorization → running container.
+8. [Use the reusable service-to-node lifecycle](service-to-node.md) — generic checklist for adding another service and understanding every state boundary.
+9. [Understand runtime realization](runtime-realization.md) — compare operational container/native realization with governed D-Code execution and Phase 119 cleanup.
+10. [Troubleshoot common failures](troubleshooting.md) — map failures back to the authority/identity gate that refused them.
 
-Need the conceptual picture before commands? Open the [Visual guide to DATUM](../concepts/visual-guide.md).
+Need the architecture before commands? Start with the [Visual guide](../concepts/visual-guide.md), [WebAssembly and D-Code](../concepts/webassembly-and-dcode.md), or [software component model](../architecture/software-components.md).
 
-## The components you will meet
+## Pick the right software path
 
 ```mermaid
 flowchart TB
-    OP["You\nDeveloper / Operator"] --> DS["DServer\ncontrol plane"]
-    DS --> DN["D-Node\nstructural runtime"]
-    DS --> DM["D-Map\naccepted placement"]
-    DM --> AG["DATUM / SmartSentinel\nnode-side realization"]
-    AG --> EV["DMonitor evidence"]
-    EV --> DS
+    SW["Software you want DATUM to govern"] --> Q{"What is it?"}
+    Q -->|"long-running container"| C["ServiceArtifact\nruntime.kind=container"]
+    Q -->|"long-running executable"| N["ServiceArtifact\nruntime.kind=native_process"]
+    Q -->|"application function / D-Code"| D["D-Script/D-Compile\n+ datum.dserv-artifact/1"]
+
+    C --> OP["Operational reconciliation"]
+    N --> OP
+    D --> DC["Exact-revision D-Code authorization\n+ isolated Wasmtime invocation"]
 ```
 
-| Component | Role in the tutorial |
+### Container/native operational software
+
+A `ServiceArtifact` is project-scoped. It describes desired runtime realization, acquisition identity, configuration, ports/volumes, dependencies, probes, secrets and governed lifecycle metadata. D-Deploy also uses current artifact resolution/eligibility in the canonical placement workflow.
+
+The node-side operational reconciler executes host mutations only after separate authorization/local enforcement gates succeed.
+
+### Canonical D-Code
+
+`datum.dserv-artifact/1` is host-independent application-code identity. DServer keeps immutable descriptor revisions; `.wasm` bytes remain in a D-Node-local content-addressed store. A fresh authorization selects the exact currently active descriptor revision immediately before invocation.
+
+## Concrete catalog examples
+
+The current implementation repository includes a versioned operational artifact catalog. Useful examples include:
+
+| Artifact | What it teaches |
 |---|---|
-| **DServer** | Server-owned control plane: structural D-Node authority, ServiceArtifact registry, D-Deploy proposals/acceptances, D-Code metadata, DMonitor evidence and derived readiness. |
-| **DATUM / SmartSentinel agent crate** | Node-side collectors, reconciliation tooling and canonical D-Code runtime tools. |
-| **Project** | Operational scope used by several DServer domains. Passed by `X-Datum-Project` on project-scoped APIs. |
-| **D-Node** | Structural logical runtime node. Its declaration is not liveness telemetry. |
-| **D-Continuum** | Server-derived structural view of the declared D-Nodes for a project scope. |
-| **D-Graph** | Placement-free application graph: D-Serv vertices and D-Call edges. |
-| **D-Serv** | Logical application service in the D-Graph. |
-| **D-Call** | Logical call from one D-Serv to another. |
-| **ServiceArtifact** | Current project-scoped operational/deployment descriptor used by D-Deploy eligibility and the reconciliation plane. |
-| **`datum.dserv-artifact/1`** | Canonical, host-independent descriptor of a D-Serv's content-addressed D-Code WASM. It is a different domain from ServiceArtifact. |
-| **D-Deploy proposal** | Candidate placement. Never authority by itself. |
-| **D-Map** | Canonical accepted placement authority, materialized only after explicit acceptance. |
-| **Operational reconciliation** | Node-side realization path for operational artifacts such as containers/native processes. |
-| **D-Code module store** | Node-local content-addressed store of canonical D-Code WASM bytes. |
-| **DMonitor** | Runtime evidence. It describes what was observed, not what should run. |
+| Mosquitto | ports, config mount, execution/health/availability probes, registry image |
+| ChirpStack PostgreSQL | persistent volume, init config, non-secret bindings, secret reference |
+| LoRa device simulator | `local_build` image classification, dependency, secret references |
+| ChirpStack/Gateway Bridge/Redis/etc. | larger multi-service dependency compositions |
 
-## Two software paths exist today
+The catalog is real implementation material, but its historical lab `target_nodes`/`target_stages` values are not automatically correct for your new continuum. Model the service facts, then adapt eligibility deliberately.
 
-The baseline has two intentionally distinct software-description/execution families.
+## One service can pass through many valid states
 
 ```mermaid
-flowchart LR
-    S["D-Serv"] --> SA["ServiceArtifact"]
-    S --> DA["datum.dserv-artifact/1"]
-    SA --> OP["Container / native-process\noperational reconciliation"]
-    DA --> DC["Content-addressed WASM\ngoverned D-Code"]
+stateDiagram-v2
+    [*] --> Modeled
+    Modeled --> Registered
+    Registered --> Proposed
+    Proposed --> Accepted
+    Accepted --> Authorized
+    Authorized --> Realized
+    Realized --> Observed
+    Observed --> Ready
 ```
 
-### Operational software: `ServiceArtifact`
+This diagram is a learning model, not a new persisted DATUM state machine. For example, a service can be Realized but later become NotReady because evidence becomes stale.
 
-A `ServiceArtifact` is project-scoped and can describe container or native-process realization. D-Deploy currently also consults these records when validating/planning D-Serv placement: exactly one artifact must resolve each canonical service, and its `target_nodes` constrain placement eligibility.
+## Why this matters for the future dashboard
 
-The artifact is **not** the canonical D-Serv D-Code contract. Its lifecycle, container/native-process data, probes, acquisition information, bindings and reconciliation policy belong to the operational deployment plane.
+The architecture already offers better UI semantics than a single “running/not running” badge. A dashboard can eventually show independent facts such as:
 
-### Application D-Code: `datum.dserv-artifact/1`
+- artifact registered and execution identity complete;
+- current proposal versus current accepted D-Map;
+- assigned node;
+- current reconciliation/D-Code authorization;
+- runtime realization;
+- observed health/evidence freshness;
+- readiness;
+- migration target realization and source cleanup.
 
-A canonical D-Serv artifact describes a content-addressed WASM module for a D-Serv. DServer stores/verifies descriptor metadata and digest identity; module bytes themselves are installed explicitly in each D-Node's local content-addressed store. Governed invocation asks DServer for current authorization immediately before local execution.
+The dashboard has not been specified by these tutorials. The rule for that future work should be: **visualize existing authority/evidence; do not create a second competing source of truth in the UI.**
 
-At this baseline the two families coexist. Do not silently substitute one for the other.
+## Baseline and evidence boundary
 
-## What this tutorial does not claim
-
-This is not yet a packaged installer, a stable release guide, or a closed live fog/cloud deployment recipe. Phase 114E live multinode validation remains open. The existing laboratory bundles are useful implementation material but are not promoted here into a reproduced 114E tutorial.
-
-Likewise, accepted placement does not imply readiness. D1/D2 readiness requires fresh canonical DMonitor evidence correlated to current authority. The canonical production DServ evidence emitter is still an open boundary at this checkpoint.
-
-## Source baseline
-
-All implementation links in these tutorials are pinned to `3e0baa8f415b822f69eef86c0cbfe2a3681e3a65` (Phase 114D2). The commands are source-derived; this documentation build does not claim to have rerun the runtime workflow in a clean environment.
+Current-source additions in this tutorial set are pinned to Phase 119I commit `c08ccc4d715d9eb76644e3f1bd7d80a7945265c4`. Historical pages may retain older immutable source links when they document older evidence. The documentation build validates links/navigation/rendering; it does not rerun the implementation test suite or physical-node proofs.
 
 See [sources and provenance](../reference/sources.md) and [status and limitations](../overview/status.md).

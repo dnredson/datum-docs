@@ -1,343 +1,271 @@
 # Author software artifacts
 
-The current baseline contains two artifact families with different authority and execution roles. Learning this distinction is essential: **a `ServiceArtifact` and a canonical `datum.dserv-artifact/1` are not interchangeable representations of the same object.**
+The current baseline has two artifact families with different responsibilities. Keeping them separate avoids one of the easiest DATUM mistakes: treating an operational deployment descriptor and an application D-Code descriptor as interchangeable.
 
 ## Quick comparison
 
 | Question | `ServiceArtifact` | `datum.dserv-artifact/1` |
 |---|---|---|
 | Primary role | Operational deployment/reconciliation descriptor | Canonical host-independent D-Code descriptor |
-| Scope | Project-scoped in DServer | Application + D-Serv identity |
-| Runtime data | Container/native-process realization, acquisition, probes, lifecycle, bindings | Content-addressed WASM, ABI, ports, limits, safety |
-| Used by D-Deploy v1 today | Yes — service resolution and node eligibility | Not as a replacement for ServiceArtifact |
-| Stores WASM bytes in DServer | No | No — only canonical metadata/digest identity |
-| Where D-Code bytes live | Not applicable | D-Node-local content-addressed module store |
+| Scope | Project-scoped | Application + D-Serv |
+| Runtime form | container or native process | WebAssembly D-Code |
+| Executable identity | OCI/platform identity or native source SHA-256 | WASM module SHA-256 |
+| Full execution descriptor identity | execution projection generation/digest | immutable descriptor digest |
+| Placement interaction | current D-Deploy resolution/eligibility and operational reconciliation | exact D-Code revision can be explicitly bound by D-Deploy |
+| Stores executable bytes in DServer | No | No |
+| Runtime bytes live | container runtime / managed native artifact root | D-Node local D-Code store |
 
-## One D-Serv, two current artifact paths
+## One logical service, different representations
 
 ```mermaid
 flowchart TB
-    DS["D-Serv\nhello-service"]
-
+    DS["D-Serv"]
     DS --> SA["ServiceArtifact"]
-    SA --> ELIG["D-Deploy eligibility\ntarget_nodes"]
-    SA --> REC["Operational reconciliation\ncontainer / native process"]
+    SA --> OP["container/native desired realization"]
+    SA --> EL["eligibility + reconciliation snapshot"]
 
     DS --> DA["datum.dserv-artifact/1"]
-    DA --> META["WASM digest + ABI + ports + limits"]
-    META --> STORE["D-Node local module store"]
-    STORE --> INV["Governed D-Code invocation"]
+    DA --> ID["WASM digest + ABI + ports + limits + safety"]
+    ID --> REG["immutable D-Code revision"]
+    REG --> INV["governed exact-revision invocation"]
 ```
 
-A beginner-friendly rule: **ServiceArtifact helps the current operational deployment path know what/how it may realize; `datum.dserv-artifact/1` gives canonical identity to application D-Code.**
+For a hands-on walkthrough of translating existing software, start with [Model an existing service](model-existing-service.md). For a real deployment example, see [Mosquitto end to end](mosquitto-end-to-end.md).
 
-## Part A — create an operational `ServiceArtifact`
+## ServiceArtifact anatomy
 
-The basic deployment tutorial uses one container-shaped artifact for `hello-service`. This artifact lets current D-Deploy resolve the canonical service and determine which structural D-Nodes are eligible.
+A current `ServiceArtifact` contains:
 
-Create `hello-service-artifact.json`:
-
-```json
-{
-  "schema_version": "0.2.0",
-  "artifact_id": "artifact:hello-service",
-  "service_id": "hello-service",
-  "runtime": {
-    "kind": "container",
-    "container": {
-      "container_name": "datum-hello-service",
-      "image": "docker.io/library/hello-world:latest",
-      "ports": [],
-      "network": null,
-      "network_aliases": [],
-      "volumes": [],
-      "configuration_mounts": [],
-      "command": [],
-      "image_source_kind": "registry"
-    }
-  },
-  "probes": {
-    "execution": {
-      "kind": "docker_container_running",
-      "params": {
-        "container_name": "datum-hello-service"
-      },
-      "vantage_point": "local_host"
-    },
-    "health": null,
-    "availability": null
-  },
-  "metadata": {
-    "tutorial": true
-  },
-  "control_plane": {
-    "project_id": "",
-    "name": "Hello service",
-    "version": "1.0.0",
-    "artifact_kind": "container",
-    "target_nodes": ["tutorial-node"],
-    "target_stages": [],
-    "dependencies": [],
-    "acquisition": {
-      "kind": "image",
-      "source": null,
-      "revision": "latest",
-      "sha256": null
-    },
-    "lifecycle": {
-      "pre_install": [],
-      "install": [],
-      "configure": [],
-      "start": [],
-      "stop": [],
-      "post_install": [],
-      "rollback": []
-    },
-    "health_checks": [],
-    "wasm_decision": {
-      "explicit_invocation_required": true,
-      "module_id": "reconcile_service",
-      "function_name": "decide",
-      "host_imports_allowed": false,
-      "side_effects_allowed": false,
-      "safe_to_auto_execute": false,
-      "max_fuel": 1000000,
-      "timeout_ms": 1000
-    },
-    "bindings": {},
-    "secret_refs": [],
-    "secret_bindings": [],
-    "created_at_utc": "",
-    "updated_at_utc": ""
-  }
-}
+```text
+schema_version
+artifact_id
+service_id
+runtime
+probes
+metadata
+control_plane
 ```
 
-!!! note "Server-owned fields"
-    DServer replaces `control_plane.project_id` with the project header, fills/normalizes selected metadata, and owns `execution_generation` and `execution_projection_digest`. A client must not fabricate `runtime.container.resolved_image_identity`; image pinning has its own explicit server operation.
+### Container runtime
 
-Register the artifact:
+Important container fields include:
+
+- `container_name`;
+- `image`;
+- `image_source_kind` (`registry`, `local_build`, or `legacy_unclassified`);
+- optional server-owned `resolved_image_identity`;
+- ports;
+- network and aliases;
+- volumes;
+- read-only configuration mounts;
+- container command arguments.
+
+### Native-process runtime
+
+A native runtime carries desired-state-only fields:
+
+```text
+process_name
+entrypoint
+args
+working_directory
+```
+
+The executable content identity lives separately in:
+
+```text
+control_plane.acquisition.kind   = native_process_executable
+control_plane.acquisition.source = POSIX absolute local path
+control_plane.acquisition.sha256 = 64 lowercase hex
+```
+
+The source path names the local file to acquire. The `entrypoint` is a safe relative path under DATUM's managed materialized artifact directory.
+
+### Probes
+
+Supported execution probes include:
+
+```text
+docker_container_running
+process_running
+systemd_active
+```
+
+Health/availability probes use supported network/runtime checks such as TCP, HTTP, MQTT or Docker health according to the owning dimension.
+
+### Control-plane fields
+
+The control-plane section carries:
+
+- human-readable name/version;
+- `target_nodes` / `target_stages` eligibility;
+- dependencies;
+- acquisition;
+- lifecycle allowlist commands;
+- health checks;
+- reconciliation WASM-decision policy;
+- ordinary bindings;
+- secret references/bindings;
+- server-owned `execution_generation` and `execution_projection_digest`.
+
+`lifecycle.program` is an allowlist key, **not a host path or shell command**.
+
+## Register a ServiceArtifact
 
 ```sh
 curl -fsS -X POST \
   "$DSERVER_URL/api/v1/service-artifacts" \
   -H "X-Datum-Project: $PROJECT_ID" \
   -H 'content-type: application/json' \
-  --data-binary @hello-service-artifact.json \
+  --data-binary @service-artifact.json \
   | tee registered-service-artifact.json
 ```
 
-Inspect the registry:
+DServer normalizes project ownership/timestamps and computes server-owned execution generation/projection identity.
 
-```sh
-curl -fsS \
-  "$DSERVER_URL/api/v1/service-artifacts" \
-  -H "X-Datum-Project: $PROJECT_ID"
-```
+### Container image identity
 
-### Why `target_nodes` matters
-
-```mermaid
-flowchart LR
-    SA["ServiceArtifact"] --> TN["target_nodes"]
-    TN --> PLAN["planner candidate filter"]
-    PLAN --> PROP["pending proposal"]
-    PROP --> ACC["explicit acceptance"]
-    ACC --> DM["D-Map becomes authority"]
-```
-
-For current D-Deploy v1, `target_nodes` is an **eligibility constraint**. The deterministic planner filters candidate nodes against it. It never becomes placement authority: after explicit acceptance, D-Map is the placement truth.
-
-An empty `target_nodes` set makes no node eligible for that service under the current per-node eligibility semantics.
-
-### Why `target_stages` is empty
-
-Do not add `target_stages` to this basic flow. The canonical D-Continuum does not contain an authoritative node-to-stage mapping at this baseline. Therefore a non-empty `target_stages` constraint is rejected fail-closed with `target_stage_constraint_unverifiable` rather than silently ignored.
-
-### Image identity and reproducibility
-
-The example intentionally demonstrates artifact creation, not a release-grade reproducibility claim. Registry images can be resolved/pinned through:
+A client must not fabricate `resolved_image_identity`. For registry-backed containers, use:
 
 ```text
 POST /api/v1/service-artifacts/:artifact_id/image-identity/resolve
 ```
 
-That operation resolves platform-specific OCI identity server-side. Runtime reconciliation may require pinned execution identity depending on the project's pinning mode. **D-Deploy acceptance itself is not proof that a container image has been pulled or started.**
+The resolver records platform-specific OCI identity through a server-owned compare-and-swap update.
 
-## Part B — create a canonical D-Code artifact
+### Current stage constraint caveat
 
-Canonical D-Code uses `datum.dserv-artifact/1`. It binds a D-Serv to exact WASM content and the `datum-dnode/0` ABI.
+The canonical D-Continuum currently has no authoritative node-to-stage mapping. Therefore do not assume a free-text `target_stages` value can be verified during canonical D-Deploy planning. For portable tutorial flows, prefer explicit `target_nodes` and an empty `target_stages` list.
 
-### The current ABI
+## Canonical D-Code artifact
 
-A v0.1 D-Code module must export exactly the semantic required set:
+`datum.dserv-artifact/1` describes one immutable application-code revision. Important areas are:
+
+| Area | Examples |
+|---|---|
+| identity | artifact id/version, application id, D-Serv id |
+| executable content | `datum-blob://sha256/...`, module SHA-256, content ID, size |
+| ABI | `datum-dnode/0`, exact required exports, zero allowed imports |
+| ports | input/output port names and payload schemas |
+| limits | fuel, timeout, memory pages, message bytes, emits |
+| safety | filesystem/network/host command/Docker/side-effect declarations |
+| execution model | stateless, fresh instance per invocation |
+| constraints | currently including allowed stages |
+
+See [WebAssembly and D-Code](../concepts/webassembly-and-dcode.md) for the ABI/runtime details.
+
+## Prefer DCompile when starting from D-Script
+
+The production compile endpoint is:
 
 ```text
-memory
-datum_abi_version
-datum_alloc
-datum_dealloc
-datum_handle
+POST /api/v1/dcompile/compile
 ```
 
-The runtime requires these signatures:
+It accepts canonical source/mapping inputs and produces deterministic candidate data including:
+
+- D-Script reference/digest;
+- canonicalized compile mapping and digest;
+- generated D-Graph and digest;
+- one D-Serv artifact candidate per D-Code service;
+- each whole-descriptor digest;
+- a service→descriptor-digest authority handoff map.
+
+DCompile is pure. A successful compile does **not** register the artifact, create/accept a D-Deploy proposal, place a service or install module bytes.
+
+## Register immutable D-Code revisions
+
+Submit the returned canonical artifact directly to:
 
 ```text
-datum_abi_version: () -> i32        # returns 0
-datum_alloc:       i32 -> i32
-datum_dealloc:     (i32, i32) -> ()
-datum_handle:      (i32, i32) -> i64
+POST /api/v1/dcode/artifacts
 ```
 
-D-Code v0.1 permits **zero host imports**. No WASI filesystem, environment, clock, socket or other host import is exposed.
+At Phase 119I the registry is **versioned and immutable per descriptor revision**. The effective key is:
 
-A minimal WAT smoke-test module can look like:
-
-```wat
-(module
-  (memory (export "memory") 1)
-  (global $heap (mut i32) (i32.const 1024))
-
-  (func (export "datum_abi_version") (result i32)
-    i32.const 0)
-
-  (func (export "datum_alloc") (param $len i32) (result i32)
-    global.get $heap)
-
-  (func (export "datum_dealloc") (param i32) (param i32))
-
-  (func (export "datum_handle") (param i32) (param i32) (result i64)
-    i64.const 0)
-)
+```text
+(application_id, dserv_id, descriptor_digest)
 ```
 
-This is an ABI teaching/smoke-test example, not a first-class DATUM SDK. The baseline does not yet ship a project scaffolder that turns arbitrary application source into a D-Code project.
+Consequences:
 
-Compile your real module to `build/hello.wasm`, then calculate its identity:
+- redeclaring the identical descriptor revision is idempotent;
+- declaring a different descriptor digest adds another immutable revision;
+- older revisions remain retrievable;
+- registering D2 does not replace or activate D1;
+- a logical service lookup becomes ambiguous when multiple revisions exist and fails closed instead of guessing “latest”.
 
-```sh
-SHA256=$(sha256sum build/hello.wasm | awk '{print $1}')
-SIZE_BYTES=$(wc -c < build/hello.wasm | tr -d ' ')
-printf 'sha256=%s size=%s\n' "$SHA256" "$SIZE_BYTES"
-```
+Governed execution fetches the exact descriptor revision named by a fresh authorization.
 
-Create a descriptor using those exact values:
+## Module digest versus descriptor digest
 
-```json
-{
-  "schema": "datum.dserv-artifact/1",
-  "artifact_id": "dserv:app:dcode-tutorial:hello-dcode",
-  "version": "0.1.0",
-  "application_id": "app:dcode-tutorial",
-  "dserv_id": "hello-dcode",
-  "dcode": {
-    "uri": "datum-blob://sha256/<SHA256>",
-    "sha256": "sha256:<SHA256>",
-    "content_id": "sha256:<SHA256>",
-    "size_bytes": 1234
-  },
-  "abi": {
-    "name": "datum-dnode",
-    "version": "0",
-    "required_exports": [
-      "memory",
-      "datum_abi_version",
-      "datum_alloc",
-      "datum_dealloc",
-      "datum_handle"
-    ],
-    "allowed_imports": []
-  },
-  "ports": {
-    "inputs": [
-      {
-        "port": "input",
-        "payload_schema": "datum.tutorial.input/1",
-        "external": true
-      }
-    ],
-    "outputs": []
-  },
-  "limits": {
-    "fuel_per_invocation": 1000000,
-    "timeout_ms": 100,
-    "max_memory_pages": 4,
-    "max_message_bytes": 4096,
-    "max_emits_per_invocation": 1
-  },
-  "safety": {
-    "filesystem_access": false,
-    "network_access": false,
-    "host_command_access": false,
-    "docker_access": false,
-    "side_effects_allowed": false
-  },
-  "state_model": "stateless",
-  "instantiation": "fresh_instance_per_invocation",
-  "constraints": {
-    "allowed_stages": []
-  },
-  "qos": null,
-  "provenance": {
-    "tutorial": true
-  },
-  "probes": null,
-  "signature_ref": null
-}
-```
-
-Replace `<SHA256>` and `size_bytes` with the actual module identity before submitting.
-
-Register canonical metadata with DServer:
-
-```sh
-curl -fsS -X POST \
-  "$DSERVER_URL/api/v1/dcode/artifacts" \
-  -H 'content-type: application/json' \
-  --data-binary @hello-dcode-artifact.json
-```
-
-This registry is keyed by `(application_id, dserv_id)`. In v0.1 one immutable descriptor occupies that key: byte-identical redeclaration is idempotent, while conflicting replacement fails. Artifact replacement/version transition is future work.
-
-### Install the module bytes on the D-Node
+Keep these identities separate:
 
 ```mermaid
 flowchart LR
-    WASM["hello.wasm"] --> HASH["SHA-256"]
-    HASH --> DESC["canonical descriptor\nin DServer"]
-    WASM --> STORE["local D-Node\ncontent-addressed store"]
-    DESC --> AUTH["current authorization"]
-    STORE --> EXEC["isolated execution"]
-    AUTH --> EXEC
+    B["WASM bytes"] --> M["module SHA-256"]
+    M --> D["D-Serv descriptor"]
+    ABI["ABI"] --> D
+    LIM["limits"] --> D
+    PORT["ports"] --> D
+    SAFE["safety"] --> D
+    D --> DD["descriptor digest"]
 ```
 
-DServer never stores or executes the WASM bytes. Install them explicitly in the D-Node-local store:
+Changing limits/ports/safety can change the descriptor digest without changing the module bytes. Current authorization carries **both** identities.
+
+## Install exact WASM bytes on the D-Node
+
+DServer stores metadata/authority, not module bytes. On a node:
 
 ```sh
-export DNODE_ROOT="$HOME/.datum/tutorial-node"
+SHA256=$(sha256sum build/service.wasm | awk '{print $1}')
 
 cargo run --locked --manifest-path DATUM/Cargo.toml \
   --bin smartsentinel-dcode-install -- \
-  --module-path build/hello.wasm \
+  --module-path build/service.wasm \
   --declared-sha256 "$SHA256" \
   --store-root "$DNODE_ROOT"
 ```
 
-The installer verifies the actual bytes against the declared digest before atomically writing them under the content-addressed store path.
+The local content-addressed store verifies bytes during install and again during load. Automatic module distribution remains outside v0.1.
 
-## Transitional overlap at this baseline
+## Registration and installation are not activation
 
-A service intended for governed D-Code execution still participates in the current D-Deploy v1 workflow, and that workflow resolves `ServiceArtifact` records for placement eligibility. Therefore a canonical D-Code descriptor does **not** remove the current requirement for a matching project-scoped `ServiceArtifact` when using this D-Deploy path.
+The Phase 117 H1→H2 live proof established the intended model:
 
-That is a real boundary of the current implementation, not something the tutorial hides or smooths over.
+```text
+register D2/H2
++ install H2 on the real D-Node
+≠ switch execution to H2
+```
 
-## Source trail
+Only a new explicitly accepted D-Deploy authority bound to D2 changes governed revision selection. D1 can remain historically retrievable while D2 is active.
 
-- [ServiceArtifact registry](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/service_artifact_registry.rs)
-- [ServiceArtifact API](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/api/service_artifacts.rs)
-- [D-Deploy artifact eligibility](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/ddeploy.rs)
-- [Canonical D-Serv artifact](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/dserv_artifact.rs)
-- [D-Code registry API](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/api/dcode.rs)
-- [D-Code ABI](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/dcode/abi.rs)
-- [D-Code runtime](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/dcode/runtime.rs)
-- [Local module store](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/dcode/module_store.rs)
+## Current overlap between artifact families
+
+The repository still contains an operational `ServiceArtifact` domain and a canonical D-Code artifact domain. Do not force one to impersonate the other.
+
+For an operational container/native service, follow:
+
+```text
+ServiceArtifact → D-Deploy → operational reconciliation
+```
+
+For canonical application D-Code, follow:
+
+```text
+D-Script/DCompile → datum.dserv-artifact/1 → exact D-Deploy binding
+→ local WASM store → fresh authorization → isolated invocation
+```
+
+Some current D-Deploy paths still consult the project-scoped ServiceArtifact domain for operational eligibility/context even while canonical D-Code identity is governed separately. Document the path you are actually exercising rather than claiming the transition is already collapsed into one artifact type.
+
+## Sources
+
+- [ServiceArtifact registry/model](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/core/service_artifact_registry.rs)
+- [ServiceArtifact API](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/api/service_artifacts.rs)
+- [DCompile production submission](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/core/dcompile_submission.rs)
+- [Canonical D-Serv artifact](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/core/dserv_artifact.rs)
+- [D-Code HTTP API](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/api/dcode.rs)
+- [D-Code local store](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/DATUM/src/dcode/module_store.rs)

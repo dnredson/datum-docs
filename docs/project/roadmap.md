@@ -1,18 +1,49 @@
 # Documentation roadmap
 
-This roadmap describes the documentation work, not a promise that a runtime capability has been implemented.
+This roadmap tracks **documentation work**, not an implementation promise. Runtime capability status must remain grounded in the implementation repository and its evidence.
 
-| Increment | Outcome | Required evidence | State |
+| Increment | Documentation outcome | Evidence boundary | State |
 |---|---|---|---|
-| Initial edition | Concepts, architecture, D1 readiness, source provenance and local integration entry point | Pinned D1 source inspection | Complete |
-| D2 documentation | Provider-specific `any_element` algorithm, findings, API and integration entry point | Accepted/reviewed D2 implementation and source test | Complete in this edition |
-| Runtime onboarding | Source installation, component configuration, artifact/D-Graph authoring and basic governed D-Deploy walkthrough | Pinned source inspection now; fresh clean-environment reproduction still required for a runtime-verified claim | Source-derived tutorial complete; reproduction pending |
-| Live scenario | Fog/cloud tutorial with current runtime evidence | Completed Phase 114E validation | Gated on 114E; 114E0 preflight is next |
-| Expanded reference | Entity/identity encyclopedia, canonical contracts, current control-plane API and complete mounted route catalog | Pinned extraction and consistency checks | Substantial baseline reference complete; generated schemas still planned |
-| Release editions | Separate release documentation from development | An actual versioned release and compatibility policy | Planned |
+| Foundations | Concepts, architecture, D-Graph/D-Map/DMonitor/readiness and source provenance | Historical pinned source/evidence checkpoints | Complete |
+| D-Code / DCompile | WebAssembly background, D-Code ABI/runtime, DScript→DCompile, immutable revision identity, exact DServer→D-Node flow | Phase 119I source + Phase 117 live/closure lineage | Complete |
+| Existing-service modeling | Explain how container/native software becomes a `ServiceArtifact`; concrete catalog examples | Phase 119I `ServiceArtifact` schema, native runtime, catalog | Complete |
+| End-to-end operational deploy | Model → register/pin → D-Graph → D-Deploy → D-Map → reconcile authorization → node execution | Current Phase 119I source; docs build does not rerun physical deployment | Complete as source-derived tutorial |
+| Migration lifecycle | Target acceptance/realization, governed source cleanup, rollback as new transition | Phase 119I independent migration closure | Complete |
+| Dashboard information model | Map existing authority/evidence domains into UI views without introducing a competing persisted truth | Dashboard phase implementation/design evidence when available | **Next documentation increment / planned** |
+| Generated API/schema reference | Machine-generated OpenAPI/schema material tied to implementation | Generation pipeline + compatibility policy | Planned |
+| Release editions | Separate stable/release docs from development baseline | Actual versioned release + compatibility policy | Planned |
 
-The site intentionally keeps source ADRs and canonical implementation types in their original repository. It expands explanation without creating parallel editable contract definitions.
+## Dashboard preparation already present
 
-The runtime-onboarding tutorial deliberately distinguishes three different milestones: **accepted placement authority**, **runtime realization**, and **fresh runtime evidence/readiness**. A successful D-Deploy acceptance is not documented as proof that a container/process/WASM has actually run.
+The documentation now uses a UI-friendly lifecycle vocabulary:
 
-The next runtime-facing evidence gate remains Phase 114E: do not publish a live fog/cloud tutorial from D2 fixture evidence or source inspection alone. Once 114E is validated, add the scenario with the exact source revision, environment, commands and captured evidence used for that validation.
+```text
+Modeled
+→ Registered
+→ Execution identity complete
+→ Proposed
+→ Accepted
+→ Assigned
+→ Authorized
+→ Realized
+→ Observed
+→ Healthy
+→ Ready
+```
+
+Migration can additionally expose **cleanup pending/completed** for an old source node.
+
+These are **derived documentation concepts**, not a new canonical DATUM state enum. The dashboard phase should preserve the architecture by deriving each visual state from its owning source of truth:
+
+- artifact registry for registered/execution identity;
+- D-Deploy/D-Map for proposal/acceptance/placement;
+- operational authorization/context for current reconciliation permission;
+- node/runtime reports for physical realization;
+- DMonitor/evidence interpretation for observed health/readiness;
+- migration history/current authority for source cleanup obligations.
+
+That separation should make the dashboard more useful: it can show exactly *where* a deployment is waiting instead of flattening everything into one `deployed` flag.
+
+## Documentation evidence rule
+
+Source-inspected tutorials may explain current control flow and commands, but a statement such as “clean-host end-to-end deployment reproduced” requires captured runtime evidence from that scenario. The documentation site should continue distinguishing source-derived instructions from newly executed validation.
