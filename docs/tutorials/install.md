@@ -1,31 +1,25 @@
-# Install DATUM from source
+# Install DATUM v1 from source
 
-The Phase 114D2 repository does not expose a packaged `apt`, Homebrew, container-image or one-command production installer for DATUM itself. The supported documentation claim here is therefore **source installation**: obtain the pinned source, build the two Rust crates, configure DServer, then run the required binaries.
-
-## What you are installing
-
-The repository contains two Rust packages with different responsibilities:
-
-- `dserver/` — DServer, the central HTTP/control-plane service.
-- `DATUM/` — the DATUM/SmartSentinel agent and node-side runtime/tooling binaries, including the D-Code tools and operational reconciler.
-
-Both manifests use Rust edition 2021. The inspected manifests do not declare a minimum Rust compiler version, so this guide deliberately does not invent one.
+DATUM v1 is currently documented as a **source build**. A packaged production installer is not implemented yet and will be documented when available.
 
 ## Prerequisites
 
-You need Git, a Rust/Cargo toolchain capable of building the checked-in lockfiles, and the normal native build dependencies required by the Rust dependency graph on your host. Some later operational examples additionally use Docker and common shell utilities; they are not required merely to compile both crates.
+You need Git, a Rust/Cargo toolchain compatible with the repository lockfiles, Python only for documentation/tooling tasks, and normal host build dependencies. Docker is required for container-realization tutorials.
 
-`jq` is used in examples only as a convenience for extracting JSON fields. It is not a DATUM runtime dependency.
-
-## 1. Obtain the documented revision
+## 1. Clone the implementation repository
 
 ```sh
 git clone https://github.com/dnredson/datum.git
 cd datum
-git checkout --detach 3e0baa8f415b822f69eef86c0cbfe2a3681e3a65
 ```
 
-A detached checkout is useful for following this documentation because every source claim is pinned to exactly this revision. Normal development should happen on an appropriate branch instead.
+For reproducible documentation examples, inspect the exact source revision used by this site:
+
+```sh
+git checkout --detach c08ccc4d715d9eb76644e3f1bd7d80a7945265c4
+```
+
+A detached checkout is useful for documentation reproduction because it does not alter your normal development branch.
 
 ## 2. Build DServer
 
@@ -33,50 +27,33 @@ A detached checkout is useful for following this documentation because every sou
 cargo build --locked --manifest-path dserver/Cargo.toml
 ```
 
-`--locked` asks Cargo to use the checked-in lockfile resolution rather than silently updating dependency selection.
-
-## 3. Build the DATUM agent/runtime tools
+## 3. Build DATUM/SmartSentinel node-side tools
 
 ```sh
 cargo build --locked --manifest-path DATUM/Cargo.toml
 ```
 
-This builds the package that contains the main DATUM binary and node-side utilities such as:
+This crate contains node-side observation/reconciliation tools and the D-Code runtime utilities used later in the tutorials.
 
-- `smartsentinel-operational-reconcile`;
-- `smartsentinel-dcode-init`;
-- `smartsentinel-dcode-install`;
-- `smartsentinel-dcode-invoke`;
-- the isolated `smartsentinel-dcode-worker` used by the governed D-Code invocation path.
+## 4. Isolate control-plane state
 
-## 4. Prepare an isolated DServer state path
-
-Many current canonical/control-plane domains use one SQLite control-state database. The path is selected by `DATUM_CONTROL_STATE_DB_PATH`; otherwise DServer uses `datum-control-plane.db` relative to its working context.
-
-For a tutorial checkout, keep state isolated:
+Use a disposable state path for tutorial work:
 
 ```sh
 mkdir -p .local
 export DATUM_CONTROL_STATE_DB_PATH="$PWD/.local/datum-control-plane.db"
 ```
 
-The control-state layer creates its parent directory and initializes the SQLite schema when needed.
+Do not point experiments at an existing production/control-plane database unless you intentionally want to operate on that state.
 
-!!! warning
-    Do not point a tutorial session at a production or shared control-state database. D-Node declarations, ServiceArtifacts, proposals, acceptances, D-Code descriptors and DMonitor evidence are persistent control-plane state.
-
-## 5. Prepare DServer configuration
-
-DServer first honors `DATUM_DSERVER_CONFIG_PATH`; otherwise it searches common `config.toml` locations. Start from the repository's development configuration rather than modifying it in place:
+## 5. Create a tutorial DServer configuration
 
 ```sh
 cp dserver/config.toml dserver/config.tutorial.toml
 export DATUM_DSERVER_CONFIG_PATH="$PWD/dserver/config.tutorial.toml"
 ```
 
-The current application config contains a `[server]` section, a required `[firebase]` section and optional CORS configuration. The checked-in example binds `0.0.0.0:8080` and contains project/collection names used by older snapshot/analysis surfaces.
-
-This tutorial's canonical D-Node/D-Deploy/D-Code control-state workflow is primarily SQLite-backed, but DServer still initializes its broader Firebase client because the process also exposes earlier/auxiliary APIs. Treat the checked-in configuration as a development example, not a production security template.
+Review the copied configuration before starting DServer. The server still carries configuration used by older/auxiliary subsystems in addition to the canonical DATUM control-plane paths documented here.
 
 ## 6. Start DServer
 
@@ -84,28 +61,34 @@ This tutorial's canonical D-Node/D-Deploy/D-Code control-state workflow is prima
 cargo run --locked --manifest-path dserver/Cargo.toml --bin DServer
 ```
 
-If `server.bind` is absent, the source defaults to `0.0.0.0:8080`. The rest of this tutorial uses loopback explicitly:
+In another terminal:
 
 ```sh
 export DSERVER_URL=http://127.0.0.1:8080
-```
-
-In a second shell, verify the minimal health endpoint:
-
-```sh
 curl -fsS "$DSERVER_URL/health"
 ```
 
-## 7. Keep implementation roles separate
+A healthy server only proves that DServer is reachable. It does not declare a D-Node, create a D-Graph or activate any deployment.
 
-A running DServer is not a D-Node. A D-Node is a structural logical runtime identity that must be declared separately. Likewise, the main DATUM agent configuration, Sentinel registration and D-Code local identity are different records with different authority.
+## 7. What is installed where?
 
-The next tutorial performs those configuration steps explicitly: [configure the control plane and identities](configure.md).
+```text
+DServer
+  └─ control-plane authority and registries
 
-## Source trail
+DATUM / SmartSentinel tools
+  └─ node-side observation, reconciliation and D-Code execution
 
-- [DServer manifest](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/Cargo.toml)
-- [DATUM manifest](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/Cargo.toml)
-- [DServer configuration loader](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/config.rs)
-- [DServer startup/router](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/main.rs)
-- [SQLite control state](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/storage/control_state.rs)
+Docker / native executable / WASM bytes
+  └─ actual runtime content, governed separately
+```
+
+DServer and D-Node responsibilities are intentionally separate.
+
+## Next
+
+Continue with [Configure components](configure.md), then [Model an existing service](model-existing-service.md).
+
+## Source boundary
+
+The commands above are source-derived from DATUM v1 revision `c08ccc4d715d9eb76644e3f1bd7d80a7945265c4`. This documentation build does not rerun the full runtime build or deployment workflow.
