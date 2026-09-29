@@ -1,225 +1,167 @@
 # Realize an accepted deployment
 
-Accepted placement authority and running software are intentionally different facts. At the Phase 119I baseline, DATUM has two important realization paths: **operational reconciliation** for container/native services and **governed D-Code invocation** for application WebAssembly.
+Accepted authority and running software are intentionally different facts. DATUM v1 keeps **placement**, **runtime realization**, **evidence** and **readiness** separate.
 
-For a complete practical example, see [Mosquitto end to end](mosquitto-end-to-end.md). For the reusable lifecycle, see [From service model to execution on a node](service-to-node.md).
-
-## Authority → realization → evidence
+## Authority versus realization versus evidence
 
 ```mermaid
 flowchart LR
-    MAP["Accepted D-Map\ncurrent placement authority"] --> REAL["Runtime realization\ncontainer / process / D-Code invocation"]
-    REAL --> OBS["Evidence\nwhat was observed"]
-    OBS --> READY["Readiness\nserver-derived usability"]
+    MAP["Accepted D-Map\nwhere DATUM authorizes placement"] --> REAL["Runtime realization\nwhat the node starts or executes"]
+    REAL --> OBS["Runtime/DMonitor evidence\nwhat was observed"]
+    OBS --> READY["Readiness\nwhat DServer can derive now"]
 ```
 
-No arrow is automatic merely because the previous box exists.
+No arrow becomes automatic just because the previous object exists.
 
-## Path A — operational reconciliation
+## Operational container/native-process path
 
-Operational reconciliation realizes long-running `ServiceArtifact` assignments.
-
-```mermaid
-flowchart TB
-    MAP["active D-Map"] --> SL["node operational slice"]
-    ART["ServiceArtifact registry"] --> JOIN["artifact reconciliation context"]
-    SL --> JOIN
-    JOIN --> AUTH["finite reconciliation authorization"]
-    AUTH --> PRE["node-side preview"]
-    PRE -->|"--execute"| HOST["governed host mutation"]
-    HOST --> RUN["container / native process"]
-```
-
-### Why `--execute` is separate
-
-The node-side CLI is explicit:
+The node-side reconciler is:
 
 ```text
 smartsentinel-operational-reconcile
 ```
 
-Without `--execute`, it can resolve/fetch/evaluate/report without requesting execution of host mutation. A preview-shaped command is:
+It resolves the node's operational slice and artifact assignments, runs the reconciliation decision path and can optionally perform governed host mutation.
+
+A preview-shaped invocation is:
 
 ```sh
 cargo run --locked --manifest-path DATUM/Cargo.toml \
   --bin smartsentinel-operational-reconcile -- \
   --config DATUM/config.toml \
-  --node-id "$NODE_ID" \
+  --node-id tutorial-node \
   --dserver-url "$DSERVER_URL" \
   --project-id "$PROJECT_ID" \
-  --out reconcile-preview.json
+  --out reconcile-report.json
 ```
 
-The operational path requires more than an active D-Map. Current host mutation is gated by such facts as:
+Without `--execute`, this does not request ordinary reconciliation host mutation.
 
-- active Resource Registry binding;
-- exact operational graph identity/revision;
-- current artifact assignment snapshot;
-- execution generation/projection digest;
-- pinning completeness/policy;
-- finite authorization lease;
-- local resource/identity/policy checks.
+## Why accepted placement is not enough
 
-### Current authorization shape
+Operational realization additionally depends on facts such as:
 
-A reconcile/rollback host-mutation authorization must be usable as a finite lease. Current API issuance requires `persistence_scope = durable` with `valid_for_seconds` for these mutation paths.
-
-Example request:
-
-```json
-{
-  "dgraph_id": "dgraph:example",
-  "dgraph_revision": 2,
-  "authorized_by": "operator-example",
-  "allow_host_mutation": true,
-  "operation": "reconcile",
-  "persistence_scope": "durable",
-  "valid_for_seconds": 900
-}
-```
-
-Endpoint:
-
-```text
-POST /api/v1/nodes/:node_id/operational-reconciliation/authorize
-```
-
-When accepted, the authorization snapshots the exact resolved artifact assignments and binds service-level `{artifact_id, execution_generation, execution_projection_digest}` values.
-
-### Execute
-
-After reviewing the preview and current authorization:
-
-```sh
-cargo run --locked --manifest-path DATUM/Cargo.toml \
-  --bin smartsentinel-operational-reconcile -- \
-  --config DATUM/config.toml \
-  --node-id "$NODE_ID" \
-  --dserver-url "$DSERVER_URL" \
-  --project-id "$PROJECT_ID" \
-  --execute \
-  --out reconcile-execute.json
-```
-
-For containers, the agent uses the supported governed container lifecycle/pinning/configuration path. For native processes, it uses exact native acquisition plus managed process runtime state.
-
-## Native process realization
-
-Native acquisition v0.1 is deliberately narrow:
-
-```text
-absolute local Linux source path
-        +
-exact lowercase SHA-256
-        ↓
-content-addressed managed materialization
-        ↓
-relative entrypoint under managed artifact directory
-        ↓
-governed managed process
-```
-
-The acquisition layer rejects relative source paths, malformed hashes and path traversal. The runtime persists identity needed to distinguish/recover the process safely.
-
-A distribution package manager such as `apt` can be used as external host preparation, but the current native acquisition does not itself mean “run apt”. See [Model an existing service](model-existing-service.md).
-
-## Container realization
-
-Container artifacts can declare image, ports, network, aliases, volumes, configuration mounts and command arguments.
-
-For `image_source_kind = registry`, server-owned platform-specific OCI identity can be resolved using:
-
-```text
-POST /api/v1/service-artifacts/:artifact_id/image-identity/resolve
-```
-
-A client cannot supply `resolved_image_identity` directly in an ordinary artifact create/update request.
-
-## Path B — governed D-Code
-
-D-Code realization is invocation-oriented rather than a continuously running container/process lifecycle.
-
-```mermaid
-sequenceDiagram
-    participant N as D-Node client
-    participant S as DServer
-    participant L as Local D-Code store
-    participant W as isolated worker
-
-    N->>S: POST /dcode/authorize (project/app/service/node)
-    S-->>N: current DMap/DGraph/node/module/descriptor authority
-    N->>S: GET exact descriptor revision
-    S-->>N: datum.dserv-artifact/1
-    N->>L: load exact module digest
-    L-->>N: verified WASM bytes
-    N->>W: invoke exact digest with descriptor limits
-    W-->>N: outcome/evidence
-```
-
-The governed path does not use a logical “latest artifact” lookup. A fresh authorization identifies the exact descriptor revision, and the client fetches that exact immutable revision before loading local bytes.
-
-See [DServer → D-Node governed D-Code execution](../architecture/dserver-dnode-dcode-flow.md).
-
-## Registration/install availability is not authority
-
-For D-Code:
-
-```text
-D2 registered in DServer
-+ H2 bytes installed on the node
-≠ H2 active
-```
-
-A new accepted D-Deploy authority must bind/select D2 before fresh authorization resolves it. Multiple immutable revisions can coexist.
-
-For operational ServiceArtifacts, the same broad principle holds: a catalog/registry record and locally available Docker image/native source do not themselves create D-Map placement authority or a host-mutation lease.
-
-## Phase 119 migration and cleanup
-
-Migration adds an important post-cutover realization fact.
+- active Resource Registry binding for the node;
+- current node-specific operational D-Graph slice;
+- exact ServiceArtifact assignment;
+- execution projection/generation and required pinning completeness;
+- finite reconciliation authorization;
+- local execution policy.
 
 ```mermaid
 flowchart LR
-    A["D-Map rev N\nservice on A"] --> P["target proposal B"]
-    P -->|"accept"| B["D-Map rev N+1\nservice on B"]
-    B --> RB["realize B"]
-    RB --> CA["cleanup authorization for old A"]
-    CA --> CL["reconciler --cleanup on A"]
+    MAP["Active D-Map"] --> SLICE["node operational slice"]
+    ART["ServiceArtifact"] --> SNAP["exact execution snapshot"]
+    SLICE --> AUTH["finite reconciliation authorization"]
+    SNAP --> AUTH
+    AUTH --> NODE["governed host action"]
 ```
 
-The old source runtime is not simply killed because a new D-Map exists. The server derives cleanup directives from accepted history/current absence, a distinct `operation = cleanup` authorization is issued, and the agent processes only cleanup directives under its dedicated `--cleanup` mode.
+## Reconciliation authorization
 
-The CLI therefore exposes three distinct intents:
+Host mutation requires a finite authorization that binds the current node/resource, operational graph revision and exact artifact execution snapshot. The current implementation uses durable authorization with a finite lease for real reconcile/rollback mutation.
+
+This makes an important distinction:
 
 ```text
-normal reconciliation: --execute
-rollback processing:   --rollback
-source cleanup:         --cleanup
+placement accepted
+    ≠ artifact snapshot authorized
+    ≠ host mutation performed
 ```
 
-`--cleanup` and `--rollback` are mutually exclusive.
+A later content-changing ServiceArtifact update does not retroactively rewrite an already-issued immutable snapshot.
 
-Rollback of placement is represented by a **new governed D-Deploy transition**, not by rewinding an old acceptance.
+## Execute the accepted realization
 
-## Running is not Ready
+After reviewing the preview and satisfying the authorization/pinning prerequisites, add:
+
+```text
+--execute
+```
+
+The agent then enforces the authorization, identity and local mutation boundaries before creating/updating the container or managed native process.
+
+For containers this can include pulling/verifying the governed image identity, configuration/volume/network/port realization and container start. For native processes it can include verified acquisition/materialization by content SHA-256 and managed spawn/adoption under the node-local runtime.
+
+## Native-process boundary
+
+Native process acquisition currently starts from an **already-present absolute Linux executable source path** plus exact SHA-256. Native `apt`, `dnf`, `yum` or repository acquisition is not implemented yet.
+
+The managed runtime materializes verified content under its own controlled root before execution. The original package-manager-installed path is therefore preparation/input, not unmanaged execution authority.
+
+## D-Code path
+
+Canonical D-Code uses a different realization path:
 
 ```mermaid
 flowchart LR
-    RUN["runtime exists"] --> E["evidence"]
-    E --> F["fresh?"]
-    F --> C["matches current authority?"]
-    C --> H["healthy?"]
-    H --> R["Ready"]
+    MAP["Current D-Map\n+ exact D-Code binding"] --> AUTH["fresh DServer authorization"]
+    REG["immutable descriptor revision"] --> AUTH
+    AUTH --> GET["exact descriptor GET"]
+    GET --> BYTES["verify local WASM bytes by digest"]
+    BYTES --> WORKER["isolated Wasmtime worker"]
 ```
 
-Operational reconciliation evidence, D-Code invocation evidence and canonical DMonitor readiness are related but distinct domains. A successful Docker/native/WASM action does not automatically prove application readiness.
+Prerequisites include:
+
+1. structural D-Node authority;
+2. current accepted placement;
+3. exact registered D-Code descriptor revision selected by current authority;
+4. matching node-local WASM bytes;
+5. local D-Node identity.
+
+Automatic WASM distribution is not implemented yet; copying/installing module bytes is a separate operational step.
+
+## Governed D-Code invocation
+
+Prepare an input payload, then use the governed invocation client. Conceptually the client performs:
+
+```text
+fresh authorize
+→ exact descriptor fetch
+→ authority/identity cross-check
+→ local content digest verification
+→ isolated invocation
+```
+
+The caller does not get to choose an arbitrary local module or “latest” artifact revision.
+
+## Migration, cleanup and rollback
+
+DATUM v1 distinguishes three node-side operational modes:
+
+```text
+ordinary reconciliation  → desired current services
+cleanup                   → historically placed service no longer desired here
+rollback                  → explicit rollback operation
+```
+
+Source cleanup has its own `cleanup` authorization and `--cleanup` reconciler path. It is intentionally separate from ordinary rollback so cleanup of one vacated service cannot accidentally apply rollback semantics to unrelated co-located services.
+
+## Runtime success is still not readiness
+
+A running container, a live managed process or a successful WASM invocation is not automatically Ready.
+
+```mermaid
+flowchart LR
+    RUN["runtime exists / invocation succeeded"] --> OBS["current canonical evidence?"]
+    OBS --> FRESH["fresh?"]
+    FRESH --> CORR["exact authority match?"]
+    CORR --> HEALTH["Healthy under policy?"]
+    HEALTH --> READY["Ready"]
+```
+
+Use DMonitor/readiness APIs for current governance conclusions rather than Docker/process success alone.
+
+## What is not implemented yet
+
+- automatic D-Code module distribution;
+- native package-manager acquisition as a governed primitive;
+- a single turnkey command that hides all placement, authorization, realization and evidence boundaries;
+- the new user-facing management dashboard described in the roadmap.
+
+These capabilities can be added without changing the v1 rule that authority, realization and evidence remain distinct.
 
 ## Sources
 
-- [Node reconciler CLI](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/DATUM/src/bin/smartsentinel-operational-reconcile.rs)
-- [Node reconciliation engine](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/DATUM/src/agent/operational_reconciliation.rs)
-- [Operational authorization API](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/api/operational_dgraph.rs)
-- [Operational authorization contract](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/dserver/src/core/operational_dgraph.rs)
-- [Native executable acquisition](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/DATUM/src/agent/native_process_acquisition.rs)
-- [D-Code governed client](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/DATUM/src/dcode/client.rs)
-- [Phase 119I migration closure](https://github.com/dnredson/datum/blob/c08ccc4d715d9eb76644e3f1bd7d80a7945265c4/documentation/reference/phase119i-independent-final-migration-closure-review.md)
+See [Sources and provenance](../reference/sources.md) for the current operational reconciler, native runtime and D-Code execution source anchors.
