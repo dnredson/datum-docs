@@ -1,6 +1,6 @@
 # Canonical contracts
 
-This page is a field-oriented map of the main canonical contracts at the Phase 114D2 baseline. It summarizes source types and invariants; the pinned Rust implementation remains authoritative for exact serialization/validation behavior.
+This page is a field-oriented map of the main canonical contracts in **DATUM v1**. It summarizes source types and invariants; the pinned Rust implementation remains authoritative for exact serialization and validation behavior.
 
 ## Common design rules
 
@@ -40,7 +40,7 @@ CanonicalDServV1
     memory_bytes
 ```
 
-At v0.1, `dnode_abi` must be `datum-dnode/0`. Resource requirements are static declared requirements, not measurements.
+The currently supported `dnode_abi` is `datum-dnode/0`. Resource requirements are static declared requirements, not measurements.
 
 ### D-Call
 
@@ -215,7 +215,7 @@ DServPlacementV2
 DIoTArtifactBindingV2
   artifact_id
   descriptor_digest
-  content_digest? 
+  content_digest?
 ```
 
 ### DIoT placement
@@ -233,13 +233,13 @@ DIoTPlacementV2
 ```text
 DCallRealizationV2
   call_id
-  realization_kind   # v0.1: via_diot_pubsub
+  realization_kind   # currently: via_diot_pubsub
   diot_placement_id
   interface
   channel
 ```
 
-Channels containing MQTT wildcard `+` or `#` are rejected by v0.1 validation.
+The currently implemented realization kind is `via_diot_pubsub`. Channels containing MQTT wildcard `+` or `#` are rejected.
 
 ### External port binding
 
@@ -300,7 +300,7 @@ DServArtifactAbiV1
   allowed_imports[]
 ```
 
-For v0.1 the ABI resolves to `datum-dnode/0`. The required export semantic set is:
+DATUM v1 resolves this ABI to `datum-dnode/0`. The required export semantic set is:
 
 ```text
 memory
@@ -330,11 +330,11 @@ max_message_bytes
 max_emits_per_invocation
 ```
 
-All must be non-zero in v0.1.
+All current execution limits must be non-zero.
 
 ### Safety/state invariants
 
-The zero-import v0.1 model requires filesystem/network/host-command/Docker/side-effect safety booleans to be false. `state_model` is `stateless`; `instantiation` is `fresh_instance_per_invocation`.
+The current zero-import model requires filesystem/network/host-command/Docker/side-effect safety booleans to be false. `state_model` is `stateless`; `instantiation` is `fresh_instance_per_invocation`.
 
 ## `datum.dmonitor-observation/1`
 
@@ -412,11 +412,9 @@ A proposal includes identity/scope, source (`operator`, `deterministic`, `ai`), 
 
 ### `datum.ddeploy-acceptance/1`
 
-Acceptance records the explicit transition that creates/activates authoritative D-Map state. The caller-supplied `accepted_by` field is audit provenance in the current prototype, not a cryptographically authenticated operator identity.
+Acceptance records the explicit transition that creates/activates authoritative D-Map state. `accepted_by` is caller-supplied audit provenance; it is not a cryptographically authenticated identity.
 
 ## Server-owned operational record: DIoT runtime binding
-
-Not a `datum.*` desired-state schema, but important enough to document beside the contracts:
 
 ```text
 DIoTRuntimeBindingV1
@@ -442,8 +440,6 @@ All identity/authority fields except the concrete broker URI are derived from cu
 
 ## Derived result schemas
 
-These schemas describe server-derived decisions, not desired-state authority:
-
 | Schema | Meaning |
 |---|---|
 | `datum.dmonitor-readiness/1` | D1 placement/application readiness |
@@ -453,4 +449,4 @@ See [Readiness APIs](readiness-api.md) for response semantics/findings.
 
 ## Sources
 
-[DGraph](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/agent/canonical_dgraph.rs), [DContinuum](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/agent/canonical_dcontinuum.rs), [DMap/1](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/agent/canonical_dmap.rs), [DForward](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/agent/canonical_dforward.rs), [DMap/2](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/agent/canonical_dmap_v2.rs), [D-Serv artifact](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/dserv_artifact.rs), [DMonitor observation](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/DATUM/src/agent/canonical_dmonitor.rs), [D-Deploy](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/ddeploy.rs), [DIoT runtime binding](https://github.com/dnredson/datum/blob/3e0baa8f415b822f69eef86c0cbfe2a3681e3a65/dserver/src/core/diot_runtime_binding.rs).
+See [Sources and provenance](sources.md) for the current immutable implementation anchors.
