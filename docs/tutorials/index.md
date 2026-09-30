@@ -69,6 +69,6 @@ The management dashboard is not implemented yet. When implemented, it should vis
 
 ## Source and evidence boundary
 
-Current v1 material is grounded in implementation revision `c08ccc4d715d9eb76644e3f1bd7d80a7945265c4`. Historical evidence links may remain at older immutable revisions when they document a specific earlier result. The documentation build validates links/navigation/rendering; it does not rerun the implementation test suite or physical-node validation.
+Current v1 material is grounded in implementation revision `c08ccc4d715d9eb76644e3f1bd7d80a7945265c4`. Evidence links that document a specific validation result may point to the immutable source revision associated with that result. The documentation build validates links/navigation/rendering; it does not rerun the implementation test suite or physical-node validation.
 
 See [sources and provenance](../reference/sources.md) and [status and limitations](../overview/status.md).
