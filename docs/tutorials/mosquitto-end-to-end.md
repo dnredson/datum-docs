@@ -42,7 +42,7 @@ The checked-in lab configuration uses an anonymous listener. Treat that as isola
 
 ## 2. Adapt eligibility to your node
 
-The historical catalog may contain node/stage values from a previous lab. For a fresh tutorial, make the eligible node explicit and avoid relying on non-authoritative stage labels.
+The checked-in catalog can contain environment-specific node or stage constraints. For this tutorial, make the eligible node explicit and avoid relying on stage labels when no authoritative node-to-stage mapping is available.
 
 Conceptually:
 
