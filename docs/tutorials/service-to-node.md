@@ -144,7 +144,7 @@ new node
   └─ realize current desired service
 
 old node
-  └─ cleanup only if derived history/current authority says the old realization is vacated
+  └─ cleanup only when the accepted placement transition and current authority prove the old realization is vacated
 ```
 
 DATUM v1 has a dedicated governed cleanup operation/path so source cleanup cannot be confused with ordinary desired-state reconciliation or broad rollback.
