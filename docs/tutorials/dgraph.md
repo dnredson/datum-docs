@@ -60,7 +60,7 @@ This is intentionally small. It says the application has one service requiring o
 
 `dgraph_id` identifies this graph lineage. `revision` is the graph revision and must be at least 1.
 
-`service_id` is the canonical D-Serv identity used by placement and D-Call references. For the current D-Deploy v1 flow, exactly one project-scoped `ServiceArtifact` must resolve this service ID before a real proposal can validate/accept.
+`service_id` is the canonical D-Serv identity used by placement and D-Call references. For the current D-Deploy flow, exactly one project-scoped `ServiceArtifact` must resolve this service ID before a real proposal can validate/accept.
 
 ## 3. Add a second service and a call
 
