@@ -184,7 +184,7 @@ Check these identities together:
 4. locally installed module content digest;
 5. currently declared D-Node ABI support.
 
-A stale placement or stale revision must fail closed instead of executing historical authority.
+A stale placement or stale revision must fail closed instead of executing authority that is no longer current.
 
 ## Service is running but readiness is `not_ready`
 
@@ -207,7 +207,7 @@ Use the current `--cleanup` path only for derived source-cleanup directives. Do 
 
 ## When something is genuinely missing
 
-Do not invent fields, bypass current authority with legacy routes, or reinterpret telemetry as canonical state. If a required capability is not implemented yet, keep that boundary explicit and document it as planned.
+Do not invent fields, bypass current authority through an unrelated or auxiliary route, or reinterpret telemetry as canonical state. If a required capability is not implemented yet, keep that boundary explicit and document it as planned.
 
 ## Source trail
 
