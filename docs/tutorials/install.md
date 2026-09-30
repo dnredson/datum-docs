@@ -53,7 +53,7 @@ cp dserver/config.toml dserver/config.tutorial.toml
 export DATUM_DSERVER_CONFIG_PATH="$PWD/dserver/config.tutorial.toml"
 ```
 
-Review the copied configuration before starting DServer. The server still carries configuration used by older/auxiliary subsystems in addition to the canonical DATUM control-plane paths documented here.
+Review the copied configuration before starting DServer. The server configuration covers auxiliary subsystems in addition to the DATUM control-plane paths used in these tutorials; leave unrelated settings unchanged unless you know the subsystem that owns them.
 
 ## 6. Start DServer
 
