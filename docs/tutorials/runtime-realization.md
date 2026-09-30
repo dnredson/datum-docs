@@ -132,7 +132,7 @@ DATUM v1 distinguishes three node-side operational modes:
 
 ```text
 ordinary reconciliation  → desired current services
-cleanup                   → historically placed service no longer desired here
+cleanup                   → previously placed service no longer desired here
 rollback                  → explicit rollback operation
 ```
 
