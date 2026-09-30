@@ -1,6 +1,6 @@
 # Basic governed deploy
 
-This tutorial creates a real **accepted placement authority** using the current D-Deploy v1 workflow. It starts from one structural D-Node, one matching `ServiceArtifact` and one canonical D-Graph.
+This tutorial creates a real **accepted placement authority** using the current D-Deploy workflow in DATUM v1. It starts from one structural D-Node, one matching `ServiceArtifact` and one canonical D-Graph.
 
 !!! important
     Completing this page means DServer has accepted a canonical D-Map. It does **not** mean the target container/process/WASM is already running. Runtime realization is the next tutorial.
@@ -208,7 +208,7 @@ curl -fsS -X POST \
   | tee acceptance.json
 ```
 
-`accepted_by` is a caller-supplied audit label. The baseline does not provide application-layer authentication that turns it into a cryptographically verified operator identity.
+`accepted_by` is a caller-supplied audit label. The current API does not provide application-layer authentication that turns it into a cryptographically verified operator identity.
 
 ## 7. What changed at acceptance
 
