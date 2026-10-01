@@ -4,9 +4,11 @@ Independent documentation for DATUM, built with **Zensical + Markdown**.
 
 This repository contains explanatory documentation and publication tooling. Implementation, canonical contracts and Architecture Decision Records remain in `dnredson/datum`.
 
-**DATUM v1 source revision:** `c08ccc4d715d9eb76644e3f1bd7d80a7945265c4`. See [status](docs/overview/status.md) and [source provenance](docs/reference/sources.md).
+**DATUM v1 source revision:** `7a79bd84bc05a1ea18870715cc033567ff472afc`. See [status](docs/overview/status.md) and [source provenance](docs/reference/sources.md).
 
-The documentation is organized around reader tasks and product concepts rather than internal development milestones. Source links are pinned to immutable full commit SHAs for reproducibility. When a capability is not implemented yet, the documentation says so directly instead of referring to an internal roadmap number.
+The documentation is organized around reader tasks and product concepts rather than internal development milestones. It now covers the **DATUM Console** graphical interface, project workspaces, logical/runtime graph visualization and the reusable service catalog in addition to the control-plane, runtime and evidence model.
+
+Source links are pinned to immutable full commit SHAs for reproducibility. When a capability is not implemented yet, the documentation says so directly instead of referring to an internal roadmap number.
 
 ## Preview locally
 
@@ -35,6 +37,6 @@ The `Documentation` workflow checks pull requests. Pushes to `main` build and pu
 
 ## Contribute
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md). Update `source-baseline.json` deliberately when documenting a newer implementation revision and reconcile current-status claims in the same change. Historical evidence links may remain pinned to the exact source revision they document.
+Read [CONTRIBUTING.md](CONTRIBUTING.md). Update `source-baseline.json` deliberately when documenting a newer implementation revision and reconcile current-status claims in the same change. Evidence links may remain pinned to the exact source revision they document.
 
 No new content license is selected in this repository. Existing project branding retains its original provenance; see [NOTICE.md](NOTICE.md).

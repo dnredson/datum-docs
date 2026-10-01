@@ -1,13 +1,15 @@
 {
   "repository": "dnredson/datum",
-  "commit": "c08ccc4d715d9eb76644e3f1bd7d80a7945265c4",
+  "commit": "7a79bd84bc05a1ea18870715cc033567ff472afc",
   "documentation_version": "v1",
   "channel": "v1",
-  "reviewed_on": "2026-09-29",
+  "reviewed_on": "2026-10-01",
   "verification": "source-inspected against the pinned implementation revision; referenced runtime evidence was not rerun by this documentation build",
   "open_items": [
     "automatic D-Code module distribution is not implemented yet",
     "distributed TOCTOU can still exist between fresh authorization and actual guest execution",
-    "D-Script v1 is a canonical source representation, not a general-purpose source-language parser or SDK"
+    "native package-manager acquisition is not implemented as a governed primitive",
+    "dedicated Console pages for placement, deploy, runtime and history are not implemented yet",
+    "the published Console catalog uses manual operator-authored definitions; a live external AI modeling provider is not part of this source revision"
   ]
 }

@@ -1,6 +1,6 @@
 # Status and limitations
 
-**Version:** DATUM v1. **Source revision:** `c08ccc4d715d9eb76644e3f1bd7d80a7945265c4`. **Documentation review date:** 2026-09-29.
+**Version:** DATUM v1. **Source revision:** `7a79bd84bc05a1ea18870715cc033567ff472afc`. **Documentation review date:** 2026-10-01.
 
 This page describes what the current DATUM v1 implementation and documentation can support. Public documentation uses product concepts and implemented capabilities rather than internal development numbering.
 
@@ -11,23 +11,38 @@ This edition covers, at source-inspected depth:
 - canonical D-Script and D-Compile;
 - D-Graph/D-Serv/D-Call application structure;
 - operational `ServiceArtifact` modeling for containers and native processes;
-- server-owned execution projection/generation and OCI image identity;
 - deterministic D-Deploy planning and explicit D-Map acceptance;
 - operational node slices, finite reconciliation authorization and node-side execution;
-- versioned immutable D-Code descriptor revisions;
-- exact-revision D-Code authorization and isolated WASM execution;
+- versioned immutable D-Code descriptor revisions and isolated WASM execution;
 - DMonitor observations, convergence and readiness;
-- governed migration, target realization, source cleanup and rollback as explicit transitions.
+- governed migration, target realization, source cleanup and rollback as explicit transitions;
+- DATUM Console global/project operational views;
+- accepted logical graph visualization with separately represented DMonitor realization evidence;
+- reusable, revisioned Artifact & Service Catalog definitions with exact operational artifact pins.
 
-## Practical service examples
+## DATUM Console
 
-The tutorial set includes a source-grounded progression from real software to node execution:
+The graphical Console **is implemented** in the pinned source revision.
 
-- Mosquitto as a real checked-in container artifact, including port 1883, configuration mount and runtime probes;
-- a full Mosquitto walk-through from artifact registration through D-Deploy acceptance and governed reconciliation;
-- PostgreSQL as an example of persistent volume, configuration and secret references;
-- a locally built LoRa simulator as an example of `local_build`, dependencies and secrets;
-- native-process modeling that freezes an existing Linux executable by local path + SHA-256.
+Current routed surfaces are:
+
+- global overview;
+- project navigation;
+- read-only project workspace;
+- project logical/runtime-evidence graph;
+- global Artifact & Service Catalog.
+
+The project workspace presents independent operational dimensions rather than synthesizing one canonical project-health score. The graph uses accepted logical snapshots and can expand admitted D-Serv realization evidence without treating evidence as placement.
+
+Dedicated project pages for Placement, Deploy, Runtime and History are not implemented yet. The current interface is primarily inspection plus catalog authoring; it is not yet a full graphical replacement for every command/API workflow.
+
+## Service catalog
+
+The service catalog stores immutable reusable definition revisions. It supports atomic and composite definitions, exact dependency revisions, tenancy capabilities, resource/capability requirements, monitoring/health intent, secret references and exact artifact snapshots.
+
+Catalog mutation is deliberately **catalog-only**. Saving a definition does not create a D-Map, runtime, tenant binding or monitoring producer.
+
+A live external AI provider for guided service modeling is not part of this pinned source revision; the published catalog editor is operator-authored.
 
 ## Current D-Code boundary
 
@@ -39,26 +54,20 @@ For each governed invocation, the node-side client requests fresh DServer author
 
 **Automatic D-Code module distribution is not implemented yet.** Copying/installing module content remains a separate operational step and must not be mistaken for activation.
 
-**Native package-manager acquisition is not implemented yet.** `native_process_executable` consumes an already-present local Linux executable. A future package/repository acquisition capability will need its own governed content/provenance model rather than arbitrary shell execution.
+**Native package-manager acquisition is not implemented yet.** `native_process_executable` consumes an already-present local Linux executable.
 
-**A distributed TOCTOU window can remain.** D-Code authorization is freshly derived immediately before execution, but DServer and a remote node do not participate in one distributed atomic transaction. Immutable revisions prevent in-place artifact mutation but do not eliminate every authority-movement race after response delivery.
+**A distributed TOCTOU window can remain.** D-Code authorization is freshly derived immediately before execution, but DServer and a remote node do not participate in one distributed atomic transaction.
 
-**`target_stages` is not authoritative placement data.** Existing artifact metadata can include `target_stages`, but the current canonical D-Continuum does not provide the authoritative node-to-stage mapping required to verify those values during canonical planning. Tutorial paths use explicit node eligibility where necessary.
+**`target_stages` is not authoritative placement data.** Existing artifact metadata can include it, but canonical planning still needs authoritative node eligibility/capability facts.
 
 **Runtime realization is not readiness.** A container/process/module can execute successfully while evidence is absent, stale, unhealthy or correlated to obsolete authority.
 
-## Dashboard
+**Console graph evidence can be partial.** A bounded runtime-evidence projection must not be interpreted as a complete process inventory.
 
-The management dashboard is **not implemented yet**. It is the next major usability increment planned for DATUM v1.
-
-The service lifecycle pages already expose UI-friendly derived facts — Modeled, Registered, Execution identity complete, Proposed, Accepted, Assigned, Authorized, Realized, Observed, Healthy, Ready and Cleanup pending. These are documentation/UI concepts, not a new persisted canonical state enum.
-
-The dashboard should derive each view from the existing authority and evidence domains rather than becoming another source of placement/runtime truth.
+**Catalog provisioning metadata is declarative.** Repository/Compose metadata is stored and validated but not cloned, parsed or executed by catalog save.
 
 ## Verification boundary
 
-This docs build validates navigation, immutable source pins, public-version wording, Markdown/site rendering and internal links. It does not rerun the implementation repository's Rust suites or physical-node live validation.
+This docs build validates navigation, immutable source pins, public-version wording, Markdown/site rendering and internal links. It does not rerun the implementation repository's Rust/Console suites or physical-node live validation.
 
-The deployment examples are **source-derived and artifact-grounded**. They should not be read as a claim that the documentation workflow itself launched every example on a clean machine.
-
-See [service modeling](../tutorials/model-existing-service.md), [Mosquitto end to end](../tutorials/mosquitto-end-to-end.md), [service-to-node lifecycle](../tutorials/service-to-node.md), [sources and provenance](../reference/sources.md) and [roadmap](../project/roadmap.md).
+See [DATUM Console tutorial](../tutorials/datum-console.md), [Console architecture](../architecture/console.md), [service catalog](../concepts/service-catalog.md), [sources and provenance](../reference/sources.md) and [roadmap](../project/roadmap.md).

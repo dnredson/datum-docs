@@ -1,7 +1,7 @@
 [project]
 site_name = "DATUM"
 site_url = "https://dnredson.github.io/datum-docs/"
-site_description = "Architecture, contracts and evidence for distributed applications across the IoTinuum."
+site_description = "Architecture, contracts, graphical operations and evidence for distributed applications across the IoTinuum."
 repo_url = "https://github.com/dnredson/datum-docs"
 repo_name = "dnredson/datum-docs"
 edit_uri = "edit/main/docs/"
@@ -10,11 +10,11 @@ nav = [
   { "Home" = "index.md" },
   { "Overview" = [{ "What is DATUM?" = "overview/index.md" }, { "Status and limitations" = "overview/status.md" }] },
   { "Get started" = [{ "Choose a path" = "getting-started/index.md" }, { "First validation" = "examples/first-validation.md" }] },
-  { "Tutorials" = [{ "Tutorial map" = "tutorials/index.md" }, { "Install from source" = "tutorials/install.md" }, { "Configure components" = "tutorials/configure.md" }, { "Model an existing service" = "tutorials/model-existing-service.md" }, { "Author software artifacts" = "tutorials/artifacts.md" }, { "Create a D-Graph" = "tutorials/dgraph.md" }, { "Basic governed deploy" = "tutorials/basic-deploy.md" }, { "Mosquitto end to end" = "tutorials/mosquitto-end-to-end.md" }, { "Service model to node execution" = "tutorials/service-to-node.md" }, { "Runtime realization" = "tutorials/runtime-realization.md" }, { "Troubleshooting" = "tutorials/troubleshooting.md" }] },
-  { "Concepts" = [{ "Vocabulary" = "concepts/index.md" }, { "Visual guide" = "concepts/visual-guide.md" }, { "WebAssembly and D-Code" = "concepts/webassembly-and-dcode.md" }, { "Entity encyclopedia" = "concepts/entities.md" }, { "Identity and references" = "concepts/identities-and-references.md" }] },
-  { "Architecture" = [{ "Overview" = "architecture/index.md" }, { "Software component model" = "architecture/software-components.md" }, { "DServer to D-Node execution" = "architecture/dserver-dnode-dcode-flow.md" }, { "Authority and evidence" = "architecture/authority-and-evidence.md" }, { "Lifecycle and authority flow" = "architecture/lifecycle.md" }] },
+  { "Tutorials" = [{ "Tutorial map" = "tutorials/index.md" }, { "DATUM Console" = "tutorials/datum-console.md" }, { "Install from source" = "tutorials/install.md" }, { "Configure components" = "tutorials/configure.md" }, { "Model an existing service" = "tutorials/model-existing-service.md" }, { "Author software artifacts" = "tutorials/artifacts.md" }, { "Create a D-Graph" = "tutorials/dgraph.md" }, { "Basic governed deploy" = "tutorials/basic-deploy.md" }, { "Mosquitto end to end" = "tutorials/mosquitto-end-to-end.md" }, { "Service model to node execution" = "tutorials/service-to-node.md" }, { "Runtime realization" = "tutorials/runtime-realization.md" }, { "Troubleshooting" = "tutorials/troubleshooting.md" }] },
+  { "Concepts" = [{ "Vocabulary" = "concepts/index.md" }, { "Visual guide" = "concepts/visual-guide.md" }, { "Service catalog" = "concepts/service-catalog.md" }, { "WebAssembly and D-Code" = "concepts/webassembly-and-dcode.md" }, { "Entity encyclopedia" = "concepts/entities.md" }, { "Identity and references" = "concepts/identities-and-references.md" }] },
+  { "Architecture" = [{ "Overview" = "architecture/index.md" }, { "DATUM Console" = "architecture/console.md" }, { "Software component model" = "architecture/software-components.md" }, { "DServer to D-Node execution" = "architecture/dserver-dnode-dcode-flow.md" }, { "Authority and evidence" = "architecture/authority-and-evidence.md" }, { "Lifecycle and authority flow" = "architecture/lifecycle.md" }] },
   { "Guides and operations" = [{ "Inspect readiness" = "guides/inspect-readiness.md" }, { "Readiness semantics" = "operations/readiness.md" }] },
-  { "Reference" = [{ "Reference map" = "reference/index.md" }, { "DCompile and D-Code API" = "reference/dcompile-dcode-api.md" }, { "Canonical contracts" = "reference/contracts.md" }, { "Core control-plane API" = "reference/core-api.md" }, { "Complete HTTP API" = "reference/http-api.md" }, { "Readiness APIs" = "reference/readiness-api.md" }, { "Sources and provenance" = "reference/sources.md" }] },
+  { "Reference" = [{ "Reference map" = "reference/index.md" }, { "Console and catalog API" = "reference/console-api.md" }, { "DCompile and D-Code API" = "reference/dcompile-dcode-api.md" }, { "Canonical contracts" = "reference/contracts.md" }, { "Core control-plane API" = "reference/core-api.md" }, { "Complete HTTP API" = "reference/http-api.md" }, { "Readiness APIs" = "reference/readiness-api.md" }, { "Sources and provenance" = "reference/sources.md" }] },
   { "Project" = [{ "Architecture decisions" = "project/decisions.md" }, { "Contributing" = "project/contributing.md" }, { "Roadmap" = "project/roadmap.md" }] },
 ]
 

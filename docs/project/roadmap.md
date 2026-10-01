@@ -6,22 +6,27 @@ This roadmap tracks **DATUM v1 documentation**, not an implementation promise. R
 |---|---|---|
 | Foundations | Concepts, architecture, D-Graph/D-Map/DMonitor/readiness and provenance | Complete |
 | D-Code / DCompile | WebAssembly background, ABI/runtime, D-Script→D-Compile, immutable revision identity, DServer→D-Node flow | Complete |
-| Existing-service modeling | Explain how container/native software becomes a `ServiceArtifact`; concrete catalog examples | Complete |
+| Existing-service modeling | Explain how container/native software becomes a `ServiceArtifact`; concrete examples | Complete |
 | End-to-end operational deploy | Model → register/pin → D-Graph → D-Deploy → D-Map → authorize → node execution | Complete as source-derived tutorial |
-| Migration lifecycle | Target acceptance/realization, governed source cleanup and rollback as a new transition | Complete |
-| Dashboard information model | Map existing authority/evidence domains into UI views without introducing competing persisted truth | **Planned / next major increment** |
+| Migration lifecycle | Target acceptance/realization, governed source cleanup and rollback | Complete |
+| DATUM Console foundations | Global overview, projects, scoped workspace and graphical navigation | Complete |
+| Logical/runtime graph | Accepted logical graph plus separately typed admitted realization evidence | Complete |
+| Service catalog | Immutable reusable atomic/composite definitions with exact artifact pins | Complete |
+| Console placement/deploy/runtime/history workspaces | Dedicated graphical operational workflows | Not implemented yet |
+| Guided service-modeling provider integration | Assisted draft generation with explicit operator control | Not part of the published source revision |
 | Generated API/schema reference | Machine-generated OpenAPI/schema material tied to implementation | Planned |
 | Packaged installation | Distribution/installer workflow beyond source builds | Not implemented yet |
 | Fully reproduced multi-machine guide | Captured clean-environment runtime workflow across real nodes | Planned |
 
-## Dashboard preparation already present
+## Console evolution rule
 
-The documentation uses a UI-friendly lifecycle vocabulary:
+Future graphical features should continue using the existing authority/evidence domains instead of creating a frontend-owned parallel state model.
+
+A useful UI lifecycle remains:
 
 ```text
 Modeled
-→ Registered
-→ Execution identity complete
+→ Cataloged / artifact identified
 → Proposed
 → Accepted
 → Assigned
@@ -32,16 +37,7 @@ Modeled
 → Ready
 ```
 
-Migration can additionally expose **cleanup pending/completed** for an old source node.
-
-These are derived documentation concepts, not a new canonical DATUM state enum. The planned dashboard should derive each visual state from its owning source of truth:
-
-- artifact registry for registered/execution identity;
-- D-Deploy/D-Map for proposal/acceptance/placement;
-- operational authorization/context for reconciliation permission;
-- node/runtime reports for physical realization;
-- DMonitor/evidence interpretation for observed health/readiness;
-- migration history/current authority for source cleanup obligations.
+These are presentation concepts. Their facts belong to different registries, D-Deploy/D-Map, runtime authorization and DMonitor/readiness domains.
 
 ## Documentation evidence rule
 

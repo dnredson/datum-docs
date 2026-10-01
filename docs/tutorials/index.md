@@ -1,38 +1,49 @@
 # Tutorials
 
-These tutorials describe the current **DATUM v1** implementation and keep **modeling, authority, realization and evidence** as separate steps.
+These tutorials describe the current **DATUM v1** implementation and keep **modeling, authority, realization, evidence and presentation** as separate steps.
 
-!!! important "What 'deploy' means"
-    DATUM does not use one overloaded `deployed=true` fact. A service can be modeled, registered, proposed, accepted, authorized, realized, observed and Ready at different times. D-Deploy acceptance creates placement authority; it does not by itself copy a WASM module, pull/start a container, materialize a native executable or prove health.
+!!! important "What the graphical interface means"
+    The DATUM Console is a presentation/composition layer. It can show accepted authority, catalog definitions and runtime evidence together, but it does not make a visual edge, badge or page into new canonical authority.
 
-## Start with the full journey
+## Recommended paths
+
+### Graphical operator path
+
+1. [DATUM Console](datum-console.md) — run the interface, browse projects, inspect logical/runtime graph views and use the catalog.
+2. [Model an existing service](model-existing-service.md) — understand the operational facts behind a service before cataloging or deploying it.
+3. [Service model to node execution](service-to-node.md) — understand what must happen after modeling before software actually runs.
+4. [Troubleshoot common failures](troubleshooting.md) — map failures to the authority/identity gate that refused them.
+
+### Control-plane/runtime path
+
+1. [Install from source](install.md).
+2. [Configure components](configure.md).
+3. [Author software artifacts](artifacts.md).
+4. [Create a D-Graph](dgraph.md).
+5. [Perform a basic governed deploy](basic-deploy.md).
+6. [Follow Mosquitto end to end](mosquitto-end-to-end.md).
+7. [Understand runtime realization](runtime-realization.md).
+
+## Full lifecycle
 
 ```mermaid
 flowchart LR
-    I["Install"] --> C["Configure node/control plane"]
-    C --> M["Model service"]
-    M --> A["Register artifact"]
-    A --> G["Describe D-Graph"]
-    G --> P["Plan proposal"]
-    P --> X["Accept D-Map"]
-    X --> AU["Authorize realization"]
-    AU --> R["Execute on node"]
-    R --> O["Observe"]
-    O --> Q["Readiness"]
+    M["Model"] --> C["Catalog / artifact identity"]
+    C --> G["D-Graph"]
+    G --> P["Propose"]
+    P --> A["Accept D-Map"]
+    A --> AU["Authorize realization"]
+    AU --> R["Realize"]
+    R --> E["Evidence"]
+    E --> Q["Readiness"]
+    C --> UI["Console"]
+    G --> UI
+    A --> UI
+    E --> UI
+    Q --> UI
 ```
 
-## Recommended path
-
-1. [Install from source](install.md) — build DServer and DATUM/SmartSentinel tooling.
-2. [Configure components](configure.md) — project scope, DServer state, structural D-Nodes and local identities.
-3. [Model an existing service](model-existing-service.md) — translate container/native software facts into a `ServiceArtifact`.
-4. [Author software artifacts](artifacts.md) — understand `ServiceArtifact` versus canonical `datum.dserv-artifact/1`.
-5. [Create a D-Graph](dgraph.md) — describe logical D-Serv/D-Call structure without embedding placement.
-6. [Perform a basic governed deploy](basic-deploy.md) — create/review a placement proposal and explicitly accept its D-Map.
-7. [Follow Mosquitto end to end](mosquitto-end-to-end.md) — artifact → pinning → D-Graph → D-Deploy → finite reconciliation authorization → running container.
-8. [Use the reusable service-to-node lifecycle](service-to-node.md) — generic checklist for another service.
-9. [Understand runtime realization](runtime-realization.md) — compare container/native realization with governed D-Code execution, migration and cleanup.
-10. [Troubleshoot common failures](troubleshooting.md) — map failures back to the authority/identity gate that refused them.
+The Console can visualize several boxes at once, but the boxes remain separate claims.
 
 ## Pick the right software path
 
@@ -47,28 +58,8 @@ flowchart TB
     D --> DC["Exact-revision D-Code authorization\n+ isolated Wasmtime invocation"]
 ```
 
-## One service can pass through many valid states
-
-```mermaid
-stateDiagram-v2
-    [*] --> Modeled
-    Modeled --> Registered
-    Registered --> Proposed
-    Proposed --> Accepted
-    Accepted --> Authorized
-    Authorized --> Realized
-    Realized --> Observed
-    Observed --> Ready
-```
-
-This diagram is a learning/UI model, not a new persisted DATUM state machine. A service can be Realized but later become NotReady because evidence becomes stale.
-
-## Dashboard direction
-
-The management dashboard is not implemented yet. When implemented, it should visualize existing authority/evidence independently — artifact identity, proposal, accepted placement, authorization, realization, health, readiness and cleanup — rather than persist a second competing truth.
-
 ## Source and evidence boundary
 
-Current v1 material is grounded in implementation revision `c08ccc4d715d9eb76644e3f1bd7d80a7945265c4`. Evidence links that document a specific validation result may point to the immutable source revision associated with that result. The documentation build validates links/navigation/rendering; it does not rerun the implementation test suite or physical-node validation.
+Current v1 material is grounded in implementation revision `7a79bd84bc05a1ea18870715cc033567ff472afc`. The documentation build validates links/navigation/rendering; it does not rerun the implementation test suite or physical-node validation.
 
 See [sources and provenance](../reference/sources.md) and [status and limitations](../overview/status.md).
