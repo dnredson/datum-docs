@@ -14,7 +14,7 @@ DATUM v1 separates application semantics, reusable service modeling, structural 
 | Operational realization | reconciliation, D-Call routes/grants, DIoT runtime bindings | How does accepted authority resolve to concrete runtime behavior? |
 | Observation | DMonitor observation | What did a collector actually observe? |
 | Interpretation | convergence, health assessment, readiness | What does current admitted evidence prove? |
-| Presentation | DATUM Console | How can operators inspect several domains without creating new authority? |
+| Presentation | DATUM Console / DATUM Live | How can operators manage or continuously observe several domains without creating new authority? |
 
 ## Main implementation responsibilities
 
@@ -22,7 +22,8 @@ DATUM v1 separates application semantics, reusable service modeling, structural 
 |---|---|
 | Canonical contracts | Describe application, continuum, placement and middleware semantics |
 | DServer | Govern acceptance, retain control/catalog state, derive authority, ingest evidence and compute safe read projections |
-| DATUM Console | Present server-owned projections, accepted logical graph structure, runtime evidence and catalog revisions |
+| DATUM Console | Present management workspaces backed by server-owned authority/read domains and catalog revisions |
+| DATUM Live | Continuously present global operational and Continuum evidence without write authority |
 | SmartSentinel / node-side producers | Realize authorized node state, observe local runtime state and publish evidence through supported paths |
 | D-Node execution paths | Run governed application D-Code and supported runtime workloads |
 | Reconciliation/executor paths | Perform concrete host mutations only when separately authorized |
@@ -42,6 +43,9 @@ flowchart LR
     MAP --> UI
     OBS --> UI
     READY --> UI
+    MAP --> LIVE["Live"]
+    OBS --> LIVE
+    READY --> LIVE
 ```
 
 The Console is downstream of the owning domains. A visual element can repeat or combine facts; it cannot originate placement simply by being drawn.
@@ -52,9 +56,9 @@ The structural D-Node registry is DServer's source of truth for declared D-Node 
 
 D1 readiness evaluates application/placement readiness from a coherent server-owned view of current authority and admitted evidence. D2 resolves `any_element` providers from current accepted DMap/2/DForward authority and evaluates the exact provider placement. Both are derived views rather than separately persisted truth booleans.
 
-## Console as a presentation plane
+## Console and Live as presentation planes
 
-The Console consumes bounded read projections from DServer. Its graph deliberately keeps accepted logical snapshots and DMonitor realization evidence separate. Visual categories and relationship styles are a presentation contract only.
+The Console consumes server-owned authority/read surfaces for management workflows. DATUM Live consumes only read projections for continuous observation. Both keep accepted logical structure, placement authority, host resource observations and DMonitor evidence distinct. Visual categories, badges and relationship styles are presentation contracts only.
 
 For example:
 
@@ -72,7 +76,7 @@ red/amber visual attention
         ≠ a new canonical health field
 ```
 
-See [DATUM Console architecture](console.md) for the complete boundary.
+See [DATUM Console architecture](console.md) and [DATUM Live architecture](live.md) for the complete boundaries.
 
 ## Canonical and operational surfaces
 
@@ -89,6 +93,6 @@ Use these rules:
 
 ## What is not implemented yet
 
-Dedicated Console pages/actions for placement, deploy, runtime mutation and history are not implemented yet. Automatic D-Code distribution and native package-manager acquisition are also not implemented as governed primitives.
+Server-side shared DATUM Live profiles, canonical connection/link-availability projection, automatic D-Code distribution and native package-manager acquisition are not implemented yet.
 
-Continue with [DATUM Console architecture](console.md), [desired state, authority and evidence](authority-and-evidence.md), the [end-to-end lifecycle](lifecycle.md), and the [entity encyclopedia](../concepts/entities.md).
+Continue with [DATUM Console architecture](console.md), [DATUM Live architecture](live.md), [desired state, authority and evidence](authority-and-evidence.md), the [end-to-end lifecycle](lifecycle.md), and the [entity encyclopedia](../concepts/entities.md).

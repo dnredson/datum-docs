@@ -1,139 +1,77 @@
-# Console and catalog API
+# Console, Live and catalog API
 
-This page summarizes the DServer surfaces used by the current DATUM Console. They fall into two groups with different mutation semantics.
+This page summarizes the DServer surfaces used by the current DATUM graphical interfaces. They have different mutation semantics and must not be collapsed into one generic UI API.
 
 ## Operations read API
 
-The operations API is **read only** and capacity-bounded. It builds projections from existing DServer sources rather than maintaining a second operations database.
+The operations API is read only and capacity-bounded.
 
 | Method | Route | Purpose |
 |---|---|---|
-| GET | `/api/v1/operations/overview` | global operational overview |
-| GET | `/api/v1/operations/projects/:project_id` | project workspace projection |
-| GET | `/api/v1/operations/projects/:project_id/graph` | accepted logical graph projection |
-| GET | `/api/v1/operations/projects/:project_id/runtime-graph` | logical graph plus separately typed realization-evidence projection |
+| GET | /api/v1/operations/overview | global operational overview used by Console and Live |
+| GET | /api/v1/operations/continuum | global physical D-Node/Continuum view used by Console and Live |
+| GET | /api/v1/operations/projects/:project_id | project workspace projection |
+| GET | /api/v1/operations/projects/:project_id/graph | accepted logical graph projection |
+| GET | /api/v1/operations/projects/:project_id/runtime-graph | logical graph plus separately typed realization-evidence projection |
+| GET | /api/v1/operations/projects/:project_id/continuum | project overlay on the same global physical node set |
 
-Responses use `Cache-Control: no-store`.
+The global Continuum joins structural D-Node facts, accepted placement references, placement-scoped DMonitor interpretation/evidence and optional host resource observation from Resource Registry records currently bound to that D-Node. A project overlay indicates nodes referenced by accepted placements; it does not make nodes project-owned.
 
-### Project scope rule
+Resource Registry host telemetry and DMonitor placement/runtime telemetry remain separate sources and must not be merged into one invented metric.
 
-Project-scoped operations routes require:
+## DATUM Live usage
 
-```text
-route :project_id
-=
-X-Datum-Project header
-```
+DATUM Live uses only:
 
-The value must be non-empty, bounded, trimmed and free of control characters. A mismatch is rejected rather than silently projecting another scope.
+~~~text
+GET /api/v1/operations/overview
+GET /api/v1/operations/continuum
+~~~
 
-This is request-scope consistency, not a complete authentication/authorization system.
+No Live-specific mutation endpoint exists. Alerts/events are correlated to a D-Node only when the canonical subject contains node_id. CPU, memory and age_seconds are displayed metrics and are not thresholded into a new frontend health policy.
 
-### Source failures
+## Resource discovery and binding for host observations
 
-Projection sources can be independently unavailable or corrupt. The API is designed to preserve safe source issues/availability states where the DTO allows it instead of leaking internal storage paths or inventing healthy data.
+| Method | Route | Purpose |
+|---|---|---|
+| POST | /api/v1/resources/discovery | publish observation-only compute-resource discovery |
+| GET | /api/v1/resources | list project-scoped discovered resources |
+| GET | /api/v1/resources/:resource_id | read one discovered resource |
+| POST | /api/v1/resources/:resource_id/binding | explicitly bind a resource identity to a D-Node |
+| GET | /api/v1/resource-bindings | inspect bindings |
 
-### Runtime graph semantics
+Discovery does not automatically assign a resource to a D-Node. Repeated discovery of the same canonical resource updates observation data while preserving the explicit binding.
 
-`runtime-graph` exposes admitted D-Serv realization evidence separately from the accepted logical graph. It is read-only and cannot create placement.
+Generic Sentinel telemetry is a different domain. A node can exist structurally and receive Sentinel/DMonitor traffic while resource_observation remains absent until a Resource Registry record is discovered and bound.
 
-The runtime source kind identifies admitted realization evidence, not an execution-instance registry. A POST to the read route is not allowed.
+## Management/control APIs used by Console workspaces
+
+The Console also uses governed APIs outside the read-only operations family for D-Graph draft/save flows, placement candidate validation/proposal creation, proposal review/acceptance, reconciliation request/control workflows and catalog definition creation/revision.
+
+Those actions retain their own owner-domain semantics. A browser click does not bypass server validation or node-side execution authorization.
 
 ## Service catalog API
 
-The catalog API mutates **catalog definitions only**.
+The catalog API mutates catalog definitions only.
 
 | Method | Route | Purpose |
 |---|---|---|
-| GET | `/api/v1/catalog/services` | list latest reusable definitions |
-| POST | `/api/v1/catalog/services` | create a definition at initial revision |
-| GET | `/api/v1/catalog/services/:id` | read latest revision |
-| POST | `/api/v1/catalog/services/:id/revisions` | create the next immutable revision |
-| GET | `/api/v1/catalog/services/:id/revisions/:revision` | read one exact historical revision |
-| GET | `/api/v1/catalog/artifacts` | list verified operational artifact snapshots available for pinning |
-| GET | `/api/v1/catalog/artifacts/:snapshot` | read one exact captured artifact snapshot |
+| GET | /api/v1/catalog/services | list latest reusable definitions |
+| POST | /api/v1/catalog/services | create a definition at initial revision |
+| GET | /api/v1/catalog/services/:id | read latest revision |
+| POST | /api/v1/catalog/services/:id/revisions | create the next immutable revision |
+| GET | /api/v1/catalog/services/:id/revisions/:revision | read one exact historical revision |
+| GET | /api/v1/catalog/artifacts | list verified operational artifact snapshots available for pinning |
+| GET | /api/v1/catalog/artifacts/:snapshot | read one exact captured artifact snapshot |
 
-There is no delete route in the current catalog API.
-
-## Save request
-
-Catalog create/revise uses a body shaped as:
-
-```json
-{
-  "definition": { "...": "service definition draft" },
-  "expected_revision": 0
-}
-```
-
-For creation, `expected_revision` must be `0`. For a new revision, it must match the current expected revision. Conflicts fail closed.
-
-## Catalog definition fields
-
-A definition can include:
-
-- stable definition ID and name;
-- `atomic` or `composite` shape;
-- exact operational artifact reference for atomic services;
-- static or declarative-discovered composition for composites;
-- tenancy capability and optional tenant unit;
-- CPU/memory/storage requirements;
-- physical capability requirements;
-- HTTP/TCP health-check intent;
-- monitoring cadence intent;
-- secret references/version/target environment variable;
-- exact dependency revisions;
-- required/provided service capabilities;
-- immutable repository/Compose metadata for declarative composite provisioning.
-
-See [Service catalog](../concepts/service-catalog.md) for semantics.
-
-## Exact artifact pinning
-
-The catalog does not duplicate ServiceArtifact resolution. When an atomic definition is saved, DServer re-reads the referenced operational artifact and captures a narrow verified snapshot.
-
-Reference identity includes:
-
-```text
-project_id
-artifact_id
-execution_generation
-execution_projection_digest
-```
-
-Container snapshots require valid resolved OCI identity. Native-process snapshots require an exact executable SHA-256.
-
-If the referenced artifact changed since the editor loaded it, save conflicts instead of repinning silently.
-
-## Catalog persistence
-
-The catalog database path is configured with:
-
-```text
-DATUM_SERVICE_CATALOG_DB_PATH
-```
-
-DServer refuses to initialize the catalog on the configured control-state or event/alert database path. If persistence is absent/unavailable, the API returns a safe `catalog_unavailable` response; it does not fall back to transient process memory.
-
-## What catalog POST does not do
-
-A successful catalog write does not:
-
-- create a D-Graph;
-- create a D-Deploy proposal;
-- accept a D-Map;
-- pull/start a container;
-- spawn a native process;
-- install/execute D-Code;
-- create tenant or requirement bindings;
-- emit monitoring evidence;
-- clone a repository or run a provisioning command.
-
-That boundary is intentional.
+Catalog writes do not create a D-Graph, accepted D-Map, runtime instance or monitoring producer.
 
 ## Sources
 
-- [operations API](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/dserver/src/api/operations.rs)
-- [catalog API](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/dserver/src/api/service_catalog.rs)
-- [catalog model/validation](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/dserver/src/core/service_catalog.rs)
-- [Console catalog client/view](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/console/src/pages/catalog.ts)
+- [operations API](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/api/operations.rs)
+- [Continuum API](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/api/continuum_view.rs)
+- [Continuum composition](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/core/continuum_view.rs)
+- [resource registry](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/core/resource_registry.rs)
+- [resource binding](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/core/resource_binding.rs)
+- [Console router](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/src/app/router.ts)
+- [Live view](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/src/live/live-view.ts)

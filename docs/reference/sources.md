@@ -1,6 +1,6 @@
 # Sources and provenance
 
-The current DATUM v1 documentation is grounded in **dnredson/datum** commit `7a79bd84bc05a1ea18870715cc033567ff472afc`. Source review for this documentation revision took place on 2026-10-01.
+The current DATUM v1 documentation is grounded in **dnredson/datum** commit `3605845b7933195e470c9a13473fbc05432c4a26`. Source review for this documentation revision took place on 2026-10-23.
 
 ## Provenance policy
 
@@ -10,39 +10,52 @@ Every implementation source link must be pinned to a **full 40-character commit 
 
 ## v1 source trail — DATUM Console
 
-- [Console package/runtime requirements](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/console/package.json)
-- [Vite configuration](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/console/vite.config.ts)
-- [client router](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/console/src/app/router.ts)
-- [project workspace](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/console/src/pages/project-workspace.ts)
-- [project graph](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/console/src/pages/project-graph.ts)
-- [runtime graph model](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/console/src/pages/runtime-graph-model.ts)
-- [graph visual semantics](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/console/src/components/graph-visuals.ts)
-- [operations read API](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/dserver/src/api/operations.rs)
+- [Console package/runtime requirements](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/package.json)
+- [Vite configuration](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/vite.config.ts)
+- [client router](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/src/app/router.ts)
+- [project workspace](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/src/pages/project-workspace.ts)
+- [project graph](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/src/pages/project-graph.ts)
+- [runtime graph model](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/src/pages/runtime-graph-model.ts)
+- [graph visual semantics](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/src/components/graph-visuals.ts)
+- [operations read API](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/api/operations.rs)
+
+## v1 source trail — DATUM Live and Continuum
+
+- [Live entry point](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/src/live/main.ts)
+- [Live view and card-state semantics](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/src/live/live-view.ts)
+- [Live profile persistence](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/src/live/live-profile.ts)
+- [global D-Node picker](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/src/live/live-node-picker.ts)
+- [responsive/kiosk styling](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/src/live/live.css)
+- [Continuum API adapter](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/api/continuum_view.rs)
+- [Continuum composition](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/core/continuum_view.rs)
+- [D-Node Registry](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/core/dnode_registry.rs)
+- [Resource Registry](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/core/resource_registry.rs)
+- [resource binding](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/core/resource_binding.rs)
 
 ## v1 source trail — service catalog
 
-- [catalog UI](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/console/src/pages/catalog.ts)
-- [catalog API](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/dserver/src/api/service_catalog.rs)
-- [catalog model and validation](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/dserver/src/core/service_catalog.rs)
-- [ServiceArtifact registry](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/dserver/src/core/service_artifact_registry.rs)
+- [catalog UI](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/src/pages/catalog.ts)
+- [catalog API](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/api/service_catalog.rs)
+- [catalog model and validation](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/core/service_catalog.rs)
+- [ServiceArtifact registry](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/core/service_artifact_registry.rs)
 
 ## v1 source trail — software model and D-Code
 
-- [canonical D-Script](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/dserver/src/core/canonical_dscript.rs)
-- [DCompile API](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/dserver/src/api/dcompile.rs)
-- [canonical D-Serv artifact](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/dserver/src/core/dserv_artifact.rs)
-- [D-Code HTTP API](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/dserver/src/api/dcode.rs)
-- [D-Code authorization](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/dserver/src/core/dcode_authorization.rs)
-- [D-Code governed client](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/DATUM/src/dcode/client.rs)
-- [D-Code runtime](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/DATUM/src/dcode/runtime.rs)
+- [canonical D-Script](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/core/canonical_dscript.rs)
+- [DCompile API](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/api/dcompile.rs)
+- [canonical D-Serv artifact](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/core/dserv_artifact.rs)
+- [D-Code HTTP API](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/api/dcode.rs)
+- [D-Code authorization](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/core/dcode_authorization.rs)
+- [D-Code governed client](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/DATUM/src/dcode/client.rs)
+- [D-Code runtime](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/DATUM/src/dcode/runtime.rs)
 
 ## v1 source trail — ServiceArtifact and node realization
 
-- [ServiceArtifact HTTP API and OCI pinning](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/dserver/src/api/service_artifacts.rs)
-- [operational reconciliation API](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/dserver/src/api/operational_dgraph.rs)
-- [node reconciliation engine](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/DATUM/src/agent/operational_reconciliation.rs)
-- [native executable acquisition](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/DATUM/src/agent/native_process_acquisition.rs)
-- [native process runtime](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/DATUM/src/agent/native_process_runtime.rs)
+- [ServiceArtifact HTTP API and OCI pinning](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/api/service_artifacts.rs)
+- [operational reconciliation API](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/api/operational_dgraph.rs)
+- [node reconciliation engine](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/DATUM/src/agent/operational_reconciliation.rs)
+- [native executable acquisition](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/DATUM/src/agent/native_process_acquisition.rs)
+- [native process runtime](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/DATUM/src/agent/native_process_runtime.rs)
 
 Concrete artifact examples remain available in the implementation repository, including Mosquitto, PostgreSQL and the LoRa simulator.
 

@@ -9,10 +9,11 @@ These tutorials describe the current **DATUM v1** implementation and keep **mode
 
 ### Graphical operator path
 
-1. [DATUM Console](datum-console.md) — run the interface, browse projects, inspect logical/runtime graph views and use the catalog.
-2. [Model an existing service](model-existing-service.md) — understand the operational facts behind a service before cataloging or deploying it.
-3. [Service model to node execution](service-to-node.md) — understand what must happen after modeling before software actually runs.
-4. [Troubleshoot common failures](troubleshooting.md) — map failures to the authority/identity gate that refused them.
+1. [DATUM Console](datum-console.md) — run the management interface across Continuum, graph, placement, proposal review, deploy/reconciliation, history and catalog workspaces.
+2. [DATUM Live](datum-live.md) — build a continuously visible read-only Area of Interest from global D-Nodes and operational evidence.
+3. [Model an existing service](model-existing-service.md) — understand the operational facts behind a service before cataloging or deploying it.
+4. [Service model to node execution](service-to-node.md) — understand what must happen after modeling before software actually runs.
+5. [Troubleshoot common failures](troubleshooting.md) — map failures to the authority/identity gate that refused them.
 
 ### Control-plane/runtime path
 
@@ -41,6 +42,8 @@ flowchart LR
     A --> UI
     E --> UI
     Q --> UI
+    E --> LIVE["DATUM Live"]
+    Q --> LIVE
 ```
 
 The Console can visualize several boxes at once, but the boxes remain separate claims.
@@ -60,6 +63,6 @@ flowchart TB
 
 ## Source and evidence boundary
 
-Current v1 material is grounded in implementation revision `7a79bd84bc05a1ea18870715cc033567ff472afc`. The documentation build validates links/navigation/rendering; it does not rerun the implementation test suite or physical-node validation.
+Current v1 material is grounded in implementation revision `3605845b7933195e470c9a13473fbc05432c4a26`. The documentation build validates links/navigation/rendering; it does not rerun the implementation test suite or physical-node validation.
 
 See [sources and provenance](../reference/sources.md) and [status and limitations](../overview/status.md).

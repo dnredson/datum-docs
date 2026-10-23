@@ -33,7 +33,7 @@ For a reproducible checkout:
 ```sh
 git clone https://github.com/dnredson/datum.git
 cd datum
-git checkout --detach 7a79bd84bc05a1ea18870715cc033567ff472afc
+git checkout --detach 3605845b7933195e470c9a13473fbc05432c4a26
 ```
 
 ## 3. Install Console dependencies
@@ -90,11 +90,19 @@ The Vite preview server is a local integration tool, not a production hosting re
 |---|---|
 | `/` | global operational overview |
 | `/projects` | project navigation/discovery |
+| `/continuum` | global physical D-Node/Continuum view |
 | `/projects/:project_id` | scoped project workspace |
 | `/projects/:project_id/graph` | accepted logical graph plus separately presented runtime evidence |
+| `/projects/:project_id/graph/edit` | local D-Graph draft editor; no acceptance/execution |
+| `/projects/:project_id/continuum` | project overlay on the same global Continuum |
+| `/projects/:project_id/placement` | placement candidate generation/validation/proposal |
+| `/projects/:project_id/proposals/:proposal_id` | proposal review and explicit placement-authority acceptance |
+| `/projects/:project_id/applications/:application_id` | read-only application operational context |
+| `/projects/:project_id/applications/:application_id/deploy` | deploy/reconciliation request workflow |
+| `/projects/:project_id/history` | read-only DMonitor historical explorer |
 | `/catalog` | global reusable Artifact & Service Catalog |
 
-Dedicated routed pages for project Placement, Deploy, Runtime and History are not implemented yet. Some facts from those domains already appear in the project overview and graph projections.
+These routes intentionally expose different powers. A draft or placement candidate is not authority; proposal acceptance changes placement authority; a reconciliation request is not itself host mutation.
 
 ## 6. Read the global overview
 
@@ -305,16 +313,11 @@ The service catalog has its own persistence boundary. DServer uses `DATUM_SERVIC
 
 If catalog persistence is not configured or cannot be accessed, catalog routes return a safe unavailable response; there is no hidden in-memory persistence fallback.
 
-## 18. What the Console does not do yet
+## 18. What remains outside the Console boundary
 
-The published Console does not currently provide dedicated routed pages for:
+The Console now exposes dedicated placement, proposal review, deploy/reconciliation and history workspaces, but it still does not turn the browser into runtime authority. Host mutation remains node-side and separately authorized. The service catalog still does not create runtime instances, tenant bindings, requirement bindings or deployments.
 
-- placement proposal authoring/review;
-- D-Deploy acceptance actions;
-- node runtime mutation controls;
-- migration/history workflows.
-
-The service catalog does not create runtime instances, tenant bindings, requirement bindings or deployments.
+For a continuously open, GET-only operational display, use [DATUM Live](datum-live.md) rather than keeping a management workspace open as a wallboard.
 
 A live external AI service-modeling provider is also not part of this pinned source revision. Service definitions in this version are operator-authored through the catalog editor.
 
@@ -333,10 +336,10 @@ That separation is the main rule for reading the DATUM Console correctly.
 
 ## Sources
 
-- [Console package and runtime requirements](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/console/package.json)
-- [Vite proxy configuration](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/console/vite.config.ts)
-- [Console router](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/console/src/app/router.ts)
-- [project workspace](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/console/src/pages/project-workspace.ts)
-- [project graph](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/console/src/pages/project-graph.ts)
-- [graph visual semantics](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/console/src/components/graph-visuals.ts)
-- [catalog UI](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/console/src/pages/catalog.ts)
+- [Console package and runtime requirements](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/package.json)
+- [Vite proxy configuration](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/vite.config.ts)
+- [Console router](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/src/app/router.ts)
+- [project workspace](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/src/pages/project-workspace.ts)
+- [project graph](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/src/pages/project-graph.ts)
+- [graph visual semantics](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/src/components/graph-visuals.ts)
+- [catalog UI](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/src/pages/catalog.ts)
