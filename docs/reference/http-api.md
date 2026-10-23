@@ -13,7 +13,20 @@ This page groups the HTTP routes exposed by the current **DATUM v1** DServer imp
 | GET | `/api/v1/graph-overview` | graph introspection |
 | GET | `/api/v1/alternative-paths` | analysis/tooling |
 
-The existing dashboard routes are auxiliary implementation surfaces. The new DATUM management dashboard described in the roadmap is **not implemented yet**.
+The older dashboard routes remain auxiliary compatibility surfaces. The current DATUM Console and DATUM Live are Vite frontends that consume the operations/control APIs; they are not served by these legacy dashboard endpoints.
+
+## Graphical operations read models
+
+| Method | Route | Role |
+|---|---|---|
+| GET | `/api/v1/operations/overview` | global cross-project operational overview |
+| GET | `/api/v1/operations/continuum` | global physical D-Node view with accepted placements and observations |
+| GET | `/api/v1/operations/projects/:project_id` | project workspace projection |
+| GET | `/api/v1/operations/projects/:project_id/graph` | accepted logical graph projection |
+| GET | `/api/v1/operations/projects/:project_id/runtime-graph` | logical graph plus realization evidence |
+| GET | `/api/v1/operations/projects/:project_id/continuum` | project overlay over the same global physical nodes |
+
+DATUM Live reads only the global overview and global Continuum routes. The Console uses these read models plus separate governed control APIs for management workflows.
 
 ## Structural D-Node and D-Continuum authority
 

@@ -12,7 +12,10 @@ This roadmap tracks **DATUM v1 documentation**, not an implementation promise. R
 | DATUM Console foundations | Global overview, projects, scoped workspace and graphical navigation | Complete |
 | Logical/runtime graph | Accepted logical graph plus separately typed admitted realization evidence | Complete |
 | Service catalog | Immutable reusable atomic/composite definitions with exact artifact pins | Complete |
-| Console placement/deploy/runtime/history workspaces | Dedicated graphical operational workflows | Not implemented yet |
+| Console placement/proposal/deploy/history workspaces | Dedicated graphical operational workflows that preserve owner-domain authority | Complete |
+| DATUM Live | Cross-project Area of Interest, local profiles, polling, responsive/kiosk display and evidence-backed card tones | Complete foundation |
+| Shared Live views | Server-side persistence, stable cross-device dashboard URLs and remote display management | Planned |
+| Connectivity Live targets | Canonical connection/reachability projection suitable for continuously watching links | Planned |
 | Guided service-modeling provider integration | Assisted draft generation with explicit operator control | Not part of the published source revision |
 | Generated API/schema reference | Machine-generated OpenAPI/schema material tied to implementation | Planned |
 | Packaged installation | Distribution/installer workflow beyond source builds | Not implemented yet |

@@ -4,9 +4,9 @@ Independent documentation for DATUM, built with **Zensical + Markdown**.
 
 This repository contains explanatory documentation and publication tooling. Implementation, canonical contracts and Architecture Decision Records remain in `dnredson/datum`.
 
-**DATUM v1 source revision:** `7a79bd84bc05a1ea18870715cc033567ff472afc`. See [status](docs/overview/status.md) and [source provenance](docs/reference/sources.md).
+**DATUM v1 source revision:** `3605845b7933195e470c9a13473fbc05432c4a26`. See [status](docs/overview/status.md) and [source provenance](docs/reference/sources.md).
 
-The documentation is organized around reader tasks and product concepts rather than internal development milestones. It now covers the **DATUM Console** graphical interface, project workspaces, logical/runtime graph visualization and the reusable service catalog in addition to the control-plane, runtime and evidence model.
+The documentation is organized around reader tasks and product concepts rather than internal development milestones. It now covers the **DATUM Console** management interface, dedicated continuum/placement/deploy/history workspaces, the separate **DATUM Live** continuous observation surface, logical/runtime graph visualization and the reusable service catalog in addition to the control-plane, runtime and evidence model.
 
 Source links are pinned to immutable full commit SHAs for reproducibility. When a capability is not implemented yet, the documentation says so directly instead of referring to an internal roadmap number.
 

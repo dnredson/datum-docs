@@ -6,7 +6,8 @@ Reference pages describe the current **DATUM v1** implementation. They are not a
 
 | Need | Page |
 |---|---|
-| Use the graphical interface | [DATUM Console tutorial](../tutorials/datum-console.md) |
+| Use the management interface | [DATUM Console tutorial](../tutorials/datum-console.md) |
+| Build a continuous operations display | [DATUM Live tutorial](../tutorials/datum-live.md) |
 | Integrate with Console read projections or catalog APIs | [Console and catalog API](console-api.md) |
 | Understand reusable service definitions | [Service catalog](../concepts/service-catalog.md) |
 | Understand each entity and its authority boundary | [Entity encyclopedia](../concepts/entities.md) |
@@ -21,7 +22,7 @@ Reference pages describe the current **DATUM v1** implementation. They are not a
 
 DATUM v1 now includes two important non-canonical-but-governed surfaces:
 
-- **Operations read API** — bounded read-only projections for the Console;
+- **Operations read API** — bounded read-only projections used by Console and DATUM Live;
 - **Service catalog API** — versioned reusable modeling definitions whose writes remain catalog-only.
 
 Neither surface replaces canonical placement or runtime authority.

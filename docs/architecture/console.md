@@ -34,15 +34,23 @@ The client has explicit route parsing and validates project identifiers before c
 
 ## Route model
 
-```text
+~~~text
 /
 ├── projects
 │   └── :project_id
-│       └── graph
+│       ├── graph
+│       │   └── edit
+│       ├── continuum
+│       ├── placement
+│       ├── history
+│       ├── proposals/:proposal_id
+│       └── applications/:application_id
+│           └── deploy
+├── continuum
 └── catalog
-```
+~~~
 
-The current UI has global overview, project navigation, project overview, project graph and catalog routes. Dedicated placement/deploy/runtime/history project routes are not implemented yet.
+The Console now contains both read-only and governed action workspaces. Graph editing creates a draft, placement creates/validates/proposes a candidate, proposal review can explicitly accept placement authority, and deploy/reconciliation creates control-plane requests while host mutation remains a node-side responsibility.
 
 ## Read-projection architecture
 
@@ -151,15 +159,17 @@ Atomic definitions pin verified artifact identity. Composite definitions describ
 - unreadable sources remain explicit errors/availability states;
 - exact identities are shown rather than replaced by friendly-but-ambiguous names.
 
-## Future UI increments
+## Relationship to DATUM Live
 
-The architecture is intentionally ready for additional project sections. Placement proposal/review, deploy, runtime control and history pages can be added by consuming their existing owner domains or new governed APIs. They should not introduce an independent `deployed`, `healthy` or `placed` database owned by the frontend.
+DATUM Live is a separate frontend entry point built from the same TypeScript/Vite project. It shares typed API clients and presentation primitives with the Console but is intentionally GET-only and does not mount the Console router. The Console remains the management surface; Live remains the continuously open observation surface.
+
+See [DATUM Live architecture](live.md) for profile persistence, Area of Interest selection, kiosk behavior and card-state semantics.
 
 ## Sources
 
-- [Console router](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/console/src/app/router.ts)
-- [project workspace](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/console/src/pages/project-workspace.ts)
-- [project graph](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/console/src/pages/project-graph.ts)
-- [graph visual semantics](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/console/src/components/graph-visuals.ts)
-- [operations API](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/dserver/src/api/operations.rs)
-- [catalog API](https://github.com/dnredson/datum/blob/7a79bd84bc05a1ea18870715cc033567ff472afc/dserver/src/api/service_catalog.rs)
+- [Console router](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/src/app/router.ts)
+- [project workspace](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/src/pages/project-workspace.ts)
+- [project graph](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/src/pages/project-graph.ts)
+- [graph visual semantics](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/console/src/components/graph-visuals.ts)
+- [operations API](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/api/operations.rs)
+- [catalog API](https://github.com/dnredson/datum/blob/3605845b7933195e470c9a13473fbc05432c4a26/dserver/src/api/service_catalog.rs)
